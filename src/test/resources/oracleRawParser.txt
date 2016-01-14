@@ -1,0 +1,29 @@
+A Display of My Dark Power
+Scheme
+When you set this scheme in motion, until your next turn, whenever a player taps a land for mana, that player adds one mana to his or her mana pool of any type that land produced.
+ARC-C
+
+Ærathi Berserker
+2RRR
+Creature -- Human Berserker
+2/4
+Rampage 3 (Whenever this creature becomes blocked, it gets +3/+3 until end of turn for each creature blocking it beyond the first.)
+LE-U
+
+Æther Adept
+1UU
+Creature -- Human Wizard
+2/2
+When AEther Adept enters the battlefield, return target creature to its owner's hand.
+M11-C, M12-C
+
+
+Emrakul, the Aeons Torn
+15
+Legendary Creature -- Eldrazi
+15/15
+Emrakul, the Aeons Torn can't be countered.
+When you cast Emrakul, take an extra turn after this one.
+Flying, protection from colored spells, annihilator 6
+When Emrakul is put into a graveyard from anywhere, its owner shuffles his or her graveyard into his or her library.
+ROE-M

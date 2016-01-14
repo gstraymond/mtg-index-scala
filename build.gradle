@@ -1,0 +1,42 @@
+group 'fr.gstraymond'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'scala'
+apply plugin: 'idea'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/releases"
+    }
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.+'
+    compile 'ch.qos.logback:logback-classic:1.+'
+    compile "org.scala-lang:scala-library:2.11.+"
+    compile "org.scala-lang:scala-compiler:2.11.+"
+    runtime "org.codehaus.groovy:groovy:2.4.+"
+    testCompile "org.specs2:specs2-core_2.11:3.+"
+    testCompile "org.specs2:specs2-junit_2.11:3.+"
+    testCompile "junit:junit:4.+"
+}
+
+task run(type: JavaExec, dependsOn: classes) {
+    main = 'Test'
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+    systemProperties 'logback.configurationFile' : new File(projectDir,'src/test/resources/logback-test.groovy').absolutePath
+}
