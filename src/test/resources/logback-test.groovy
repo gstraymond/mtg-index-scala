@@ -5,7 +5,7 @@ import static ch.qos.logback.classic.Level.DEBUG
 
 appender("STDOUT", ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%highlight(%-5level) %boldGreen(%logger{15}) - %boldWhite(%msg) %n"
+        pattern = "%highlight(%-5level) %green(%logger{15}) - %white(%msg) %n"
     }
 }
 

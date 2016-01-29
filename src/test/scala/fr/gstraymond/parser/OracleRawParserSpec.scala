@@ -9,7 +9,7 @@ class OracleRawParserSpec extends Specification {
 
   "A test" should {
     "check" in {
-      val result = new OracleRawParser().parse("/oracleRawParser.txt")
+      val result = OracleRawParser.parse("/oracleRawParser.txt")
       result must have size 4
       result.head === Seq(
         "A Display of My Dark Power",

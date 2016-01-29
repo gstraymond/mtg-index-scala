@@ -2,18 +2,23 @@ package fr.gstraymond.parser
 
 import fr.gstraymond.utils.Log
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 
-class OracleRawParser extends Log {
+object OracleRawParser extends Log {
 
   def parse(path: String): Seq[Seq[String]] = {
+    log.debug(s"path: $path")
     val resource = getClass.getResource(path)
-    val lines = Source.fromFile(resource.getFile).getLines()
+    log.debug(s"resource: $resource")
+    val lines = Source.fromFile(resource.getFile)(Codec.ISO8859).getLines()
 
-    lines.foldLeft(Seq(Seq.empty[String])) {
+    lines.zipWithIndex.map { case (line, i) =>
+      log.debug(s"$i -> $line")
+      line
+    }.foldLeft(Seq(Seq.empty[String])) {
       case (acc, "") => Seq.empty +: acc
       case (acc, line) => (acc.head :+ line) +: acc.tail
-    }.filter{
+    }.filter {
       _.nonEmpty
     }.reverse
   }

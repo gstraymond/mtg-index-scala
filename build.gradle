@@ -2,29 +2,41 @@ group 'fr.gstraymond'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'scala'
-apply plugin: 'idea'
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/releases"
-    }
+    maven { url "https://oss.sonatype.org/content/repositories/releases" }
+    maven { url "http://repo.typesafe.com/typesafe/releases/" }
 }
+
+// https://github.com/gradle/gradle/tree/master/subprojects/docs/src/samples/scala
+
+def scalaVersion = "2.11"
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.+'
     compile 'ch.qos.logback:logback-classic:1.+'
-    compile "org.scala-lang:scala-library:2.11.+"
-    compile "org.scala-lang:scala-compiler:2.11.+"
+    compile "org.scala-lang:scala-library:$scalaVersion.+"
+    compile "org.scala-lang:scala-compiler:$scalaVersion.+"
+    compile "com.typesafe.play:play-json_$scalaVersion:2.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
-    testCompile "org.specs2:specs2-core_2.11:3.+"
-    testCompile "org.specs2:specs2-junit_2.11:3.+"
+    compile 'org.jsoup:jsoup:1.8.+'
+    testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
+    testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"
 }
 
-task run(type: JavaExec, dependsOn: classes) {
-    main = 'Test'
+task importer(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.Importer'
+    description "Import data"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task scraper(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.Scraper'
+    description "Scrap data"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
@@ -38,5 +50,21 @@ test {
         exceptionFormat = 'full'
         showStandardStreams = true
     }
-    systemProperties 'logback.configurationFile' : new File(projectDir,'src/test/resources/logback-test.groovy').absolutePath
+    systemProperties 'logback.configurationFile': new File(projectDir, 'src/test/resources/logback-test.groovy').absolutePath
 }
+
+
+// START SNIPPET use-zinc
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.useAnt = false
+}
+// END SNIPPET use-zinc
+
+// START SNIPPET adjust-memory
+tasks.withType(ScalaCompile) {
+    configure(scalaCompileOptions.forkOptions) {
+        memoryMaximumSize = '1g'
+        jvmArgs = ['-XX:MaxPermSize=512m']
+    }
+}
+// END SNIPPET adjust-memory

@@ -25,6 +25,7 @@ class OracleRawCardConverterSpec extends Specification {
         Some("ARC-C")
       )
     }
+
     "convert Ærathi Berserker" in {
       val card = Seq(
         "Ærathi Berserker",

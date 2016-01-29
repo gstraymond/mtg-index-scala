@@ -17,6 +17,7 @@ lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
+/src/main/resources/scrap
 
 
 # Created by .ignore support plugin (hsz.mobi)
