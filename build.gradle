@@ -34,30 +34,30 @@ task importer(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
-task scraper(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.Scraper'
-    description "Scrap data"
+task fullScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.FullScrapTask'
+    description "Scrap cards + prices"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
 
-task mciScraper(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.MCIScraper'
-    description "Scrap data TMP"
+task cardScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.CardScrapTask'
+    description "Scrap cards"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
 
-task priceScraper(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.MGFScraper'
-    description "Scrap price"
+task priceScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.PriceScrapTask'
+    description "Scrap prices"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
 
-task process(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.Process'
-    description "Process price"
+task priceProcess(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.PriceProcessTask'
+    description "Process prices"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }

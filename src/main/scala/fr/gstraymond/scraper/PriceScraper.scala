@@ -1,7 +1,7 @@
 package fr.gstraymond.scraper
 
 import fr.gstraymond.model.{Price, ScrapedCard, ScrapedPrice}
-import fr.gstraymond.utils.{StringUtils, FileUtils}
+import fr.gstraymond.utils.{FileUtils, StringUtils}
 import play.api.libs.json.Json
 
 import scala.collection.JavaConverters._
@@ -9,8 +9,6 @@ import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source
-import fr.gstraymond.model.ScrapedCardFormat._
-import fr.gstraymond.model.ScrapedPriceFormat._
 
 object PriceScraper extends MTGGoldFishScraper {
 
@@ -18,21 +16,39 @@ object PriceScraper extends MTGGoldFishScraper {
   val sep = " - "
 
   def process: Seq[ScrapedCard] = {
-    process(loadCards)
+    process(loadCards, loadPrices)
   }
 
-  private def normEditions(price: ScrapedPrice): ScrapedPrice = {
-    val code = price.editionCode
-      .replace("prm-sdcc13", "prm-med")
-      .replace("prm-sdcc14", "prm-med")
-      .replace("prm-sdcc15", "prm-med")
+  def scrapAndProcess(cards: Seq[ScrapedCard]): Future[Seq[ScrapedCard]] = {
+    scrap.map {
+      process(cards, _)
+    }
+  }
+
+  def scrap: Future[Seq[ScrapedPrice]] = {
+    scrapEditionUrls.flatMap { editionUrls =>
+      Future.sequence {
+        editionUrls.map { editionPath =>
+          scrapEditionPrices(editionPath)
+        }
+      }.map(_.flatten)
+    }
+  }
+
+  private def process(cards: Seq[ScrapedCard], prices: Seq[ScrapedPrice]): Seq[ScrapedCard] = {
+    def normEditions(price: ScrapedPrice): ScrapedPrice = {
+      val code = price.editionCode
+        .replace("prm-sdcc13", "prm-med")
+        .replace("prm-sdcc14", "prm-med")
+        .replace("prm-sdcc15", "prm-med")
       //.replace("prm-wpn", "prm-gwp")
-    price.copy(editionCode = code)
-  }
+      price.copy(editionCode = code)
+    }
 
-  def process(cards: Seq[ScrapedCard]): Seq[ScrapedCard] = {
-    val priceMap = loadPrice.map(normEditions).flatMap(priceAsMap).toMap
-    merge(cards, priceMap)
+    merge(
+      cards,
+      prices.map(normEditions).flatMap(priceAsMap).toMap
+    )
   }
 
   private def priceAsMap(card: ScrapedPrice): Seq[(String, ScrapedPrice)] = {
@@ -61,24 +77,16 @@ object PriceScraper extends MTGGoldFishScraper {
     }
   }
 
-  private def loadPrice: Seq[ScrapedPrice] = {
+  private def loadPrices: Seq[ScrapedPrice] = {
     val json = Source.fromFile(s"${FileUtils.scrapPath}/prices.json").mkString
+    import fr.gstraymond.model.ScrapedPriceFormat.scrapedPriceFormat
     Json.parse(json).as[Seq[ScrapedPrice]]
   }
 
   private def loadCards: Seq[ScrapedCard] = {
     val json = Source.fromFile(s"${FileUtils.scrapPath}/cards.json").mkString
+    import fr.gstraymond.model.ScrapedCardFormat.scrapCardFormat
     Json.parse(json).as[Seq[ScrapedCard]]
-  }
-
-  def scrap: Future[Seq[ScrapedPrice]] = {
-    scrapEditionUrls.flatMap { editionUrls =>
-      Future.sequence {
-        editionUrls.map { editionPath =>
-          scrapEditionPrices(editionPath)
-        }
-      }.map(_.flatten)
-    }
   }
 
   private def scrapEditionUrls: Future[Seq[String]] = {
@@ -156,7 +164,7 @@ object PriceScraper extends MTGGoldFishScraper {
 
 
     val mutablePrices = mutable.Map() ++ cardToPrice.toMap
-    val r = cards
+    val result = cards
       .map { card =>
         val editionCode = editionCodeMap.getOrElse(card.editionCode, card.editionCode)
         val key = s"$editionCode$sep${StringUtils.normalize(card.title)}"
@@ -174,13 +182,13 @@ object PriceScraper extends MTGGoldFishScraper {
     val editionCodes = mutablePrices.keys.map(_.split(sep).head)
     val missingPriceByEditions = mutablePrices.values.groupBy(_.editionCode)
 
-    log.info(s"cards total before: ${cards.size} / after ${r.size}")
+    log.info(s"cards total before: ${cards.size} / after ${result.size}")
     log.info(s"missing prices before ${cardToPrice.size} / after ${mutablePrices.size}")
     log.info(s"missing editions before ${editionCodes.size} / ${editionCodes.mkString(", ")}")
     log.info(s"missing editions grouped ${missingPriceByEditions.mapValues(_.size).toSeq.sortBy(-_._2)}")
     //log.info(s"missing first card ${missingPriceByEditions.mapValues(_.head.card)}")
     mutablePrices.mapValues(_.card).toSeq.sortBy(_._1).foreach(t => log.info(s"missing: $t"))
-    r
+    result
   }
 
 }

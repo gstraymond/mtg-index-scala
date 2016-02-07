@@ -16,7 +16,6 @@ trait Scraper extends Log {
     val url = s"http://$host$path"
     Future {
       val now = new Date().getTime
-      log.info(s"scraping url $url...")
       now -> Jsoup.connect(url).timeout(20 * 1000).get()
     }.map { case (now, doc) =>
       log.info(s"scraping url $url done in ${new Date().getTime - now}ms !")
