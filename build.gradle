@@ -41,6 +41,27 @@ task scraper(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
+task mciScraper(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.MCIScraper'
+    description "Scrap data TMP"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task priceScraper(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.MGFScraper'
+    description "Scrap price"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task process(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.Process'
+    description "Process price"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.10'
 }

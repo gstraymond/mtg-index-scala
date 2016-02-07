@@ -8,7 +8,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object CardScraper extends Scraper with Log {
+object CardScraper extends MagicCardsInfoScraper with Log {
 
   val cardExpression = "table[cellpadding=3] tr"
 
@@ -18,7 +18,7 @@ object CardScraper extends Scraper with Log {
       edition <- editions.map(_.code)
       language <- langs
     } yield {
-      get(s"http://$host/$edition/$language.html").map {
+      get(s"/$edition/$language.html").map {
         (edition, language, _)
       }
     }
@@ -40,15 +40,16 @@ object CardScraper extends Scraper with Log {
     }
   }
 
-  private def buildScrapedCard(element: Element, edition: String, language: String) = {
+  private def buildScrapedCard(element: Element, editionCode: String, language: String) = {
     val tds = element.getElementsByTag("td").asScala
     tds match {
-      case collectorNumber +: title +: _ +: _ +: rarity +: artist +: _ =>
+      case Seq(collectorNumber, title, _, _, rarity, artist, editionName) =>
         ScrapedCard(
           collectorNumber = collectorNumber.text(),
           rarity = rarity.text(),
           artist = artist.text(),
-          edition = edition,
+          editionCode = editionCode,
+          editionName = editionName.text(),
           title =  if (language == "en") title.text() else "",
           frenchTitle = if (language == "fr") Some(title.text()) else None
         )

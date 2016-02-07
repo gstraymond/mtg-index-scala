@@ -13,16 +13,16 @@ import scala.concurrent.duration.Duration
 
 @Ignore
 @RunWith(classOf[JUnitRunner])
-class CardScraperSpec(implicit ee: ExecutionEnv) extends Specification {
+class ReleaseDateScraperSpec(implicit ee: ExecutionEnv) extends Specification {
 
-  "card scraper" should {
+  "release date scraper" should {
     "scrap" in {
       val editions = Seq(
-        ScrapedEdition("lg", "", None),
-        ScrapedEdition("mi", "", None)
+        ScrapedEdition("", "Oath of the Gatewatch", None),
+        ScrapedEdition("", "Battle for Zendikar", None)
       )
 
-      CardScraper.scrap(editions, Seq("en", "fr")) must be_==(Map.empty).awaitFor(Duration(10, TimeUnit.SECONDS))
+      ReleaseDateScraper.scrap(editions) must be_==("").awaitFor(Duration(10, TimeUnit.SECONDS))
     }
   }
 }
