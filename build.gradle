@@ -62,6 +62,13 @@ task priceProcess(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
+task formatScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.FormatScrapTask'
+    description "Scrap formats"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.10'
 }

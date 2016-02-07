@@ -5,8 +5,9 @@ import java.io.File
 import fr.gstraymond.model.ScrapedCardFormat._
 import fr.gstraymond.model.ScrapedEditionFormat._
 import fr.gstraymond.model.ScrapedPriceFormat._
-import fr.gstraymond.model.{ScrapedEdition, ScrapedCard, ScrapedPrice}
-import fr.gstraymond.scraper.{CardScraper, EditionScraper, PriceScraper, ReleaseDateScraper}
+import fr.gstraymond.model.ScrapedFormatFormat._
+import fr.gstraymond.model.{ScrapedFormat, ScrapedEdition, ScrapedCard, ScrapedPrice}
+import fr.gstraymond.scraper._
 import fr.gstraymond.stats.Timing
 import fr.gstraymond.utils.{FileUtils, Log}
 import play.api.libs.json.Json
@@ -35,21 +36,27 @@ trait Task[A] extends Log {
   def process: Future[A]
 
   protected def storeCards(cards: Seq[ScrapedCard]) = {
-    val cardFile = new File(s"${FileUtils.scrapPath}/cards.json")
-    FileUtils.printJson(cardFile, Json.toJson(cards.sortBy(_.uniqueId)))
+    val file = new File(s"${FileUtils.scrapPath}/cards.json")
+    FileUtils.printJson(file, Json.toJson(cards.sortBy(_.uniqueId)))
     cards
   }
 
   protected def storeEditions(editions: Seq[ScrapedEdition]) = {
-    val editionFile = new File(s"${FileUtils.scrapPath}/editions.json")
-    FileUtils.printJson(editionFile, Json.toJson(editions.sortBy(_.code)))
+    val file = new File(s"${FileUtils.scrapPath}/editions.json")
+    FileUtils.printJson(file, Json.toJson(editions.sortBy(_.code)))
     editions
   }
 
   protected def storePrices(prices: Seq[ScrapedPrice]) = {
-    val priceFile = new File(s"${FileUtils.scrapPath}/prices.json")
-    FileUtils.printJson(priceFile, Json.toJson(prices))
+    val file = new File(s"${FileUtils.scrapPath}/prices.json")
+    FileUtils.printJson(file, Json.toJson(prices))
     prices
+  }
+
+  protected def storeFormats(formats: Seq[ScrapedFormat]) = {
+    val file = new File(s"${FileUtils.scrapPath}/formats.json")
+    FileUtils.printJson(file, Json.toJson(formats))
+    formats
   }
 }
 
@@ -87,10 +94,13 @@ object PriceScrapTask extends Task[Seq[ScrapedPrice]] {
 }
 
 object PriceProcessTask extends Task[Seq[ScrapedCard]] {
-  def process = {
+  override def process = {
     Future.successful {
       PriceScraper.process
     }
   }
+}
+object FormatScrapTask extends Task[Seq[ScrapedFormat]] {
+  override def process = FormatScraper.scrap.map(storeFormats)
 }
 
