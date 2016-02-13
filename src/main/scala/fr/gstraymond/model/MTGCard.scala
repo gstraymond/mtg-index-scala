@@ -2,8 +2,8 @@ package fr.gstraymond.model
 
 case class MTGCard(
   title: String,
-  frenchTitle: String,
-  castingCost: String,
+  frenchTitle: Option[String],
+  castingCost: Option[String],
   colors: Seq[String],
   convertedManaCost: Int,
   `type`: String,

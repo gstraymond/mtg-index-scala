@@ -13,12 +13,6 @@ object PriceScraper extends MTGGoldFishScraper {
   val path = "/prices/select"
   val sep = " - "
 
-  def scrapAndProcess(cards: Seq[ScrapedCard]): Future[Seq[ScrapedCard]] = {
-    scrap.map {
-      process(cards, _)
-    }
-  }
-
   def scrap: Future[Seq[ScrapedPrice]] = {
     scrapEditionUrls.flatMap { editionUrls =>
       Future.sequence {
@@ -68,7 +62,7 @@ object PriceScraper extends MTGGoldFishScraper {
     }
   }
 
-  private def scrapEditionUrls: Future[Seq[String]] = {
+  def scrapEditionUrls: Future[Seq[String]] = {
     get(path).map { doc =>
       doc
         .select("div.priceList-selectMenu li[role=presentation]").asScala
@@ -79,7 +73,7 @@ object PriceScraper extends MTGGoldFishScraper {
     }
   }
 
-  private def scrapEditionPrices(path: String): Future[Seq[ScrapedPrice]] = {
+  def scrapEditionPrices(path: String): Future[Seq[ScrapedPrice]] = {
     def parseDouble(str: String) = str.replace(",", "").toDouble
 
     get(path).map { doc =>

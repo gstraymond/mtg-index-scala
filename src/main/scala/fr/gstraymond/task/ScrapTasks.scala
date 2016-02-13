@@ -7,17 +7,19 @@ import fr.gstraymond.utils.FileUtils
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-
-
 object FullScrapTask extends Task[Seq[ScrapedCard]] {
   override def process = {
     for {
       editions <- EditionScraper.scrap
       editionsWithDate <- ReleaseDateScraper.scrap(editions)
       cards <- CardScraper.scrap(editionsWithDate, FileUtils.langs)
-      cardsWithPrice <- PriceScraper.scrapAndProcess(cards)
+      prices <- PriceScraper.scrap
+      cardsWithPrice <- Future.successful(PriceScraper.process(cards, prices))
+      formats <- FormatScraper.scrap
     } yield {
+      storeFormats(formats)
       storeEditions(editionsWithDate)
+      storePrices(prices)
       storeScrapedCards(cardsWithPrice)
     }
   }
