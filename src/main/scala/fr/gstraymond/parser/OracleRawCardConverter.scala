@@ -27,7 +27,7 @@ object OracleRawCardConverter extends Log {
       maybeType,
       maybePT,
       description,
-      maybeRarityEdition
+      maybeRarityEdition.map(_.split(", ").toSeq).getOrElse(Seq.empty)
     )
   }
 

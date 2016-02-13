@@ -28,8 +28,15 @@ dependencies {
 }
 
 task importer(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.Importer'
+    main = 'fr.gstraymond.task.ImportTask'
     description "Import data"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task cardConvert(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.CardConvertTask'
+    description "convert raw card -> mtg card"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }

@@ -9,8 +9,9 @@ object FileUtils {
 
   val langs = Seq("en", "fr")
   val scrapPath = "src/main/resources/scrap"
+  val oraclePath = "src/main/resources/oracle"
 
-  def printJson(file: java.io.File, json: JsValue) {
+  def storeJson(file: java.io.File, json: JsValue) {
     val writer = new java.io.PrintWriter(file)
     try {
       writer.println(Json.prettyPrint(json))

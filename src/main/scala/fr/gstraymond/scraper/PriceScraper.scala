@@ -1,23 +1,17 @@
 package fr.gstraymond.scraper
 
 import fr.gstraymond.model.{Price, ScrapedCard, ScrapedPrice}
-import fr.gstraymond.utils.{FileUtils, StringUtils}
-import play.api.libs.json.Json
+import fr.gstraymond.utils.StringUtils
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.io.Source
 
 object PriceScraper extends MTGGoldFishScraper {
 
   val path = "/prices/select"
   val sep = " - "
-
-  def process: Seq[ScrapedCard] = {
-    process(loadCards, loadPrices)
-  }
 
   def scrapAndProcess(cards: Seq[ScrapedCard]): Future[Seq[ScrapedCard]] = {
     scrap.map {
@@ -35,7 +29,7 @@ object PriceScraper extends MTGGoldFishScraper {
     }
   }
 
-  private def process(cards: Seq[ScrapedCard], prices: Seq[ScrapedPrice]): Seq[ScrapedCard] = {
+  def process(cards: Seq[ScrapedCard], prices: Seq[ScrapedPrice]): Seq[ScrapedCard] = {
     def normEditions(price: ScrapedPrice): ScrapedPrice = {
       val code = price.editionCode
         .replace("prm-sdcc13", "prm-med")
@@ -55,10 +49,7 @@ object PriceScraper extends MTGGoldFishScraper {
     def getTitle1(t1: String, t2: String) = normalize(s"$t1 ($t1/$t2)")
     def getTitle2(t1: String, t2: String) = normalize(s"$t2 ($t1/$t2)")
     def normalize(text: String): String = {
-      text
-        .replace("Aether", "ther")
-        .replace("Aerathi", "rathi")
-        .toLowerCase match {
+      StringUtils.normalize(text) match {
         case t if t.endsWith(")") && !t.contains("/") => t.split(" \\(").head
         case t => t
       }
@@ -75,18 +66,6 @@ object PriceScraper extends MTGGoldFishScraper {
       case _ =>
         Seq(s"${card.editionCode}$sep${normalize(card.card)}" -> card)
     }
-  }
-
-  private def loadPrices: Seq[ScrapedPrice] = {
-    val json = Source.fromFile(s"${FileUtils.scrapPath}/prices.json").mkString
-    import fr.gstraymond.model.ScrapedPriceFormat.scrapedPriceFormat
-    Json.parse(json).as[Seq[ScrapedPrice]]
-  }
-
-  private def loadCards: Seq[ScrapedCard] = {
-    val json = Source.fromFile(s"${FileUtils.scrapPath}/cards.json").mkString
-    import fr.gstraymond.model.ScrapedCardFormat.scrapCardFormat
-    Json.parse(json).as[Seq[ScrapedCard]]
   }
 
   private def scrapEditionUrls: Future[Seq[String]] = {
