@@ -1,8 +1,8 @@
 package fr.gstraymond.parser
 
-import fr.gstraymond.constant.Color
+import fr.gstraymond.constant.{Abilities, Color}
 import fr.gstraymond.constant.Color._
-import fr.gstraymond.model.{MTGCard, RawCard, ScrapedCard}
+import fr.gstraymond.model.{Publication, MTGCard, RawCard, ScrapedCard}
 import fr.gstraymond.utils.{Log, StringUtils}
 
 object CardConverter extends Log {
@@ -28,15 +28,15 @@ object CardConverter extends Log {
             castingCost = castingCost,
             colors = _colors(castingCost),
             convertedManaCost = _cmc(castingCost),
-            `type` = ???,
-            description = ???,
-            power = ???,
-            toughness = ???,
-            editions = ???,
-            rarities = ???,
-            priceRanges = ???,
-            publications = ???,
-            abilities = ???,
+            `type` = _type(rawCard),
+            description = _desc(rawCard),
+            power = _power(rawCard),
+            toughness = _toughness(rawCard),
+            editions = _editions(cards),
+            rarities = _rarities(cards),
+            priceRanges = _priceRanges(cards),
+            publications = _publications(cards),
+            abilities = _abilities(rawCard),
             formats = ???,
             artists = ???,
             hiddenHints = ???,
@@ -61,13 +61,11 @@ object CardConverter extends Log {
     }
   }
 
-  def _title(scrapedCards: Seq[ScrapedCard]) =
-    scrapedCards.head.title
+  def _title(scrapedCards: Seq[ScrapedCard]) = scrapedCards.head.title
 
-  def _frenchTitle(scrapedCards: Seq[ScrapedCard]) =
-    scrapedCards.flatMap(_.frenchTitle).headOption
+  def _frenchTitle(scrapedCards: Seq[ScrapedCard]) = scrapedCards.flatMap(_.frenchTitle).headOption
 
-  def _cc(rawCard: RawCard): Option[String] = rawCard.castingCost.map { cc =>
+  def _cc(rawCard: RawCard) = rawCard.castingCost.map { cc =>
     cc.toSeq.foldLeft("" -> false) { case ((acc, inP), char) =>
       val tuple = char match {
         case '(' => " " -> true
@@ -85,7 +83,7 @@ object CardConverter extends Log {
     }._1.trim.toUpperCase()
   }
 
-  def _colors(maybeCastingCost: Option[String]): Seq[String] = {
+  def _colors(maybeCastingCost: Option[String]) = {
     maybeCastingCost.map { castingCost =>
       def find(colors: Seq[Color]) = colors.filter(c => castingCost.contains(c.symbol))
 
@@ -103,18 +101,60 @@ object CardConverter extends Log {
     }
   }
 
-  def _cmc(maybeCastingCost: Option[String]): Int = {
+  def _cmc(maybeCastingCost: Option[String]) = {
     maybeCastingCost.map {
       _.split(" ")
         .filter(_ != X.lbl)
         .map {
-          case number if number.forall(_.isDigit) => Integer.parseInt(number)
-          case spec if spec.head.isDigit => Integer.parseInt(spec.head.toString)
+          case number if number.forall(_.isDigit) => number.toInt
+          case spec if spec.head.isDigit => spec.head.toString.toInt
           case _ => 1
         }
         .sum
     }.getOrElse {
       0
     }
+  }
+
+  def _type(rawCard: RawCard) = rawCard.`type`.getOrElse {
+    throw new RuntimeException(s"$rawCard has not type :/")
+  }
+
+  def _desc(rawCard: RawCard) = rawCard.description.mkString("\n")
+
+  def _power(rawCard: RawCard) = rawCard.powerToughness.map(_.split("/")(0))
+
+  def _toughness(rawCard: RawCard) = rawCard.powerToughness.map(_.split("/")(1))
+
+  def _editions(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.editionName)
+
+  def _rarities(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.rarity).distinct
+
+  def _priceRanges(scrapedCards: Seq[ScrapedCard]) = scrapedCards.flatMap(_.price.map(_.value)).map {
+    case p if p < 0.20 => "< 0.20$"
+    case p if p >= 0.20 && p < 0.50 => "0.20$ .. 0.50$"
+    case p if p >= 0.50 && p < 1 => "0.50$ .. 1$"
+    case p if p >= 1 && p < 5 => "1$ .. 5$"
+    case p if p >= 5 && p < 20 => "5$ .. 20$"
+    case p if p >= 20 && p < 100 => "20$ .. 100$"
+    case p if p >= 100 => "> 100$"
+  }
+
+  def _publications(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map { scrapedCard =>
+    Publication(
+      edition = scrapedCard.editionName,
+      editionCode = scrapedCard.editionCode,
+      stdEditionCode = "TODO",
+      rarity = scrapedCard.rarity,
+      rarityCode = scrapedCard.rarity.head.toUpper.toString,
+      image = s"http://magiccards.info/scans/en/${scrapedCard.editionCode}/${scrapedCard.collectorNumber}.jpg",
+      editionImage = "TODO",
+      price = scrapedCard.price.map(_.value)
+    )
+  }
+
+  def _abilities(rawCard: RawCard) = Abilities.LIST.filter(rawCard.description.mkString("").contains) match {
+    case Seq() if rawCard.`type`.contains("Creature") => Seq("Vanilla")
+    case abilities => abilities
   }
 }
