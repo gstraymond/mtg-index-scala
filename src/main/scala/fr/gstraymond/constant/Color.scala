@@ -1,22 +1,25 @@
 package fr.gstraymond.constant
 
 case class Color(
-  symbol: String, 
-  lbl: String, 
-  colored: Boolean)
+  symbol: String,
+  lbl: String,
+  colored: Boolean
+)
 
 object Color {
   val BLACK = Color("B", "Black", colored = true)
-  val BLUE = Color("U", "Blue", colored =true)
-  val GREEN = Color("G", "Green", colored =true)
-  val RED = Color("R", "Red", colored =true)
-  val WHITE = Color("W", "White", colored =true)
-  val LIFE = Color("P", "Life", colored =false)
-  val X = Color("X", "X", colored =false)
+  val BLUE = Color("U", "Blue", colored = true)
+  val GREEN = Color("G", "Green", colored = true)
+  val RED = Color("R", "Red", colored = true)
+  val WHITE = Color("W", "White", colored = true)
+  val LIFE = Color("P", "Life", colored = false)
+  val X = Color("X", "X", colored = false)
 
   val UNCOLORED = "Uncolored"
   val MONOCOLORED = "1 color"
+
   def MULTICOLORED(colors: Int) = s"$colors colors"
+
   val GUILD = "Guild"
   val GOLD = "Gold"
 
@@ -26,6 +29,8 @@ object Color {
     WHITE, LIFE,
     X
   )
+
+  val ONLY_COLORED_SYMBOLS = ALL_COLORS_SYMBOLS.filter(_.colored)
 
   // Azorius Senate
   val WU = "WU"

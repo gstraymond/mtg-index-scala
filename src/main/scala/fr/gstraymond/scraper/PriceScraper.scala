@@ -104,7 +104,7 @@ object PriceScraper extends MTGGoldFishScraper {
   private def merge(cards: Seq[ScrapedCard], cardToPrice: Map[String, ScrapedPrice]): Seq[ScrapedCard] = {
 
     val cardEditions = cards.map { card =>
-      card.editionName -> card.editionCode
+      card.edition.name -> card.edition.code
     }.distinct
 
     val priceEditions = cardToPrice.values.toSeq.map { price =>
@@ -139,7 +139,7 @@ object PriceScraper extends MTGGoldFishScraper {
     val mutablePrices = mutable.Map() ++ cardToPrice.toMap
     val result = cards
       .map { card =>
-        val editionCode = editionCodeMap.getOrElse(card.editionCode, card.editionCode)
+        val editionCode = editionCodeMap.getOrElse(card.edition.code, card.edition.code)
         val key = s"$editionCode$sep${StringUtils.normalize(card.title)}"
         mutablePrices
           .get(key)

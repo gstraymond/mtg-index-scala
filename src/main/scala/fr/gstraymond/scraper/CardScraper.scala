@@ -15,10 +15,10 @@ object CardScraper extends MagicCardsInfoScraper with Log {
   def scrap(editions: Seq[ScrapedEdition], langs: Seq[String]): Future[Seq[ScrapedCard]] = {
 
     val eventualDocuments = for {
-      edition <- editions.map(_.code)
+      edition <- editions
       language <- langs
     } yield {
-      get(s"/$edition/$language.html").map {
+      get(s"/${edition.code}/$language.html").map {
         (edition, language, _)
       }
     }
@@ -40,16 +40,15 @@ object CardScraper extends MagicCardsInfoScraper with Log {
     }
   }
 
-  private def buildScrapedCard(element: Element, editionCode: String, language: String) = {
+  private def buildScrapedCard(element: Element, edition: ScrapedEdition, language: String) = {
     val tds = element.getElementsByTag("td").asScala
     tds match {
-      case Seq(collectorNumber, title, _, _, rarity, artist, editionName) =>
+      case Seq(collectorNumber, title, _, _, rarity, artist, _) =>
         ScrapedCard(
           collectorNumber = collectorNumber.text(),
           rarity = rarity.text(),
           artist = artist.text(),
-          editionCode = editionCode,
-          editionName = editionName.text(),
+          edition = edition,
           title =  if (language == "en") title.text() else "",
           frenchTitle = if (language == "fr") Some(title.text()) else None
         )

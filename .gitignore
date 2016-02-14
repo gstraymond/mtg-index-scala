@@ -1,4 +1,6 @@
 /src/main/resources/oracle
+/src/main/resources/scrap
+/src/main/resources/output
 /mtg-index-scala.iml
 /gradlew
 /gradlew.bat
@@ -7,4 +9,3 @@
 gradle
 build
 target/
-/src/main/resources/scrap

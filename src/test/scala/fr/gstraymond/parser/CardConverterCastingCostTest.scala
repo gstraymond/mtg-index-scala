@@ -48,6 +48,10 @@ class CardConverterCastingCostTest extends Specification {
     "Emrakul, the Aeons Torn" in {
       _cc("15") === "15"
     }
+
+    "Autochthon Wurm" in {
+      _cc("10GGGWW") === "10 G G G W W"
+    }
   }
 
   private def _cc(cc: String) = CardConverter._cc(card(Some(cc))).getOrElse("NO CC")

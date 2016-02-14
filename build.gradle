@@ -39,6 +39,7 @@ task cardConvert(type: JavaExec, dependsOn: classes) {
     description "convert raw card -> mtg card"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
+    maxHeapSize = '256m'
 }
 
 task fullScrap(type: JavaExec, dependsOn: classes) {
@@ -72,6 +73,13 @@ task priceProcess(type: JavaExec, dependsOn: classes) {
 task formatScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.FormatScrapTask'
     description "Scrap formats"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task releaseDateScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.ReleaseDateScrapTask'
+    description "Scrap release date"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }

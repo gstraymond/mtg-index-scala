@@ -47,6 +47,10 @@ class CardConverterCMCTest extends Specification {
     "Emrakul, the Aeons Torn" in {
       _cmc("15") === 15
     }
+
+    "Autochthon Wurm" in {
+      _cmc("10 G G G W W") === 15
+    }
   }
 
   private def _cmc(cc: String) = CardConverter._cmc(Some(cc))

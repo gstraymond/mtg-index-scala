@@ -6,13 +6,12 @@ case class ScrapedCard(
   collectorNumber: String,
   rarity: String,
   artist: String,
-  editionCode: String,
-  editionName: String,
+  edition: ScrapedEdition,
   title: String,
   frenchTitle: Option[String],
   price: Option[Price] = None) {
 
-  val uniqueId = s"$editionCode - $collectorNumber"
+  val uniqueId = s"${edition.code} - $collectorNumber"
 }
 
 case class Price(
@@ -22,6 +21,7 @@ case class Price(
 )
 
 object ScrapedCardFormat {
+  import ScrapedEditionFormat._
   implicit val priceFormat = Json.format[Price]
   implicit val scrapCardFormat = Json.format[ScrapedCard]
 }

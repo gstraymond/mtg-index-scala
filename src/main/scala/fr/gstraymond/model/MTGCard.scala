@@ -1,5 +1,7 @@
 package fr.gstraymond.model
 
+import play.api.libs.json.Json
+
 case class MTGCard(
   title: String,
   frenchTitle: Option[String],
@@ -18,5 +20,10 @@ case class MTGCard(
   formats: Seq[String],
   artists: Seq[String],
   hiddenHints: Seq[String],
-  devotions: Seq[String]
+  devotions: Seq[Int]
 )
+
+object MTGCardFormat {
+  implicit val publicationFormat = Json.format[Publication]
+  implicit val mtgCardFormat = Json.format[MTGCard]
+}

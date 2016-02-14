@@ -10,7 +10,7 @@ class CardConverterColorsTest extends Specification {
 
   "card converter" should {
     "Nope" in {
-      CardConverter._colors(None) ===
+      CardConverter._colors(None, Seq.empty) ===
         Seq(UNCOLORED)
     }
 
@@ -58,7 +58,17 @@ class CardConverterColorsTest extends Specification {
       _colors("15") ===
         Seq(UNCOLORED)
     }
+
+    "Autochthon Wurm" in {
+      _colors("10 G G G W W") ===
+        Seq(GREEN.lbl, WHITE.lbl, GOLD, MULTICOLORED(2)).sorted
+    }
+
+    "Transguild Courier" in {
+      CardConverter._colors(Some("4"), Seq("White/Blue/Black/Red/Green color indicator")).sorted ===
+        Seq(GREEN.lbl, WHITE.lbl, BLUE.lbl, BLACK.lbl, RED.lbl, GOLD, MULTICOLORED(5)).sorted
+    }
   }
 
-  private def _colors(cc: String) = CardConverter._colors(Some(cc)).sorted
+  private def _colors(cc: String) = CardConverter._colors(Some(cc), Seq.empty).sorted
 }

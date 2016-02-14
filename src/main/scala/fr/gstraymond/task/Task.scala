@@ -38,6 +38,7 @@ trait Task[A] extends Log {
   import fr.gstraymond.model.ScrapedEditionFormat._
   import fr.gstraymond.model.ScrapedPriceFormat._
   import fr.gstraymond.model.ScrapedFormatFormat._
+  import fr.gstraymond.model.MTGCardFormat._
 
   protected def storeRawCards(cards: Seq[RawCard]) = {
     mkDir(FileUtils.oraclePath)
@@ -50,6 +51,13 @@ trait Task[A] extends Log {
     mkDir(FileUtils.scrapPath)
     val file = new File(s"${FileUtils.scrapPath}/cards.json")
     FileUtils.storeJson(file, Json.toJson(cards.sortBy(_.uniqueId)))
+    cards
+  }
+
+  protected def storeMTGCards(cards: Seq[MTGCard]) = {
+    mkDir(FileUtils.outputPath)
+    val file = new File(s"${FileUtils.outputPath}/cards.json")
+    FileUtils.storeJson(file, Json.toJson(cards.sortBy(_.title)))
     cards
   }
 
@@ -87,6 +95,16 @@ trait Task[A] extends Log {
   protected def loadPrices: Seq[ScrapedPrice] = {
     val json = Source.fromFile(s"${FileUtils.scrapPath}/prices.json").mkString
     Json.parse(json).as[Seq[ScrapedPrice]]
+  }
+
+  protected def loadFormats: Seq[ScrapedFormat] = {
+    val json = Source.fromFile(s"${FileUtils.scrapPath}/formats.json").mkString
+    Json.parse(json).as[Seq[ScrapedFormat]]
+  }
+
+  protected def loadEditions: Seq[ScrapedEdition] = {
+    val json = Source.fromFile(s"${FileUtils.scrapPath}/editions.json").mkString
+    Json.parse(json).as[Seq[ScrapedEdition]]
   }
 
   private def mkDir(path: String) = {

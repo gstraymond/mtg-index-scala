@@ -4,6 +4,7 @@ import fr.gstraymond.importer.OracleImporter
 import fr.gstraymond.model.{MTGCard, RawCard}
 import fr.gstraymond.parser.CardConverter
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object ImportTask extends Task[Seq[RawCard]] {
@@ -17,6 +18,8 @@ object ImportTask extends Task[Seq[RawCard]] {
 object CardConvertTask extends Task[Seq[MTGCard]] {
 
   override def process = Future.successful {
-    CardConverter.convert(loadRawCards, loadScrapedCards)
+    CardConverter.convert(loadRawCards, loadScrapedCards, loadFormats)
+  }.map {
+    storeMTGCards
   }
 }

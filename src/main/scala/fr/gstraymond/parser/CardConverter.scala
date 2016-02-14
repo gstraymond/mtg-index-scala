@@ -1,13 +1,13 @@
 package fr.gstraymond.parser
 
-import fr.gstraymond.constant.{Abilities, Color}
 import fr.gstraymond.constant.Color._
-import fr.gstraymond.model.{Publication, MTGCard, RawCard, ScrapedCard}
+import fr.gstraymond.constant.{Abilities, Color}
+import fr.gstraymond.model._
 import fr.gstraymond.utils.{Log, StringUtils}
 
 object CardConverter extends Log {
 
-  def convert(rawCards: Seq[RawCard], scrapedCards: Seq[ScrapedCard]): Seq[MTGCard] = {
+  def convert(rawCards: Seq[RawCard], scrapedCards: Seq[ScrapedCard], formats: Seq[ScrapedFormat]): Seq[MTGCard] = {
     val groupedScrapedCards = scrapedCards.groupBy { card =>
       StringUtils.normalize(card.title)
     }
@@ -22,11 +22,12 @@ object CardConverter extends Log {
         val title = getTitle(rawCard)
         groupedScrapedCards.get(title).map { cards =>
           val castingCost = _cc(rawCard)
+          val hints = _hiddenHints(rawCard)
           MTGCard(
             title = _title(cards),
             frenchTitle = _frenchTitle(cards),
             castingCost = castingCost,
-            colors = _colors(castingCost),
+            colors = _colors(castingCost, hints),
             convertedManaCost = _cmc(castingCost),
             `type` = _type(rawCard),
             description = _desc(rawCard),
@@ -37,10 +38,10 @@ object CardConverter extends Log {
             priceRanges = _priceRanges(cards),
             publications = _publications(cards),
             abilities = _abilities(rawCard),
-            formats = ???,
-            artists = ???,
-            hiddenHints = ???,
-            devotions = ???
+            formats = _formats(rawCard, cards, formats),
+            artists = _artists(cards),
+            hiddenHints = hints,
+            devotions = _devotions(rawCard, castingCost)
           )
         }.orElse {
           log.error(s"title not found: $title - $rawCard")
@@ -83,11 +84,16 @@ object CardConverter extends Log {
     }._1.trim.toUpperCase()
   }
 
-  def _colors(maybeCastingCost: Option[String]) = {
+  def _colors(maybeCastingCost: Option[String], hints: Seq[String]) = {
     maybeCastingCost.map { castingCost =>
       def find(colors: Seq[Color]) = colors.filter(c => castingCost.contains(c.symbol))
 
-      val colorNumber = find(ALL_COLORS_SYMBOLS.filter(_.colored)).size match {
+      val colorHint = hints.find(_.contains("color indicator")).getOrElse("")
+      val hintSymbols = ONLY_COLORED_SYMBOLS.map(_.lbl).filter(colorHint.contains)
+
+      val colorCount = Math.max(hintSymbols.size, find(ONLY_COLORED_SYMBOLS).size)
+
+      val colorNumber = colorCount match {
         case 0 => Seq(UNCOLORED)
         case 1 => Seq(MONOCOLORED)
         case s => Seq(MULTICOLORED(s), GOLD)
@@ -95,7 +101,9 @@ object CardConverter extends Log {
 
       val guild = if (GUILDS.exists(castingCost.contains)) Seq(GUILD) else Seq.empty
 
-      colorNumber ++ guild ++ find(ALL_COLORS_SYMBOLS).map(_.lbl)
+      val symbols = find(ALL_COLORS_SYMBOLS).map(_.lbl)
+
+      colorNumber ++ guild ++ symbols ++ hintSymbols
     }.getOrElse {
       Seq(UNCOLORED)
     }
@@ -126,7 +134,7 @@ object CardConverter extends Log {
 
   def _toughness(rawCard: RawCard) = rawCard.powerToughness.map(_.split("/")(1))
 
-  def _editions(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.editionName)
+  def _editions(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.edition.name)
 
   def _rarities(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.rarity).distinct
 
@@ -138,23 +146,69 @@ object CardConverter extends Log {
     case p if p >= 5 && p < 20 => "5$ .. 20$"
     case p if p >= 20 && p < 100 => "20$ .. 100$"
     case p if p >= 100 => "> 100$"
-  }
+  }.distinct
 
   def _publications(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map { scrapedCard =>
     Publication(
-      edition = scrapedCard.editionName,
-      editionCode = scrapedCard.editionCode,
+      edition = scrapedCard.edition.name,
+      editionCode = scrapedCard.edition.code,
+      editionReleaseDate = scrapedCard.edition.releaseDate,
       stdEditionCode = "TODO",
       rarity = scrapedCard.rarity,
       rarityCode = scrapedCard.rarity.head.toUpper.toString,
-      image = s"http://magiccards.info/scans/en/${scrapedCard.editionCode}/${scrapedCard.collectorNumber}.jpg",
+      image = s"http://magiccards.info/scans/en/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}.jpg",
       editionImage = "TODO",
       price = scrapedCard.price.map(_.value)
     )
-  }
+  }.sortBy(_.editionReleaseDate.map(_.getTime).getOrElse(Long.MaxValue))
 
-  def _abilities(rawCard: RawCard) = Abilities.LIST.filter(rawCard.description.mkString("").contains) match {
+  def _abilities(rawCard: RawCard) = Abilities.LIST.filter(rawCard.description.mkString(" ").contains) match {
     case Seq() if rawCard.`type`.contains("Creature") => Seq("Vanilla")
     case abilities => abilities
+  }
+
+  def _formats(rawCard: RawCard,scrapedCards: Seq[ScrapedCard], formats: Seq[ScrapedFormat]) = {
+    formats.filter { format =>
+      lazy val isInSet = format.availableSets.isEmpty || format.availableSets.exists(scrapedCards.map(_.edition.name).contains)
+      lazy val isBanned = format.bannedCards.exists {
+        case banned if banned.startsWith("description->") =>
+          val keyword = banned.split("description->")(1)
+          rawCard.description.mkString(" ").toLowerCase.contains(keyword)
+        case banned if banned.startsWith("type->") =>
+          val keyword = banned.split("type->")(1)
+          rawCard.`type`.getOrElse("").toLowerCase.contains(keyword)
+        case banned => banned == scrapedCards.head.title
+      }
+      lazy val isRestricted = format.restrictedCards.isEmpty || format.restrictedCards.contains(scrapedCards.head.title)
+      isInSet && !isBanned && isRestricted
+    }.map {
+      _.name
+    }
+  }
+
+  def _artists(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.artist).distinct
+
+  def _hiddenHints(rawCard: RawCard) = {
+    rawCard.description.collect {
+      case desc if desc.contains("[") && desc.contains("]") =>
+        desc.split("\\[")(1).split("\\]").head.split("\\.")
+    }.flatten
+  }
+
+  def _devotions(rawCard: RawCard, maybeCastingCost: Option[String]) = {
+    val isPermanent = Seq("Instant", "Sorcery").forall(!rawCard.`type`.contains(_))
+    isPermanent -> maybeCastingCost match {
+      case (true, Some(castingCost)) =>
+        ONLY_COLORED_SYMBOLS
+          .map { color =>
+            castingCost.split(" ").collect {
+              case symbol if symbol.contains(color.symbol) && symbol.contains("/") => symbol.head.toString.toInt
+              case symbol if symbol.contains(color.symbol) => 1
+            }.sum
+          }
+          .distinct
+          .filter(_ > 0)
+      case _ => Seq.empty
+    }
   }
 }

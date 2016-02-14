@@ -1,6 +1,6 @@
 package fr.gstraymond.task
 
-import fr.gstraymond.model.{ScrapedCard, ScrapedFormat, ScrapedPrice}
+import fr.gstraymond.model.{ScrapedEdition, ScrapedCard, ScrapedFormat, ScrapedPrice}
 import fr.gstraymond.scraper._
 import fr.gstraymond.utils.FileUtils
 
@@ -51,7 +51,12 @@ object PriceProcessTask extends Task[Seq[ScrapedCard]] {
     }
   }
 }
+
 object FormatScrapTask extends Task[Seq[ScrapedFormat]] {
   override def process = FormatScraper.scrap.map(storeFormats)
+}
+
+object ReleaseDateScrapTask extends Task[Seq[ScrapedEdition]] {
+  override def process = ReleaseDateScraper.scrap(loadEditions)
 }
 

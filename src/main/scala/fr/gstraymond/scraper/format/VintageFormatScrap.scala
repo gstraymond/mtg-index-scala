@@ -16,7 +16,7 @@ object VintageFormatScrap extends FormatScrap {
       // Any card referencing ante
       // Any card with Conspiracy card type
       Seq(
-        "description->ante",
+        "description->playing for ante",
         "type->conspiracy"
       )
   }
