@@ -2,15 +2,17 @@ package fr.gstraymond.task
 
 import java.io.File
 
+import dispatch.Http
 import fr.gstraymond.model._
 import fr.gstraymond.stats.Timing
 import fr.gstraymond.utils.{FileUtils, Log}
 import play.api.libs.json.Json
 
-import scala.concurrent.{Future, Await}
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 import scala.io.Source
-import scala.util.{Success, Failure}
+import scala.util.control.NonFatal
 
 /**
   * Created by guillaume on 10/02/16.
@@ -21,24 +23,25 @@ trait Task[A] extends Log {
 
   def main(args: Array[String]): Unit = {
 
-    val timing = Timing(name)(
-      Await.ready(process, Duration.Inf).value.get match {
-        case Failure(e) => log.error("error during scrap", e)
-        case Success(s) => s
+    val timing = Timing(name) {
+      val eventualProcess = process.recover {
+        case NonFatal(e) => log.error(s"error during $name", e)
       }
-    )
+      Await.result(eventualProcess, Duration.Inf)
+      Http.shutdown()
+    }
 
     log.info(Json.prettyPrint(timing.json))
   }
 
   def process: Future[A]
 
+  import fr.gstraymond.model.MTGCardFormat._
   import fr.gstraymond.model.RawCardFormat._
   import fr.gstraymond.model.ScrapedCardFormat._
   import fr.gstraymond.model.ScrapedEditionFormat._
-  import fr.gstraymond.model.ScrapedPriceFormat._
   import fr.gstraymond.model.ScrapedFormatFormat._
-  import fr.gstraymond.model.MTGCardFormat._
+  import fr.gstraymond.model.ScrapedPriceFormat._
 
   protected def storeRawCards(cards: Seq[RawCard]) = {
     mkDir(FileUtils.oraclePath)
@@ -105,6 +108,11 @@ trait Task[A] extends Log {
   protected def loadEditions: Seq[ScrapedEdition] = {
     val json = Source.fromFile(s"${FileUtils.scrapPath}/editions.json").mkString
     Json.parse(json).as[Seq[ScrapedEdition]]
+  }
+
+  protected def loadMTGCards: Seq[MTGCard] = {
+    val json = Source.fromFile(s"${FileUtils.outputPath}/cards.json").mkString
+    Json.parse(json).as[Seq[MTGCard]]
   }
 
   private def mkDir(path: String) = {

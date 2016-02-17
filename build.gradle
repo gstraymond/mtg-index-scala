@@ -6,8 +6,8 @@ apply plugin: 'scala'
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/releases" }
-    maven { url "http://repo.typesafe.com/typesafe/releases/" }
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+    maven { url 'http://repo.typesafe.com/typesafe/releases' }
 }
 
 // https://github.com/gradle/gradle/tree/master/subprojects/docs/src/samples/scala
@@ -22,6 +22,7 @@ dependencies {
     compile "com.typesafe.play:play-json_$scalaVersion:2.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
     compile 'org.jsoup:jsoup:1.8.+'
+    compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.11.+"
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"
@@ -82,6 +83,28 @@ task releaseDateScrap(type: JavaExec, dependsOn: classes) {
     description "Scrap release date"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
+}
+
+task deleteIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.DeleteIndexTask'
+    description "Delete Es Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task configureIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.ConfigureIndexTask'
+    description "Configure Es Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task cardIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.CardIndexTask'
+    description "Card Es Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+    maxHeapSize = '256m'
 }
 
 task wrapper(type: Wrapper) {
