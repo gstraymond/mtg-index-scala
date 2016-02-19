@@ -4,6 +4,7 @@ import java.io.File
 
 import dispatch.Http
 import fr.gstraymond.model._
+import fr.gstraymond.scraper.HttpClients
 import fr.gstraymond.stats.Timing
 import fr.gstraymond.utils.{FileUtils, Log}
 import play.api.libs.json.Json
@@ -28,7 +29,7 @@ trait Task[A] extends Log {
         case NonFatal(e) => log.error(s"error during $name", e)
       }
       Await.result(eventualProcess, Duration.Inf)
-      Http.shutdown()
+      HttpClients.shutdown()
     }
 
     log.info(Json.prettyPrint(timing.json))

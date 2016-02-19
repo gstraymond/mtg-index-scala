@@ -20,7 +20,7 @@ object FormatScraper extends MTGSalvationScraper {
   def scrap: Future[Seq[ScrapedFormat]] = {
     Future.sequence {
       scraps.map { scrap =>
-        curl(scrap.path).map { doc =>
+        get(scrap.path, followRedirect = true).map { doc =>
           ScrapedFormat(
             scrap.name,
             scrap.currentRotation(doc),
