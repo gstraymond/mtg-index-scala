@@ -1,40 +1,33 @@
 package fr.gstraymond.scraper
 
-import java.util.Date
-
+import dispatch.Defaults._
+import dispatch._
 import fr.gstraymond.utils.Log
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.collection.mutable
 import scala.concurrent.Future
-import sys.process._
 
 trait Scraper extends Log {
   def host: String
 
   val TIMEOUT: Int = 20 * 1000
 
-  def get(path: String): Future[Document] = {
-    download(path) { p =>
-      Jsoup.connect(p).timeout(TIMEOUT).get()
+  def get(path: String, followRedirect: Boolean = false): Future[Document] = {
+    val fullUrl = s"http://$host$path"
+    val http = followRedirect match {
+      case true =>
+        val h = Http.configure(_ setFollowRedirect true)
+        HttpClients.addClient(h)
+      case _ => Http
     }
-  }
 
-  def curl(path: String): Future[Document] = {
-    download(path) { p =>
-      Jsoup.parse(s"curl -s -L $p".!!)
-    }
-  }
-
-  private def download(path: String)(dl: String => Document): Future[Document] = {
-    val url = s"http://$host$path"
-    Future {
-      val now = new Date().getTime
-      now -> dl(url)
-    }.map { case (now, doc) =>
-      log.info(s"scraping url $url done in ${new Date().getTime - now}ms !")
-      doc
+    http {
+      url(fullUrl) OK as.String
+    }.map {
+      log.info(s"scraping url $fullUrl done")
+      Jsoup.parse
     }
   }
 }
@@ -53,4 +46,18 @@ trait MTGGoldFishScraper extends Scraper {
 
 trait MTGSalvationScraper extends Scraper {
   override val host = "mtgsalvation.gamepedia.com"
+}
+
+object HttpClients {
+  private val list = mutable.Buffer[Http]()
+
+  def addClient(http: Http) = {
+    list.append(http)
+    http
+  }
+
+  def shutdown() = {
+    list.foreach(_.shutdown())
+    Http.shutdown()
+  }
 }
