@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 object FormatScraper extends MTGSalvationScraper {
 
-  val scraps = Seq(
+  val scrapers = Seq(
     StandardFormatScrap,
     ExtendedFormatScrap,
     ModernFormatScrap,
@@ -19,13 +19,13 @@ object FormatScraper extends MTGSalvationScraper {
 
   def scrap: Future[Seq[ScrapedFormat]] = {
     Future.sequence {
-      scraps.map { scrap =>
-        get(scrap.path, followRedirect = true).map { doc =>
+      scrapers.map { scraper =>
+        scrap(scraper.path, followRedirect = true).map { doc =>
           ScrapedFormat(
-            scrap.name,
-            scrap.currentRotation(doc),
-            scrap.bannedCards(doc),
-            scrap.restrictedCards(doc)
+            scraper.name,
+            scraper.currentRotation(doc),
+            scraper.bannedCards(doc),
+            scraper.restrictedCards(doc)
           )
         }
       }

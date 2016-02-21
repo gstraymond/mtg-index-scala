@@ -5,11 +5,15 @@ import fr.gstraymond.utils.Log
 
 object OracleRawCardConverter extends Log {
 
-  val VALID_CASTING_COST = "X*\\d*[(,),/,r,g,b,u,w,p,2]*[R,G,B,U,W]*".r
+  val VALID_CASTING_COST = "X*\\d*[(,),/,r,g,b,u,w,p,2]*[R,G,B,U,W,C]*".r
+
+  val SPECIAL_CASTING_COSTS = Seq(
+    "1,000,000", "W(½)", "XYZRR"
+  )
 
   def convert(cards: Seq[Seq[String]]): Seq[RawCard] = {
     cards
-      .filter(!_.head.contains(" // ")) // double cards are duplicate
+      .filterNot(_.head.contains(" // ")) // double cards are duplicate
       .map(convertCard)
   }
 
@@ -43,6 +47,7 @@ object OracleRawCardConverter extends Log {
     case _ if card.exists(_.contains("Suspend ")) => nope(card)
     case _ if card.exists(_.contains("Nonexistent mana costs")) => nope(card)
     case VALID_CASTING_COST() => first(card)
+    case cc if SPECIAL_CASTING_COSTS.contains(cc) => first(card)
     case _ =>
       log.warn(s"$VALID_CASTING_COST didn't match [${card.head}] --- ${maybeTitle.getOrElse("")} ")
       nope(card)
@@ -51,7 +56,7 @@ object OracleRawCardConverter extends Log {
   def `type` = first _
 
   def powerToughness(card: Seq[String], maybeType: Option[String]) = maybeType match {
-    case Some(t) if t.contains("Creature") => first(card)
+    case Some(t) if t.contains("Creature -- ") => first(card)
     case _ => nope(card)
   }
 

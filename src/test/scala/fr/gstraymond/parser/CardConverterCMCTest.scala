@@ -51,6 +51,10 @@ class CardConverterCMCTest extends Specification {
     "Autochthon Wurm" in {
       _cmc("10 G G G W W") === 15
     }
+
+    "Kozilek, the Great Distortion" in {
+      _cmc("8 C C") === 10
+    }
   }
 
   private def _cmc(cc: String) = CardConverter._cmc(Some(cc))

@@ -29,10 +29,10 @@ trait Task[A] extends Log {
         case NonFatal(e) => log.error(s"error during $name", e)
       }
       Await.result(eventualProcess, Duration.Inf)
-      HttpClients.shutdown()
     }
 
-    log.info(Json.prettyPrint(timing.json))
+    log.info(s"Task terminated\n${Json.prettyPrint(timing.json)}")
+    HttpClients.shutdown()
   }
 
   def process: Future[A]
@@ -114,6 +114,14 @@ trait Task[A] extends Log {
   protected def loadMTGCards: Seq[MTGCard] = {
     val json = Source.fromFile(s"${FileUtils.outputPath}/cards.json").mkString
     Json.parse(json).as[Seq[MTGCard]]
+  }
+
+  protected def loadOracle: File = {
+    val files = new File(FileUtils.oraclePath).listFiles().filter(_.getName.endsWith(".txt"))
+    log.info(s"files: ${files.map(_.getName).mkString(", ")}")
+    val head: File = files.sortBy(_.getName).reverse.head
+    log.info(s"file found: ${head.getName}")
+    head
   }
 
   private def mkDir(path: String) = {

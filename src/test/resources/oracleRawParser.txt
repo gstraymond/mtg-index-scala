@@ -17,6 +17,14 @@ Creature -- Human Wizard
 When AEther Adept enters the battlefield, return target creature to its owner's hand.
 M11-C, M12-C
 
+Loose Lips
+U
+Enchant Creature
+As Loose Lips comes into play, choose a sentence with eight or fewer words.
+Enchanted creature has flying.
+Whenever enchanted creature deals damage to an opponent, you draw two cards unless that player says the chosen sentence.
+UNH-C
+
 
 Emrakul, the Aeons Torn
 15

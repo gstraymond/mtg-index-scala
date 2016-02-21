@@ -68,6 +68,11 @@ class CardConverterColorsTest extends Specification {
       CardConverter._colors(Some("4"), Seq("White/Blue/Black/Red/Green color indicator")).sorted ===
         Seq(GREEN.lbl, WHITE.lbl, BLUE.lbl, BLACK.lbl, RED.lbl, GOLD, MULTICOLORED(5)).sorted
     }
+
+    "Kozilek, the Great Distortion" in {
+      _colors("8 C C") ===
+        Seq(COLORLESS.lbl, UNCOLORED)
+    }
   }
 
   private def _colors(cc: String) = CardConverter._colors(Some(cc), Seq.empty).sorted

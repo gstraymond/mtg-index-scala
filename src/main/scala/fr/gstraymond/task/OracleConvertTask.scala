@@ -1,17 +1,23 @@
 package fr.gstraymond.task
 
-import fr.gstraymond.importer.OracleImporter
 import fr.gstraymond.model.{MTGCard, RawCard}
-import fr.gstraymond.parser.CardConverter
+import fr.gstraymond.parser.{CardConverter, OracleRawCardConverter, OracleRawParser}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object ImportTask extends Task[Seq[RawCard]] {
+object OracleConvertTask extends Task[Seq[RawCard]] {
 
-  override def process = Future.successful {
-    val rawCards = OracleImporter.`import`("/All-Sets-2015-11-15.txt")
-    storeRawCards(rawCards)
+  override def process = {
+    Future.successful {
+      loadOracle
+    }.map {
+      OracleRawParser.parse
+    }.map {
+      OracleRawCardConverter.convert
+    }.map {
+      storeRawCards
+    }
   }
 }
 

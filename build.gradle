@@ -28,8 +28,8 @@ dependencies {
     testCompile "junit:junit:4.+"
 }
 
-task importer(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.ImportTask'
+task oracleConvert(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.OracleConvertTask'
     description "Import data"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
@@ -106,6 +106,31 @@ task cardIndex(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
     maxHeapSize = '256m'
 }
+
+task CardPictureDL(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.CardictureDLTask'
+    description "Card Es Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task oracleScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.OracleScrapTask'
+    description "Scrap oracle cards"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task doZeMagic(dependsOn: [oracleScrap, fullScrap, oracleConvert, cardConvert, deleteIndex, configureIndex, cardIndex]) {
+    println "Done !"
+}
+
+fullScrap.shouldRunAfter oracleScrap
+oracleConvert.shouldRunAfter fullScrap
+cardConvert.shouldRunAfter oracleConvert
+deleteIndex.shouldRunAfter cardConvert
+configureIndex.shouldRunAfter deleteIndex
+cardIndex.shouldRunAfter configureIndex
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.10'

@@ -52,6 +52,10 @@ class CardConverterCastingCostTest extends Specification {
     "Autochthon Wurm" in {
       _cc("10GGGWW") === "10 G G G W W"
     }
+
+    "Kozilek, the Great Distortion" in {
+      _cc("8CC") === "8 C C"
+    }
   }
 
   private def _cc(cc: String) = CardConverter._cc(card(Some(cc))).getOrElse("NO CC")

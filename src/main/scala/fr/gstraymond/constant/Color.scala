@@ -14,6 +14,7 @@ object Color {
   val WHITE = Color("W", "White", colored = true)
   val LIFE = Color("P", "Life", colored = false)
   val X = Color("X", "X", colored = false)
+  val COLORLESS = Color("C", "Colorless", colored = false)
 
   val UNCOLORED = "Uncolored"
   val MONOCOLORED = "1 color"
@@ -27,7 +28,7 @@ object Color {
     BLACK, BLUE,
     GREEN, RED,
     WHITE, LIFE,
-    X
+    X, COLORLESS
   )
 
   val ONLY_COLORED_SYMBOLS = ALL_COLORS_SYMBOLS.filter(_.colored)

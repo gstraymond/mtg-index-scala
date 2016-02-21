@@ -13,11 +13,12 @@ object CardConverter extends Log {
     }
 
     rawCards
-      .filter(!_.`type`.contains("Vanguard"))
-      .filter(!_.`type`.contains("Scheme"))
-      .filter(!_.`type`.contains("Phenomenon"))
-      .filter(!_.`type`.exists(_.startsWith("Plane -- ")))
-      .filter(!_.`type`.exists(_.endsWith(" Scheme")))
+      .filterNot(_.`type`.contains("Vanguard"))
+      .filterNot(_.`type`.contains("Scheme"))
+      .filterNot(_.`type`.contains("Phenomenon"))
+      .filterNot(_.`type`.exists(_.startsWith("Plane -- ")))
+      .filterNot(_.`type`.exists(_.endsWith(" Scheme")))
+      .filterNot(_.editionRarity.exists(_.startsWith("ASTRAL-")))
       .flatMap { rawCard =>
         val title = getTitle(rawCard)
         groupedScrapedCards.get(title).map { cards =>
@@ -50,13 +51,13 @@ object CardConverter extends Log {
       }
   }
 
-  private val SPLIT_DESC = "This is half of the split card"
+  private val SPLIT_DESC = "of the split card "
 
   private def getTitle(rawCard: RawCard) = StringUtils.normalize {
     val title = rawCard.title.getOrElse("")
     rawCard.description.find(_.contains(SPLIT_DESC)) match {
       case Some(d) =>
-        val baseTitle = d.substring(32, d.length - 2)
+        val baseTitle = d.split(SPLIT_DESC)(1).dropRight(2)
         s"$title (${baseTitle.replace(" // ", "/")})"
       case _ => title
     }
@@ -148,16 +149,18 @@ object CardConverter extends Log {
     case p if p >= 100 => "> 100$"
   }.distinct
 
+  private val pictureHost = "http://dl.dropboxusercontent.com/u/22449802/mtg"
+
   def _publications(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map { scrapedCard =>
     Publication(
       edition = scrapedCard.edition.name,
       editionCode = scrapedCard.edition.code,
       editionReleaseDate = scrapedCard.edition.releaseDate,
-      stdEditionCode = "TODO",
+      stdEditionCode = scrapedCard.edition.code,
       rarity = scrapedCard.rarity,
       rarityCode = scrapedCard.rarity.head.toUpper.toString,
-      image = s"http://magiccards.info/scans/en/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}.jpg",
-      editionImage = "TODO",
+      image = s"$pictureHost/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}.jpg",
+      editionImage = s"$pictureHost/sets/${scrapedCard.edition.code}/${scrapedCard.rarity}.jpg",
       price = scrapedCard.price.map(_.value)
     )
   }.sortBy(_.editionReleaseDate.map(_.getTime).getOrElse(Long.MaxValue))

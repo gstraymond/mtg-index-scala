@@ -14,7 +14,7 @@ trait Scraper extends Log {
 
   val TIMEOUT: Int = 20 * 1000
 
-  def get(path: String, followRedirect: Boolean = false): Future[Document] = {
+  def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
     val fullUrl = s"http://$host$path"
     val http = followRedirect match {
       case true =>
@@ -28,6 +28,12 @@ trait Scraper extends Log {
     }.map {
       log.info(s"scraping url $fullUrl done")
       Jsoup.parse
+    }
+  }
+
+  def get(path: String): Future[Array[Byte]] = {
+    Http {
+      url(s"http://$host$path") OK as.Bytes
     }
   }
 }
@@ -46,6 +52,10 @@ trait MTGGoldFishScraper extends Scraper {
 
 trait MTGSalvationScraper extends Scraper {
   override val host = "mtgsalvation.gamepedia.com"
+}
+
+trait YawgatogScraper extends Scraper {
+  override val host = "www.yawgatog.com"
 }
 
 object HttpClients {

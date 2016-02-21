@@ -14,7 +14,7 @@ object EditionScraper extends MagicCardsInfoScraper with Log {
   val path = "/sitemap.html"
 
   def scrap: Future[Seq[ScrapedEdition]] = {
-    get(path).map { doc =>
+    scrap(path).map { doc =>
       log.info(s"scraping doc ${doc.title()}")
       extractTable(doc)
     }.map {

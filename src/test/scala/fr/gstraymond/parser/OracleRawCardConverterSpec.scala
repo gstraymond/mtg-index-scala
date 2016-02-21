@@ -44,5 +44,29 @@ class OracleRawCardConverterSpec extends Specification {
         Seq("LE-U")
       )
     }
+
+    "convert Loost Lips" in {
+      val card = Seq(
+        "Loose Lips",
+        "U",
+        "Enchant Creature",
+        "As Loose Lips comes into play, choose a sentence with eight or fewer words.",
+        "Enchanted creature has flying.",
+        "Whenever enchanted creature deals damage to an opponent, you draw two cards unless that player says the chosen sentence.",
+        "UNH-C"
+      )
+
+      OracleRawCardConverter.convertCard(card) === RawCard(
+        Some("Loose Lips"),
+        Some("U"),
+        Some("Enchant Creature"),
+        None,
+        Seq(
+          "As Loose Lips comes into play, choose a sentence with eight or fewer words.",
+          "Enchanted creature has flying.",
+          "Whenever enchanted creature deals damage to an opponent, you draw two cards unless that player says the chosen sentence."),
+        Seq("UNH-C")
+      )
+    }
   }
 }

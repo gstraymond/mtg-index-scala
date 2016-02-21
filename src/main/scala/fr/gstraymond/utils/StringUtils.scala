@@ -12,5 +12,6 @@ object StringUtils {
       .replace("”", "")
       .replace("aether", "ther")
       .replace("aerathi", "rathi")
+      .replace("coast(r)", "coast")
   }
 }

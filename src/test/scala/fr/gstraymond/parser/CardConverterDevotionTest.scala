@@ -60,6 +60,10 @@ class CardConverterDevotionTest extends Specification {
     "Autochthon Wurm" in {
       _devotion("10 G G G W W") === Seq(2, 3).sorted
     }
+
+    "Kozilek, the Great Distortion" in {
+      _devotion("8 C C") === Seq.empty
+    }
   }
 
   private def _devotion(cc: String) =

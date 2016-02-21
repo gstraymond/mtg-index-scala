@@ -2,9 +2,6 @@ package fr.gstraymond.utils
 
 import play.api.libs.json.{JsValue, Json}
 
-/**
-  * Created by guillaume on 07/02/16.
-  */
 object FileUtils {
 
   val langs = Seq("en", "fr")

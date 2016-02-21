@@ -1,5 +1,6 @@
 package fr.gstraymond.task
 
+import fr.gstraymond.dl.CardPictureDownloader
 import fr.gstraymond.model.{ScrapedEdition, ScrapedCard, ScrapedFormat, ScrapedPrice}
 import fr.gstraymond.scraper._
 import fr.gstraymond.utils.FileUtils
@@ -60,3 +61,10 @@ object ReleaseDateScrapTask extends Task[Seq[ScrapedEdition]] {
   override def process = ReleaseDateScraper.scrap(loadEditions)
 }
 
+object CardictureDLTask extends Task[Unit] {
+  override def process = CardPictureDownloader.download(loadMTGCards)
+}
+
+object OracleScrapTask extends Task[Unit] {
+  override def process = OracleScraper.scrap()
+}

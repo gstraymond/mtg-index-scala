@@ -18,7 +18,7 @@ object ReleaseDateScraper extends MTGPriceScraper {
   val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
 
   def scrap(editions: Seq[ScrapedEdition]): Future[Seq[ScrapedEdition]] = {
-    get(path).map { doc =>
+    scrap(path).map { doc =>
       log.info(s"scraping doc ${doc.title()}")
       extractReleaseDate(doc)
     }.map { result =>
