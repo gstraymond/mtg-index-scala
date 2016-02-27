@@ -7,6 +7,7 @@ import play.api.libs.json.Json
 case class ScrapedEdition(
   code: String,
   name: String,
+  stdEditionCode: Option[String],
   releaseDate: Option[Date]
 )
 

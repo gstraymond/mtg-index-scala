@@ -8,7 +8,6 @@ import play.api.libs.json.Json
 import scala.concurrent.duration.Duration
 
 object Timing {
-  implicit lazy val f1 = Json.format[ProcessStats]
 
   def apply[A](name: String)(computation: => A): Timing[A] = new Timing().apply(name, computation)
 }
@@ -27,7 +26,7 @@ class Timing[A] {
     val end = new Date().getTime
     val resultAsString = get match {
       case seq: Seq[_] => s"${seq.size} elements"
-      case _ => s"${result.getClass} result"
+      case _ => s"${get.getClass} result"
     }
     val processStats2 = ProcessStats(
       name,
@@ -55,8 +54,8 @@ class Timing[A] {
     other
   }
 
+  implicit val f1 = Json.format[ProcessStats]
   def json = {
-    import Timing._
     Json.obj( "stats" -> stats)
   }
 }

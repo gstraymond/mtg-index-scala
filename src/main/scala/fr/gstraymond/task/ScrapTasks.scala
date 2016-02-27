@@ -1,6 +1,6 @@
 package fr.gstraymond.task
 
-import fr.gstraymond.dl.CardPictureDownloader
+import fr.gstraymond.dl.{EditionPictureDownloader, CardPictureDownloader}
 import fr.gstraymond.model.{ScrapedEdition, ScrapedCard, ScrapedFormat, ScrapedPrice}
 import fr.gstraymond.scraper._
 import fr.gstraymond.utils.FileUtils
@@ -13,13 +13,15 @@ object FullScrapTask extends Task[Seq[ScrapedCard]] {
     for {
       editions <- EditionScraper.scrap
       editionsWithDate <- ReleaseDateScraper.scrap(editions)
-      cards <- CardScraper.scrap(editionsWithDate, FileUtils.langs)
+      (editionsWithStdCode, cache) <- GathererEditionCodeScraper.scrap(editionsWithDate, loadStdCodeCache)
+      cards <- CardScraper.scrap(editionsWithStdCode, FileUtils.langs)
       prices <- PriceScraper.scrap
-      cardsWithPrice <- Future.successful(PriceScraper.process(cards, prices))
+      cardsWithPrice = PriceScraper.process(cards, prices)
       formats <- FormatScraper.scrap
     } yield {
       storeFormats(formats)
-      storeEditions(editionsWithDate)
+      storeEditions(editionsWithStdCode)
+      storeStdCodeCache(cache)
       storePrices(prices)
       storeScrapedCards(cardsWithPrice)
     }
@@ -61,10 +63,22 @@ object ReleaseDateScrapTask extends Task[Seq[ScrapedEdition]] {
   override def process = ReleaseDateScraper.scrap(loadEditions)
 }
 
-object CardictureDLTask extends Task[Unit] {
+object CardPictureDLTask extends Task[Unit] {
   override def process = CardPictureDownloader.download(loadMTGCards)
+}
+
+object EditionPictureDLTask extends Task[Unit] {
+  override def process = EditionPictureDownloader.download(loadMTGCards)
 }
 
 object OracleScrapTask extends Task[Unit] {
   override def process = OracleScraper.scrap()
+}
+
+object GathererEditionCodeScrapTask extends Task[Seq[ScrapedEdition]] {
+  override def process = GathererEditionCodeScraper.scrap(loadEditions, loadStdCodeCache).map { case (editions, cache) =>
+    storeStdCodeCache(cache)
+    editions
+  }
+
 }

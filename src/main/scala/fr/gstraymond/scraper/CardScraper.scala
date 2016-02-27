@@ -29,7 +29,7 @@ object CardScraper extends MagicCardsInfoScraper with Log {
           (doc.select(cardExpression).asScala match {
             case head +: tail => tail
             case _ =>
-              log.info(s"No results found for : url '${doc.location()}' and expression '$cardExpression'")
+              log.info(s"No results found for : '$language' -> '${edition.name}' and expression '$cardExpression'")
               Seq.empty
           }).map { elem =>
             buildScrapedCard(elem, edition, language)

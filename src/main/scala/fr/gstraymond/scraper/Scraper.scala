@@ -32,8 +32,12 @@ trait Scraper extends Log {
   }
 
   def get(path: String): Future[Array[Byte]] = {
+    val fullUrl = s"http://$host$path"
     Http {
-      url(s"http://$host$path") OK as.Bytes
+      url(fullUrl) OK as.Bytes
+    }.map { bytes =>
+      log.info(s"scraping url $fullUrl done")
+      bytes
     }
   }
 }
@@ -56,6 +60,10 @@ trait MTGSalvationScraper extends Scraper {
 
 trait YawgatogScraper extends Scraper {
   override val host = "www.yawgatog.com"
+}
+
+trait GathererScraper extends Scraper {
+  override val host = "gatherer.wizards.com"
 }
 
 object HttpClients {

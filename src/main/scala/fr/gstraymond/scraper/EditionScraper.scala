@@ -36,7 +36,7 @@ object EditionScraper extends MagicCardsInfoScraper with Log {
       case elems => elems.map { elem =>
         val code = elem.getElementsByTag("small").first().text()
         val name = elem.getElementsByTag("a").first().text()
-        ScrapedEdition(code, name, None)
+        ScrapedEdition(code, name, None, None)
       }
     }
   }

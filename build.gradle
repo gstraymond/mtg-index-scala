@@ -107,9 +107,16 @@ task cardIndex(type: JavaExec, dependsOn: classes) {
     maxHeapSize = '256m'
 }
 
-task CardPictureDL(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.CardictureDLTask'
-    description "Card Es Index"
+task cardPictureDL(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.CardPictureDLTask'
+    description "Download card picture"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task editionPictureDL(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.EditionPictureDLTask'
+    description "Download edition picture"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
@@ -117,6 +124,13 @@ task CardPictureDL(type: JavaExec, dependsOn: classes) {
 task oracleScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.OracleScrapTask'
     description "Scrap oracle cards"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task editionCodeScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.GathererEditionCodeScrapTask'
+    description "Scrap std edition code"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }

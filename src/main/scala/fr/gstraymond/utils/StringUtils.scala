@@ -6,7 +6,8 @@ object StringUtils {
   def normalize(text: String) = {
     Normalizer
       .normalize(text.toLowerCase, Normalizer.Form.NFD)
-      .replaceAll("[^\\p{ASCII}]", "")
+      .replace(" ", "-")
+      .replaceAll("[^A-Za-z0-9\\-\\_]", "")
       .replace("\"", "")
       .replace("“", "")
       .replace("”", "")

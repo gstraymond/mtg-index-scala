@@ -3,6 +3,7 @@ package fr.gstraymond.model
 import java.util.Date
 
 case class Publication(
+  collectorNumber: String,
   edition: String,
   editionCode: String,
   editionReleaseDate: Option[Date],

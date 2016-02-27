@@ -1,8 +1,7 @@
 package fr.gstraymond.task
 
-import java.io.File
+import java.io.{File, FileNotFoundException}
 
-import dispatch.Http
 import fr.gstraymond.model._
 import fr.gstraymond.scraper.HttpClients
 import fr.gstraymond.stats.Timing
@@ -86,6 +85,13 @@ trait Task[A] extends Log {
     formats
   }
 
+  protected def storeStdCodeCache(cache: Map[String, String]) = {
+    mkDir(FileUtils.cachePath)
+    val file = new File(s"${FileUtils.cachePath}/stdCodes.json")
+    FileUtils.storeJson(file, Json.toJson(cache))
+    cache
+  }
+
   protected def loadRawCards: Seq[RawCard] = {
     val json = Source.fromFile(s"${FileUtils.oraclePath}/cards.json").mkString
     Json.parse(json).as[Seq[RawCard]]
@@ -122,6 +128,15 @@ trait Task[A] extends Log {
     val head: File = files.sortBy(_.getName).reverse.head
     log.info(s"file found: ${head.getName}")
     head
+  }
+
+  protected def loadStdCodeCache: Map[String, String] = {
+    try {
+      val json = Source.fromFile(s"${FileUtils.cachePath}/stdCodes.json").mkString
+      Json.parse(json).as[Map[String, String]]
+    } catch {
+      case e: FileNotFoundException => Map.empty
+    }
   }
 
   private def mkDir(path: String) = {

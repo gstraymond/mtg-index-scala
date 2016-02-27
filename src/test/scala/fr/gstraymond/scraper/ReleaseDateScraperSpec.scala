@@ -18,8 +18,8 @@ class ReleaseDateScraperSpec(implicit ee: ExecutionEnv) extends Specification {
   "release date scraper" should {
     "scrap" in {
       val editions = Seq(
-        ScrapedEdition("", "Oath of the Gatewatch", None),
-        ScrapedEdition("", "Battle for Zendikar", None)
+        ScrapedEdition("", "Oath of the Gatewatch", None, None),
+        ScrapedEdition("", "Battle for Zendikar", None, None)
       )
 
       ReleaseDateScraper.scrap(editions) must be_==("").awaitFor(Duration(10, TimeUnit.SECONDS))

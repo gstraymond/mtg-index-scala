@@ -153,10 +153,11 @@ object CardConverter extends Log {
 
   def _publications(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map { scrapedCard =>
     Publication(
+      collectorNumber = scrapedCard.collectorNumber,
       edition = scrapedCard.edition.name,
       editionCode = scrapedCard.edition.code,
       editionReleaseDate = scrapedCard.edition.releaseDate,
-      stdEditionCode = scrapedCard.edition.code,
+      stdEditionCode = scrapedCard.edition.stdEditionCode.getOrElse(scrapedCard.edition.code).toUpperCase,
       rarity = scrapedCard.rarity,
       rarityCode = scrapedCard.rarity.head.toUpper.toString,
       image = s"$pictureHost/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}.jpg",

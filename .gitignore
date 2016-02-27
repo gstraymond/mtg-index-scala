@@ -1,6 +1,7 @@
 /src/main/resources/oracle
 /src/main/resources/scrap
 /src/main/resources/output
+/src/main/resources/cache
 /mtg-index-scala.iml
 /gradlew
 /gradlew.bat
