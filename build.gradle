@@ -5,7 +5,7 @@ apply plugin: 'scala'
 
 repositories {
     mavenLocal()
-    mavenCentral()
+    maven { url "http://repo1.maven.org/maven2" }
     maven { url 'https://oss.sonatype.org/content/repositories/releases' }
     maven { url 'http://repo.typesafe.com/typesafe/releases' }
 }
@@ -159,7 +159,6 @@ test {
     }
     systemProperties 'logback.configurationFile': new File(projectDir, 'src/test/resources/logback-test.groovy').absolutePath
 }
-
 
 // START SNIPPET use-zinc
 tasks.withType(ScalaCompile) {
