@@ -135,14 +135,16 @@ task editionCodeScrap(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
-task doZeMagic(dependsOn: [oracleScrap, fullScrap, oracleConvert, cardConvert, deleteIndex, configureIndex, cardIndex]) {
+task doZeMagic(dependsOn: [oracleScrap, fullScrap, oracleConvert, cardConvert, editionPictureDL, cardPictureDL, deleteIndex, configureIndex, cardIndex]) {
     println "Done !"
 }
 
 fullScrap.shouldRunAfter oracleScrap
 oracleConvert.shouldRunAfter fullScrap
 cardConvert.shouldRunAfter oracleConvert
-deleteIndex.shouldRunAfter cardConvert
+editionPictureDL.shouldRunAfter cardConvert
+cardPictureDL.shouldRunAfter editionPictureDL
+deleteIndex.shouldRunAfter cardPictureDL
 configureIndex.shouldRunAfter deleteIndex
 cardIndex.shouldRunAfter configureIndex
 

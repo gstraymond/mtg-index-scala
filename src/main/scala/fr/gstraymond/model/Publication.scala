@@ -7,10 +7,10 @@ case class Publication(
   edition: String,
   editionCode: String,
   editionReleaseDate: Option[Date],
-  stdEditionCode: String,
+  stdEditionCode: Option[String],
   rarity: String,
-  rarityCode: String,
+  rarityCode: Option[String],
   image: String,
-  editionImage: String,
+  editionImage: Option[String],
   price: Option[Double]
 )

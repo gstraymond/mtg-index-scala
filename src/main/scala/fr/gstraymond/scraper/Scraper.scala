@@ -38,6 +38,10 @@ trait Scraper extends Log {
     }.map { bytes =>
       log.info(s"scraping url $fullUrl done")
       bytes
+    }.recover {
+      case e: Exception =>
+        log.warn(s"not found: [${e.getMessage}], $fullUrl")
+        Array()
     }
   }
 }

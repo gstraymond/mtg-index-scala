@@ -32,8 +32,7 @@ object GathererEditionCodeScraper extends GathererScraper {
     Future.sequence {
       editions.map { edition =>
         getCode(edition, cache).map { maybeCode =>
-          val code = maybeCode.getOrElse(edition.code)
-          edition.copy(stdEditionCode = Some(code)) -> maybeCode
+          edition.copy(stdEditionCode = maybeCode) -> maybeCode
         }
       }
     }.map { editionsWithCode =>

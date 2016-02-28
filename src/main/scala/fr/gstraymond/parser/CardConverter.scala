@@ -1,7 +1,7 @@
 package fr.gstraymond.parser
 
 import fr.gstraymond.constant.Color._
-import fr.gstraymond.constant.{Abilities, Color}
+import fr.gstraymond.constant.{URIs, Abilities, Color}
 import fr.gstraymond.model._
 import fr.gstraymond.utils.{Log, StringUtils}
 
@@ -20,10 +20,10 @@ object CardConverter extends Log {
       .filterNot(_.`type`.exists(_.endsWith(" Scheme")))
       .filterNot(_.editionRarity.exists(_.startsWith("ASTRAL-")))
       .flatMap { rawCard =>
-        val title = getTitle(rawCard)
+        def title = getTitle(rawCard)
         groupedScrapedCards.get(title).map { cards =>
-          val castingCost = _cc(rawCard)
-          val hints = _hiddenHints(rawCard)
+          def castingCost = _cc(rawCard)
+          def hints = _hiddenHints(rawCard)
           MTGCard(
             title = _title(cards),
             frenchTitle = _frenchTitle(cards),
@@ -54,10 +54,10 @@ object CardConverter extends Log {
   private val SPLIT_DESC = "of the split card "
 
   private def getTitle(rawCard: RawCard) = StringUtils.normalize {
-    val title = rawCard.title.getOrElse("")
+    def title = rawCard.title.getOrElse("")
     rawCard.description.find(_.contains(SPLIT_DESC)) match {
       case Some(d) =>
-        val baseTitle = d.split(SPLIT_DESC)(1).dropRight(2)
+        def baseTitle = d.split(SPLIT_DESC)(1).dropRight(2)
         s"$title (${baseTitle.replace(" // ", "/")})"
       case _ => title
     }
@@ -149,19 +149,25 @@ object CardConverter extends Log {
     case p if p >= 100 => "> 100$"
   }.distinct
 
-  private val pictureHost = "http://dl.dropboxusercontent.com/u/22449802/mtg"
-
   def _publications(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map { scrapedCard =>
+    def title = StringUtils.normalize(scrapedCard.title)
+    def rarityCode = scrapedCard.edition.stdEditionCode.map { _ =>
+      scrapedCard.rarity.head.toUpper.toString
+    }
+    def editionImage = scrapedCard.edition.stdEditionCode.map { _ =>
+      s"${URIs.pictureHost}/sets/${scrapedCard.edition.stdEditionCode.getOrElse("")}/${rarityCode.get}.gif"
+    }
+
     Publication(
       collectorNumber = scrapedCard.collectorNumber,
       edition = scrapedCard.edition.name,
       editionCode = scrapedCard.edition.code,
       editionReleaseDate = scrapedCard.edition.releaseDate,
-      stdEditionCode = scrapedCard.edition.stdEditionCode.getOrElse(scrapedCard.edition.code).toUpperCase,
+      stdEditionCode = scrapedCard.edition.stdEditionCode,
       rarity = scrapedCard.rarity,
-      rarityCode = scrapedCard.rarity.head.toUpper.toString,
-      image = s"$pictureHost/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}.jpg",
-      editionImage = s"$pictureHost/sets/${scrapedCard.edition.code}/${scrapedCard.rarity}.jpg",
+      rarityCode = rarityCode,
+      image = s"${URIs.pictureHost}/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}-$title.jpg",
+      editionImage = editionImage,
       price = scrapedCard.price.map(_.value)
     )
   }.sortBy(_.editionReleaseDate.map(_.getTime).getOrElse(Long.MaxValue))
