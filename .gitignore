@@ -2,6 +2,7 @@
 /src/main/resources/scrap
 /src/main/resources/output
 /src/main/resources/cache
+/src/main/resources/conf.properties
 /mtg-index-scala.iml
 /gradlew
 /gradlew.bat
