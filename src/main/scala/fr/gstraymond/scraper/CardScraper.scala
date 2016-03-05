@@ -18,7 +18,7 @@ object CardScraper extends MagicCardsInfoScraper with Log {
       edition <- editions
       language <- langs
     } yield {
-      scrap(s"/${edition.code}/$language.html").map {
+      oldScrap(s"/${edition.code}/$language.html").map {
         (edition, language, _)
       }
     }

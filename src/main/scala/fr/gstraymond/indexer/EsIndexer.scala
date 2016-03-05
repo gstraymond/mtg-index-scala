@@ -22,7 +22,7 @@ object EsIndexer extends Log {
 
   def delete(): Future[Unit] = {
     Http {
-      url(indexPath).DELETE OK as.String
+      url(indexPath).DELETE > as.String
     }.map { result =>
       log.info(s"delete: $result")
       ()

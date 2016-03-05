@@ -1,5 +1,7 @@
 package fr.gstraymond.scraper
 
+import java.util.Date
+
 import dispatch.Defaults._
 import dispatch._
 import fr.gstraymond.utils.Log
@@ -12,7 +14,18 @@ import scala.concurrent.Future
 trait Scraper extends Log {
   def host: String
 
-  val TIMEOUT: Int = 20 * 1000
+  val TIMEOUT: Int = 60 * 1000
+
+  def oldScrap(path: String): Future[Document] = {
+    val fullUrl = s"http://$host$path"
+    Future {
+      val now = new Date().getTime
+      now -> Jsoup.connect(fullUrl).timeout(TIMEOUT).get()
+    }.map { case (now, doc) =>
+      log.info(s"scraping url $fullUrl done in ${new Date().getTime - now}ms !")
+      doc
+    }
+  }
 
   def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
     val fullUrl = s"http://$host$path"

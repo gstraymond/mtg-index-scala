@@ -48,6 +48,7 @@ task fullScrap(type: JavaExec, dependsOn: classes) {
     description "Scrap cards + prices"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
+    maxHeapSize = '300m'
 }
 
 task cardScrap(type: JavaExec, dependsOn: classes) {
