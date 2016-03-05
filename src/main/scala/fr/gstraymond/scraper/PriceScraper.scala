@@ -15,11 +15,16 @@ object PriceScraper extends MTGGoldFishScraper {
 
   def scrap: Future[Seq[ScrapedPrice]] = {
     scrapEditionUrls.flatMap { editionUrls =>
-      Future.sequence {
-        editionUrls.map { editionPath =>
-          scrapEditionPrices(editionPath)
+      val init = Future.successful(Seq.empty[ScrapedPrice])
+      editionUrls.foldLeft(init) { (acc, editionUrl) =>
+        for {
+          prices <- acc
+          _ = Thread.sleep(100)
+          newPrices <- scrapEditionPrices(editionUrl)
+        } yield {
+          prices ++ newPrices
         }
-      }.map(_.flatten)
+      }
     }
   }
 
