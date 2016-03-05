@@ -114,6 +114,7 @@ object DoZeMagicTask extends Task[Seq[ScrapedCard]] {
       storeStdCodeCache(cache)
       storePrices(prices)
       storeScrapedCards(scrapedCards)
+      storeMTGCards(mtgCards)
     }
   }
 }
