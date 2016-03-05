@@ -63,7 +63,7 @@ object PriceScraper extends MTGGoldFishScraper {
   }
 
   def scrapEditionUrls: Future[Seq[String]] = {
-    oldScrap(path).map { doc =>
+    scrap(path).map { doc =>
       doc
         .select("div.priceList-selectMenu li[role=presentation]").asScala
         .filter(_.select("a img").asScala.nonEmpty)
@@ -76,7 +76,7 @@ object PriceScraper extends MTGGoldFishScraper {
   def scrapEditionPrices(path: String): Future[Seq[ScrapedPrice]] = {
     def parseDouble(str: String) = str.replace(",", "").toDouble
 
-    oldScrap(path).map { doc =>
+    scrap(path).map { doc =>
       val editionCode = path.split("/").last.toLowerCase
       val editionName = doc.select(".price-card-name-header-name").text()
       doc
