@@ -2,7 +2,7 @@ package fr.gstraymond.task
 
 import fr.gstraymond.dl.{EditionPictureDownloader, CardPictureDownloader}
 import fr.gstraymond.indexer.EsIndexer
-import fr.gstraymond.model.{ScrapedEdition, ScrapedCard, ScrapedFormat, ScrapedPrice}
+import fr.gstraymond.model._
 import fr.gstraymond.parser.{CardConverter, OracleConverter}
 import fr.gstraymond.scraper._
 import fr.gstraymond.utils.FileUtils
@@ -84,7 +84,7 @@ object GathererEditionCodeScrapTask extends Task[Seq[ScrapedEdition]] {
   }
 }
 
-object DoZeMagicTask extends Task[Seq[ScrapedCard]] {
+object DoZeMagicTask extends Task[Seq[MTGCard]] {
   override def process = {
     for {
       // editions
