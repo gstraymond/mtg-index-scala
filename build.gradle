@@ -40,7 +40,7 @@ task cardConvert(type: JavaExec, dependsOn: classes) {
     description "convert raw card -> mtg card"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
-    maxHeapSize = '256m'
+    maxHeapSize = '512m'
 }
 
 task fullScrap(type: JavaExec, dependsOn: classes) {
@@ -48,7 +48,7 @@ task fullScrap(type: JavaExec, dependsOn: classes) {
     description "Scrap cards + prices"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
-    maxHeapSize = '300m'
+    maxHeapSize = '512m'
 }
 
 task cardScrap(type: JavaExec, dependsOn: classes) {
@@ -105,7 +105,7 @@ task cardIndex(type: JavaExec, dependsOn: classes) {
     description "Card Es Index"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
-    maxHeapSize = '256m'
+    maxHeapSize = '512m'
 }
 
 task cardExists(type: JavaExec, dependsOn: classes) {
@@ -148,7 +148,7 @@ task doZeMagic(type: JavaExec, dependsOn: classes) {
     description "DO EVERY-THING"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
-    maxHeapSize = '300m'
+    maxHeapSize = '512m'
 }
 
 task wrapper(type: Wrapper) {
