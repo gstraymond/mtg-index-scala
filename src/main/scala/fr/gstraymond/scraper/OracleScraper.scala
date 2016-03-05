@@ -1,5 +1,7 @@
 package fr.gstraymond.scraper
 
+import java.io.File
+
 import fr.gstraymond.utils.{FileUtils, ZipUtils}
 
 import scala.collection.JavaConverters._
@@ -19,6 +21,8 @@ object OracleScraper extends YawgatogScraper {
 
       bytes <- get(s"$path$link")
     } yield {
+      val dir = new File(FileUtils.oraclePath)
+      if (!dir.exists()) dir.mkdirs()
       ZipUtils.unZip(bytes, FileUtils.oraclePath)
       ()
     }
