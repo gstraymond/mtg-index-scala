@@ -1,6 +1,6 @@
 package fr.gstraymond.scraper
 
-import fr.gstraymond.model.{ScrapedEdition, ScrapedCard}
+import fr.gstraymond.model.{ScrapedCard, ScrapedEdition}
 import fr.gstraymond.utils.Log
 import org.jsoup.nodes.Element
 
@@ -18,14 +18,17 @@ object CardScraper extends MagicCardsInfoScraper with Log {
       edition <- editions
       language <- langs
     } yield {
+      Thread.sleep(100)
       scrap(s"/${edition.code}/$language.html").map {
         (edition, language, _)
       }
     }
 
-    Future.sequence(eventualDocuments).map { tuples =>
-      tuples.flatMap {
-        case (edition, language, doc) =>
+    val init = Future.successful(Seq.empty[ScrapedCard])
+    eventualDocuments.foldLeft(init) { case (acc, tuples) =>
+      for {
+        cards <- acc
+        newCards <- tuples.map { case (edition, language, doc) =>
           (doc.select(cardExpression).asScala match {
             case head +: tail => tail
             case _ =>
@@ -34,6 +37,9 @@ object CardScraper extends MagicCardsInfoScraper with Log {
           }).map { elem =>
             buildScrapedCard(elem, edition, language)
           }
+        }
+      } yield {
+        cards ++ newCards
       }
     }.map {
       mergeCards
@@ -49,7 +55,7 @@ object CardScraper extends MagicCardsInfoScraper with Log {
           rarity = rarity.text(),
           artist = artist.text(),
           edition = edition,
-          title =  if (language == "en") title.text() else "",
+          title = if (language == "en") title.text() else "",
           frenchTitle = if (language == "fr") Some(title.text()) else None
         )
       case _ => throw new RuntimeException(s"tds $tds not matched")
