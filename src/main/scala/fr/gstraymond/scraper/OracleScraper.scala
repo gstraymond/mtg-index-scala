@@ -10,7 +10,7 @@ object OracleScraper extends YawgatogScraper {
 
   val path = "/resources/oracle/"
 
-  def scrap(): Future[Unit] = {
+  def scrap: Future[Unit] = {
     for {
       doc <- scrap(path)
 

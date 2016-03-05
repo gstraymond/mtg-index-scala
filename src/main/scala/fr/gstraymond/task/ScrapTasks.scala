@@ -1,7 +1,9 @@
 package fr.gstraymond.task
 
 import fr.gstraymond.dl.{EditionPictureDownloader, CardPictureDownloader}
+import fr.gstraymond.indexer.EsIndexer
 import fr.gstraymond.model.{ScrapedEdition, ScrapedCard, ScrapedFormat, ScrapedPrice}
+import fr.gstraymond.parser.{CardConverter, OracleConverter}
 import fr.gstraymond.scraper._
 import fr.gstraymond.utils.FileUtils
 
@@ -72,7 +74,7 @@ object EditionPictureDLTask extends Task[Unit] {
 }
 
 object OracleScrapTask extends Task[Unit] {
-  override def process = OracleScraper.scrap()
+  override def process = OracleScraper.scrap
 }
 
 object GathererEditionCodeScrapTask extends Task[Seq[ScrapedEdition]] {
@@ -80,5 +82,38 @@ object GathererEditionCodeScrapTask extends Task[Seq[ScrapedEdition]] {
     storeStdCodeCache(cache)
     editions
   }
+}
 
+object DoZeMagicTask extends Task[Seq[ScrapedCard]] {
+  override def process = {
+    for {
+      // editions
+      _editions <- EditionScraper.scrap
+      __editions <- ReleaseDateScraper.scrap(_editions)
+      (editions, cache) <- GathererEditionCodeScraper.scrap(__editions, loadStdCodeCache)
+      // scraped cards with prices
+      _scrapedCards <- CardScraper.scrap(editions, FileUtils.langs)
+      prices <- PriceScraper.scrap
+      scrapedCards = PriceScraper.process(_scrapedCards, prices)
+      // formats
+      formats <- FormatScraper.scrap
+      // oracle
+      _ <- OracleScraper.scrap
+      rawCards = OracleConverter.convert(loadOracle)
+      // mtg cards
+      mtgCards = CardConverter.convert(rawCards, scrapedCards, formats)
+      _ <- EditionPictureDownloader.download(mtgCards)
+      _ <- CardPictureDownloader.download(mtgCards)
+      _ <- EsIndexer.delete()
+      _ <- EsIndexer.configure()
+      _ <- EsIndexer.index(mtgCards)
+    } yield {
+      storeRawCards(rawCards)
+      storeFormats(formats)
+      storeEditions(editions)
+      storeStdCodeCache(cache)
+      storePrices(prices)
+      storeScrapedCards(scrapedCards)
+    }
+  }
 }

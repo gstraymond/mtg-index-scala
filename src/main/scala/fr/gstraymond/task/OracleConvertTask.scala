@@ -1,7 +1,7 @@
 package fr.gstraymond.task
 
 import fr.gstraymond.model.{MTGCard, RawCard}
-import fr.gstraymond.parser.{CardConverter, OracleRawCardConverter, OracleRawParser}
+import fr.gstraymond.parser.{OracleConverter, CardConverter, OracleRawCardConverter, OracleRawParser}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -12,9 +12,7 @@ object OracleConvertTask extends Task[Seq[RawCard]] {
     Future.successful {
       loadOracle
     }.map {
-      OracleRawParser.parse
-    }.map {
-      OracleRawCardConverter.convert
+      OracleConverter.convert
     }.map {
       storeRawCards
     }

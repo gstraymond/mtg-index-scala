@@ -107,6 +107,13 @@ task cardIndex(type: JavaExec, dependsOn: classes) {
     maxHeapSize = '256m'
 }
 
+task cardExists(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.CardExistsTask'
+    description "Check card exists"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
 task cardPictureDL(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.CardPictureDLTask'
     description "Download card picture"
@@ -135,21 +142,16 @@ task editionCodeScrap(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
-task doZeMagic(dependsOn: [oracleScrap, fullScrap, oracleConvert, cardConvert, editionPictureDL, cardPictureDL, deleteIndex, configureIndex, cardIndex]) {
-    println "Done !"
+task doZeMagic(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.DoZeMagicTask'
+    description "DO EVERY-THING"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+    maxHeapSize = '300m'
 }
 
-fullScrap.shouldRunAfter oracleScrap
-oracleConvert.shouldRunAfter fullScrap
-cardConvert.shouldRunAfter oracleConvert
-editionPictureDL.shouldRunAfter cardConvert
-cardPictureDL.shouldRunAfter editionPictureDL
-deleteIndex.shouldRunAfter cardPictureDL
-configureIndex.shouldRunAfter deleteIndex
-cardIndex.shouldRunAfter configureIndex
-
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
+    gradleVersion = '2.11'
 }
 
 test {

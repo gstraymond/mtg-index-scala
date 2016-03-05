@@ -13,3 +13,7 @@ object ConfigureIndexTask extends Task[Unit]{
 object CardIndexTask extends Task[Unit]{
   override def process = EsIndexer.index(loadMTGCards)
 }
+
+object CardExistsTask extends Task[Seq[String]]{
+  override def process = EsIndexer.exists(loadMTGCards)
+}
