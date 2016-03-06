@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>MTG | Magic: The Gathering card search</title>
+  
+  <meta name="description" content="Fast and powerful search for your Magic: The Gathering cards. Helps you to build betters MTG decks !" />
+  <link type="text/plain" rel="author" href="http://magic-card-search.com/humans.txt" />
+
+  <!-- jquery -->
+  <script type="text/javascript" src="vendor/jquery/1.7.1/jquery-1.7.1.min.js"></script>
+
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+  <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.min.js"></script>  
+
+  <!-- linkify -->
+  <script type="text/javascript" src="vendor/linkify/1.0/jquery.linkify-1.0-min.js"></script>  
+  
+  <!-- jquery ui -->
+  <link rel="stylesheet" href="vendor/jquery-ui-1.8.18.custom/jquery-ui-1.8.18.custom.css">
+  <script type="text/javascript" src="vendor/jquery-ui-1.8.18.custom/jquery-ui-1.8.18.custom.min.js"></script>
+
+  <!-- facetview -->
+  <script type="text/javascript" src="jquery.facetview.js"></script>
+  <link rel="stylesheet" href="css/facetview.css">
+
+  <!-- fancybox -->
+  <script type="text/javascript" src="fancybox/jquery.fancybox.pack.js"></script>
+  <link rel="stylesheet" href="fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+
+  <!-- custom -->
+  <script type="text/javascript">
+  	var searchUrl = 'http://localhost:8080/magic/card/_search?';
+  </script>
+  <script type="text/javascript" src="custom.js"></script>
+  <link rel="stylesheet" href="custom.css" type="text/css" media="screen" />
+  
+  <!-- webmaster tools -->
+  <meta name="google-site-verification" content="RfTkN5ENwFkxkQcrSjCSttxh1Dcy1VDIoycfmObJkXw" />
+  
+  <!-- ogp -->
+  <meta property="og:title" content="Magic card search engine" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://magic-card-search.com" />
+  <meta property="og:image" content="http://magic-card-search.com/img/logo.png" />
+  <meta property="og:description" content="Powerful and fast search engine for Magic: The Gathering cards " />
+</head>
+<body>
+	<div class="help" style="display: none;">
+		<div class="help-lang" lang="en">
+			<h1>
+				Help !
+				<a href="javascript:void(0)" class="btn btn-success"><img width="20" src="img/country/france.png" alt="FR" /><span class="help-lang-txt">En français, svp !</span></a>
+			</h1>
+			<p>
+				Welcome on this card search engine for Magic : The Gathering.
+			</p>
+			<p>
+				This search engine contains all card until the last extension Theros.
+			</p>
+			<p>
+				Ih has been made for simple and powerful search thanks to :
+			</p>
+			<ul>
+				<li>text search</li>
+				<li>facets filtering</li>
+			</ul>
+			<h2>How do I search cards ?</h2>
+			
+			<h2>Text search</h2>
+			<p>
+				All cards has been indexed in English. For French people, card title is also available in French.
+			</p>
+			<p>
+				Text search can search words contained in all card text content (title, description, type...).
+			</p>
+			<p>
+				Text search works with full words. For example, searching <code>elf enchantment</code>
+				returns all cards where text content contains <code>elf</code> AND <code>enchantment</code>.
+			</p>
+			
+			<h3>Character *</h3>
+			<p>
+				Character <code>*</code> can be used for searching partial words, for example : 
+			</p>
+			<ul>
+				<li>
+					searching <code>lo*us</code> returns card containing 
+					words <code>lotus</code> and <code>locus</code>.
+				</li>
+				<li>
+					searching <code>emra*</code> returns cards beginning with 
+					<code>emra</code> like <code>Emrakul</code>.
+				</li>
+			</ul>
+			
+			<h3>Character "</h3>
+			<p>
+				Character <code>"</code> searchs a text block. For example, searching 
+				<code>"add three mana"</code> returns cards containing this text block
+				like <code>Black Lotus</code>, <code>Lotus Vale</code>,
+				<code>Gilded Lotus</code>...
+			</p>
+			
+			<h2>Facets</h2>
+			<p>
+				Facets are filters that can be applied and cumulated for searching. 
+			</p>
+			<p>
+				For instance, a facet can filter on card color. By selecting <code>blue</code> from
+				<code>Color</code> facet, search results is filtered to display only blue cards.
+			</p>
+			<p>
+				Filters can be added  from the same facet or another one.
+				When selecting <code>green</code>, search results are again filtered to display only 
+				blue and green cards.
+			</p>
+			<p>
+				Also, by selecting <code>creature</code> from <code>Type</code> facet, search results are again
+				filtered to display only blue and green creatures.
+			</p>
+			<p>
+				Number between parenthesis at right of a facet is the number of results of this facet.
+				This number is dynamic and relates to current search.
+			</p>
+			<p>
+				For example, when there are no search filter nor text search, <code>1</code> in
+				facet <code>Converted mana cost</code> indicates 1612. It means that 1612
+				cards with CMC 1.
+			</p>
+			<p>
+				With previous search (blue/green/creature), the same filter in facet indicates 2.
+				It means that only 2 cards exists with CMC 1 : Bioshift, Slippery Boggle.
+			</p>
+			
+			<h3>Color</h3>
+			<p>
+				Filters search results based on card color :
+			</p>
+			<ul>
+				<li><code>White</code> / <code>Blue</code> / <code>Black</code> / <code>Red</code> / <code>Green</code> : filter based on color</li>
+				<li><code>Uncolored</code> / <code>Gold</code> / <code>1 color</code> / ... / <code>5 colors</code> : filter based on colors number</li>
+				<li>
+					<code>Guild</code> : relates to symbols
+					<img width="20" src="img/hd/WU.jpeg" alt="WU">
+					<img width="20" src="img/hd/RW.jpeg" alt="RW">
+					<img width="20" src="img/hd/UB.jpeg" alt="UB">
+					<img width="20" src="img/hd/BG.jpeg" alt="BG">
+					<img width="20" src="img/hd/RG.jpeg" alt="RG">
+					<img width="20" src="img/hd/UR.jpeg" alt="UR">
+					<img width="20" src="img/hd/WB.jpeg" alt="WB">
+					<img width="20" src="img/hd/BR.jpeg" alt="BR">
+					<img width="20" src="img/hd/GW.jpeg" alt="GW">
+				</li>
+				<li>
+					<code>X</code> : relates to symbol
+					<img width="20" src="img/hd/X.jpeg" alt="X">
+				</li>
+				<li>
+					<code>Life</code> : relates to symbols 
+					<img width="20" src="img/hd/WP.jpeg" alt="WP">
+					<img width="20" src="img/hd/UP.jpeg" alt="UP">
+					<img width="20" src="img/hd/BP.jpeg" alt="BP">
+					<img width="20" src="img/hd/GP.jpeg" alt="GP">
+					<img width="20" src="img/hd/RP.jpeg" alt="RP">
+				</li>
+			</ul>
+			
+			<h3>Devotion</h3>
+			<p>
+				Filters search results based on devotion value.
+				Devotion for a card color is calculated on number of mana symbol
+				in casting cost.
+			</p>
+			<p>
+				For instance, <code>Abhorrent Overlord</code> has 2 in devotion for black :
+				<img width="20" src="img/hd/5.jpeg" alt="5">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+			</p>
+			
+			<h3>Converted mana cost (CMC)</h3>
+			<p>
+				Filters seach results based on CMC : card casting cost mana sum
+			</p>
+			<p>
+				For instance, <code>Abhorrent Overlord</code> has 7 for CMC :
+				<img width="20" src="img/hd/5.jpeg" alt="5">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+			</p>
+			
+			<h3>Type</h3>
+			<p>
+				Filters search results based on type :
+			</p>
+			<ul>
+				<li>
+					<code>creature</code>
+				</li>
+				<li>
+					<code>enchantment</code>
+				</li>
+				<li>
+					<code>instant</code>
+				</li>
+				<li>
+					<code>human</code>
+				</li>
+				<li>
+					<code>artifact</code>
+				</li>
+				<li>
+					<code>sorcery</code>
+				</li>
+				<li>
+					<code>aura</code>
+				</li>
+				<li>
+					<code>legendary</code>
+				</li>
+				<li>
+					<code>wizard</code>
+				</li>
+				<li>
+					<code>land</code>
+				</li>
+				<li>
+					<code>soldier</code>
+				</li>
+				<li>
+					<code>warrior</code>
+				</li>
+				<li>
+					<code>spirit</code>
+				</li>
+				<li>
+					<code>elemental</code>
+				</li>
+				<li>
+					<code>beast</code>
+				</li>
+				<li>...</li>
+			</ul>
+			
+			<h3>Ability</h3>
+			<p>
+				Filters sear results based on ability :
+			</p>
+			<ul>
+				<li>
+					<code>Flying</code>
+				</li>
+				<li>
+					<code>Enchant</code>
+				</li>
+				<li>
+					<code>Trample</code>
+				</li>
+				<li>
+					<code>Haste</code>
+				</li>
+				<li>
+					<code>First Strike</code>
+				</li>
+				<li>
+					<code>Flash</code>
+				</li>
+				<li>
+					<code>Protection</code>
+				</li>
+				<li>
+					<code>Equip</code>
+				</li>
+				<li>
+					<code>Defender</code>
+				</li>
+				<li>
+					<code>Vigilance</code>
+				</li>
+				<li>
+					<code>Reach</code>
+				</li>
+				<li>
+					<code>Cycling</code>
+				</li>
+				<li>
+					<code>Morph</code>
+				</li>
+				<li>
+					<code>Shroud</code>
+				</li>
+				<li>
+					<code>Kicker</code>
+				</li>
+				<li>...</li>
+			</ul>
+			
+			<h3>Power</h3>
+			<p>
+				Filters search results based on creature power (from 0 to 15).
+			</p>
+			
+			<h3>Toughness</h3>
+			<p>
+				Filters search results based on creature toughness (from 0 to 15).
+			</p>
+			
+			<h3>Rarity</h3>
+			<p>
+				Filters search results based on rarity :
+			</p>
+			<ul>
+				<li>
+					<code>common</code>
+				</li>
+				<li>
+					<code>uncommon</code>
+				</li>
+				<li>
+					<code>rare</code>
+				</li>
+				<li>
+					<code>mythic</code>
+				</li>
+				<li>
+					<code>special</code> : promo cards, magazine gifts, builded decks
+				</li>
+				<li>
+					<code>land</code> : basic land
+				</li>
+				<li>
+					<code>c1</code> / <code>c2</code> / ... / <code>r3</code> /  : old classification (Legends set, The Dark set...)
+				</li>
+			</ul>
+			
+			<h3>Set</h3>
+			<p>
+				Filters search results based on sets.
+			</p>
+			
+			<h3>Format</h3>
+			<p>
+				Filters search results based on formats :
+			</p>
+			<ul>
+				<li>
+					<code>vintage</code> : Type 1
+				</li>
+				<li>
+					<code>legacy</code> : Type 1.5
+				</li>
+				<li>
+					<code>modern</code> : Type 1.M
+				</li>
+				<li>
+					<code>extended</code> : Type 1.X
+				</li>
+				<li>
+					<code>standard</code> : Type 2
+				</li>
+			</ul>
+			
+			<h3>Artist</h3>
+			<p>
+				Filters search results based on artist.
+			</p>
+			
+		</div>
+	
+		<div class="help-lang" lang="fr" style="display: none;">
+			<h1>Aide
+				<a href="javascript:void(0)" class="btn btn-success"><img width="20" src="img/country/usa.png" alt="EN US" /><img width="20" src="img/country/uk.png" alt="EN BG" /><span class="help-lang-txt">English, please !</span></a>
+			</h1>
+			<p>
+				Bienvenue sur ce moteur de recherche de carte Magic : The Gathering.
+			</p>
+			<p>
+				Ce moteur de recherche contient toutes les cartes jusqu'à la dernière extension Theros.
+			</p>
+			<p>
+				Il a été conçu pour que la recherche soit la plus simple et efficace grâce à :
+			</p>
+			<ul>
+				<li>une recherche textuelle</li>
+				<li>un filtrage par facette</li>
+			</ul>
+			<h2>Comment rechercher des cartes ?</h2>
+			
+			<h2>La recherche textuelle</h2>
+			<p>
+				Toutes les cartes ont été indexées en anglais, donc la recherche se fera en anglais.
+				Cepdendant, le titre de cartes est aussi disponible en français.
+			</p>
+			<p>
+				La recherche textuelle permet de rechercher des mots présents dans tout
+				le contenu textuel d'une carte (titre, description, type...).
+			</p>
+			<p>
+				La recherche textuelle fonctionne avec des mots entiers. Par exemple,
+				la recherche <code>elf enchantment</code> va retourner toutes les cartes
+				dont le contenu textuel contient <code>elf</code> ET <code>enchantment</code>.
+			</p>
+			<p>
+				Une autre exemple, avec une recherche en français sur le titre :
+				<code>contresort</code> va retourner les cartes <code>Contresort immédiat</code>
+				et <code>Contresort</code>.
+			</p>
+			
+			<h3>Caractère *</h3>
+			<p>
+				Le caractère <code>*</code> permet de rechercher des mots incomplets. Par exemple,
+			</p>
+			<ul>
+				<li>
+					la recherche <code>lo*us</code> va retourner des résultats contenant
+					le terme <code>lotus</code> et <code>locus</code>
+				</li>
+				<li>
+					la recherche <code>emra*</code> va retourner des résultats commençant
+					par <code>emra</code> et va retourner des résultats contenant <code>Emrakul</code>.
+				</li>
+			</ul>
+			
+			<h3>Caractère "</h3>
+			<p>
+				Le caractère <code>"</code> va permettre de rechercher un bloc de texte.
+				Par exemple, la recherche <code>"add three mana"</code> va retourner les cartes
+				ayant ce bloc de texte dont <code>Black Lotus</code>, <code>Vallon de Lotus</code>,
+				<code>Lotus doré</code>...
+			</p>
+			
+			<h2>Les facettes</h2>
+			<p>
+				Les facettes sont des filtres que vous allez pouvoir appliquer et cumuler sur vos recherches.
+			</p>
+			<p>
+				Par exemple, il existe une facette sur la couleur de la carte. En sélectionnant
+				<code>blue</code> de la facette <code>Color</code>, la recherche va être filtrée
+				pour ne sélectionner que les cartes de couleur bleue.
+			</p>
+			<p>
+				Il est possible de cumuler les filtres au sein d'une même facette ou d'une facette
+				différente. En cliquant, sur <code>green</code>, la recherche va être de nouveau
+				filtrée pour n'afficher que des cartes de couleurs bleue et verte.
+			</p>
+			<p>
+				De même, en cliquant sur <code>creature</code> de la facette <code>Type</code>,
+				la recherche va être de nouveau filtrée pour n'afficher que des cartes de
+				creatures de couleurs bleue et verte.
+			</p>
+			<p>
+				Le chiffre entre parenthèse à droite d'une facette correspond au nombre de
+				résultat correspondant. Ce chiffre est dynamique et correspond à la recherche courante.
+			</p>
+			<p>
+				Par exemple, lorsqu'il n'y aucune recherche ni filtre de facette,
+				<code>1</code> de la facette <code>Converted mana cost</code> indique 1612.
+				Cela veut dire qu'il y a 1612 carte ayant un cout converti en mana de 1.
+			</p>
+			<p>
+				Sur la recherche précédente (blue/green/creature), ce même filtre de facette indique 2.
+				Ce qui indique qu'il existe 2 cartes de creature verte et bleue ayant un
+				coût converti en mana de 1 (Biochangement et Bogle insaisissable). 
+			</p>
+			
+			<h3>Color — Couleur</h3>
+			<p>
+				Filtre la recherche sur la couleur de la carte :
+			</p>
+			<ul>
+				<li><code>White</code> / <code>Blue</code> / <code>Black</code> / <code>Red</code> / <code>Green</code> : filtre suivant la couleur</li>
+				<li><code>Uncolored</code> / <code>Gold</code> / <code>1 color</code> / ... / <code>5 colors</code> : filtre suivant le nombre de couleur</li>
+				<li>
+					<code>Guild</code> : correspond aux symboles
+					<img width="20" src="img/hd/WU.jpeg" alt="WU">
+					<img width="20" src="img/hd/RW.jpeg" alt="RW">
+					<img width="20" src="img/hd/UB.jpeg" alt="UB">
+					<img width="20" src="img/hd/BG.jpeg" alt="BG">
+					<img width="20" src="img/hd/RG.jpeg" alt="RG">
+					<img width="20" src="img/hd/UR.jpeg" alt="UR">
+					<img width="20" src="img/hd/WB.jpeg" alt="WB">
+					<img width="20" src="img/hd/BR.jpeg" alt="BR">
+					<img width="20" src="img/hd/GW.jpeg" alt="GW">
+				</li>
+				<li>
+					<code>X</code> : correspond au symbole
+					<img width="20" src="img/hd/X.jpeg" alt="X">
+				</li>
+				<li>
+					<code>Life</code> : correspond aux symboles
+					<img width="20" src="img/hd/WP.jpeg" alt="WP">
+					<img width="20" src="img/hd/UP.jpeg" alt="UP">
+					<img width="20" src="img/hd/BP.jpeg" alt="BP">
+					<img width="20" src="img/hd/GP.jpeg" alt="GP">
+					<img width="20" src="img/hd/RP.jpeg" alt="RP">
+				</li>
+			</ul>
+			
+			<h3>Devotion — Dévotion</h3>
+			<p>
+				Filtre les permanents selon leur valeur en dévotion.
+				La dévotion d'une couleur correspond au nombre de symbole
+				de cette couleur dans le coût d'invocation de la carte.
+			</p>
+			<p>
+				Par exemple, <code>Suzerain abject</code> a une dévotion de 2 en noir :
+				<img width="20" src="img/hd/5.jpeg" alt="5">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+			</p>
+			
+			<h3>Converted mana cost — Coût converti de mana (CMC)</h3>
+			<p>
+				Filtre les cartes suivant leurs CMC : total de mana
+				correspondant au coût de lancement d'un sort.
+			</p>
+			<p>
+				Par exemple, <code>Suzerain abject</code> a un CMC de 7 :
+				<img width="20" src="img/hd/5.jpeg" alt="5">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+				<img width="20" src="img/hd/B.jpeg" alt="B">
+			</p>
+			
+			<h3>Type</h3>
+			<p>
+				Filtre les cartes suivant leurs types :
+			</p>
+			<ul>
+				<li>
+					<code>creature</code>
+				</li>
+				<li>
+					<code>enchantment</code>
+				</li>
+				<li>
+					<code>instant</code>
+				</li>
+				<li>
+					<code>human</code>
+				</li>
+				<li>
+					<code>artifact</code>
+				</li>
+				<li>
+					<code>sorcery</code>
+				</li>
+				<li>
+					<code>aura</code>
+				</li>
+				<li>
+					<code>legendary</code>
+				</li>
+				<li>
+					<code>wizard</code>
+				</li>
+				<li>
+					<code>land</code>
+				</li>
+				<li>
+					<code>soldier</code>
+				</li>
+				<li>
+					<code>warrior</code>
+				</li>
+				<li>
+					<code>spirit</code>
+				</li>
+				<li>
+					<code>elemental</code>
+				</li>
+				<li>
+					<code>beast</code>
+				</li>
+				<li>...</li>
+			</ul>
+			
+			<h3>Ability — Capacité</h3>
+			<p>
+				Filtre les cartes suivants leurs capacités :
+			</p>
+			<ul>
+				<li>
+					<code>Flying</code>
+				</li>
+				<li>
+					<code>Enchant</code>
+				</li>
+				<li>
+					<code>Trample</code>
+				</li>
+				<li>
+					<code>Haste</code>
+				</li>
+				<li>
+					<code>First Strike</code>
+				</li>
+				<li>
+					<code>Flash</code>
+				</li>
+				<li>
+					<code>Protection</code>
+				</li>
+				<li>
+					<code>Equip</code>
+				</li>
+				<li>
+					<code>Defender</code>
+				</li>
+				<li>
+					<code>Vigilance</code>
+				</li>
+				<li>
+					<code>Reach</code>
+				</li>
+				<li>
+					<code>Cycling</code>
+				</li>
+				<li>
+					<code>Morph</code>
+				</li>
+				<li>
+					<code>Shroud</code>
+				</li>
+				<li>
+					<code>Kicker</code>
+				</li>
+				<li>...</li>
+			</ul>
+			
+			<h3>Power — Force</h3>
+			<p>
+				Filtre les créatures suivant leurs forces (va de 0 à 15).
+			</p>
+			
+			<h3>Toughness — Endurance</h3>
+			<p>
+				Filtre les créatures suivant leurs endurances (va 0 à 15).
+			</p>
+			
+			<h3>Rarity — Rareté</h3>
+			<p>
+				Filtre les cartes suivant leurs raretés :
+			</p>
+			<ul>
+				<li>
+					<code>common</code> : commune
+				</li>
+				<li>
+					<code>uncommon</code> : peu commune
+				</li>
+				<li>
+					<code>rare</code> : rare
+				</li>
+				<li>
+					<code>mythic</code> : mythique
+				</li>
+				<li>
+					<code>special</code> : cartes promotionnelles, offertes dans des magazines, présentes dans des decks préconstruits
+				</li>
+				<li>
+					<code>land</code> : terrain de base
+				</li>
+				<li>
+					<code>c1</code> / <code>c2</code> / ... / <code>r3</code> /  : ancienne classification (éditions Legends, The Dark...)
+				</li>
+			</ul>
+			
+			<h3>Set — Édition</h3>
+			<p>
+				Filtre les cartes suivant les éditions.
+			</p>
+			
+			<h3>Format</h3>
+			<p>
+				Filtre les cartes suivant leurs formats :
+			</p>
+			<ul>
+				<li>
+					<code>vintage</code> : anciennement Type 1
+				</li>
+				<li>
+					<code>legacy</code> : anciennement Type 1.5
+				</li>
+				<li>
+					<code>modern</code> : anciennement Type 1.M
+				</li>
+				<li>
+					<code>extended</code> : anciennement Type 1.X
+				</li>
+				<li>
+					<code>standard</code> : anciennement Type 2
+				</li>
+			</ul>
+			
+			<h3>Artist — Artiste</h3>
+			<p>
+				Filtre les cartes suivant leurs dessinateurs.
+			</p>
+			
+		</div>
+	</div>
+
+    <div class="facet-view-simple">
+		<h1>
+			Magic card search engine
+			<a href="https://play.google.com/store/apps/details?id=fr.gstraymond" target="_blank" class="google-play-logo">
+			  <img alt="Get it on Google Play"
+			       src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
+			</a>
+			<a href="javascript:void(0)" class="btn btn-small btn-info help-button">
+				<i class="icon-info-sign icon-white"></i> Help !
+			</a>
+		</h1>
+		<hr />
+    </div>
+    
+    <div class="disclaimer">
+	    <hr />
+    	<p>
+			The information presented on this site about Magic: The Gathering, both literal and graphical, is copyrighted by Wizards of the Coast.
+			This website is not produced, endorsed, supported, or affiliated with Wizards of the Coast.
+		</p>
+    </div>
+
+	<script type="text/javascript">	
+	/*
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-36595811-2']);
+	  _gaq.push(['_trackPageview']);
+	
+	(function() {
+	   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	 })();
+ 	*/
+	</script>
+</body>
+</html>

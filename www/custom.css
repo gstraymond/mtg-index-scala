@@ -1,0 +1,100 @@
+.facet-view-simple, .disclaimer{
+    width: 800px;
+    margin: 20px auto 0 auto;
+}
+
+.facet-view-simple h1 {
+	margin-left: 203px;
+}
+
+.facetview_learnmore,
+.facetview_order,
+.facetview_howmany {
+	display: none;
+}
+
+pre {
+	margin-top: 10px;
+	margin-left: 115px;
+	font-size: 13px;
+	word-break: normal;
+}
+
+.rawPublications {
+	margin-top: 5px;
+	margin-left: 115px;
+}
+
+.rawPublications div {
+	float: left;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+
+.rawPublications a {
+	color: white;
+	text-decoration: none;
+}
+
+.fancybox-skin {
+	background: transparent;
+}
+
+.fancybox-opened .fancybox-skin {	
+	box-shadow: 0 0 0;
+}
+
+strong.title {
+	font-size: 16px;
+	line-height: 24px;
+}
+
+.help {
+	width: 800px;
+	padding: 10px;
+	text-align: justify;
+}
+
+.help-lang .btn-success {
+	height: 18px;
+}
+
+.fancybox-skin .help {
+	background: white;
+}
+
+.help-lang-txt {
+	float: right;
+	padding-left: 10px;
+}
+
+.disclaimer {
+	clear: both;
+	color: gray;
+}
+
+.disclaimer p {
+	font-size: 10px;
+}
+
+.thumbnail {
+	background: black;
+	padding: 2px;
+	border: 0;
+}
+
+.thumbnail,
+.showmore {
+	cursor: pointer;
+}
+
+.google-play-logo {
+	position: relative;
+	top: 6px;
+}
+
+.rawPublications img {
+	position: relative;
+	top: 2px;
+	height: 20px;
+}
