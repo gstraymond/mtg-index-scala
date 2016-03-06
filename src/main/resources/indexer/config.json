@@ -163,6 +163,19 @@
               "index": "not_analyzed"
             }
           }
+        },
+        "priceRanges": {
+          "type": "multi_field",
+          "fields": {
+            "priceRanges": {
+              "type": "string",
+              "index": "analyzed"
+            },
+            "exact": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
         }
       }
     }
