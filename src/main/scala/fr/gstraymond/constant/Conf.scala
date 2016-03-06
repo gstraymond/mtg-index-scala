@@ -13,6 +13,11 @@ object Conf {
     p
   }
 
-  def pictureLocation = Option(props.getProperty("pictureLocation")).getOrElse("/root/Dropbox")
+  def pictureLocation =
+    Option(props.getProperty("pictureLocation"))
+      .getOrElse("/root/Dropbox")
 
+  def coloredLogs =
+    Option(props.getProperty("coloredLogs"))
+      .exists(_.toBoolean)
 }
