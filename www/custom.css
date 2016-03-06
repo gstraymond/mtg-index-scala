@@ -98,3 +98,10 @@ strong.title {
 	top: 2px;
 	height: 20px;
 }
+
+.rawPublications .pic .label-info {
+	position: relative;
+	top: -5px;
+	margin-left: 3px;
+	margin-right: 5px;
+}

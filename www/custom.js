@@ -84,11 +84,15 @@ jQuery(document).ready(function($) {
 		 	        "pre": "|",
 		        	"field": "publications.editionImage",
 		    	},
-		 	    {
-		 	        "pre": "|",
-		        	"field": "publications.image",
-			 	    "post": "</div>",
-		    	}
+                {
+                    "pre": "|",
+                    "field": "publications.price",
+                },
+                {
+                    "pre": "|",
+                    "field": "publications.image",
+                    "post": "</div>",
+                }
 		    ]
 	     ]
 	  });
@@ -117,15 +121,30 @@ $(document).ajaxComplete(function() {
 		var editions = textSplit[0].split(',');
 		var rarities = textSplit[1].split(',');
 		var images = textSplit[2].split(',');
-		var editionImages = 'null';
-		if (textSplit.length == 4) {
+		var prices = textSplit[3].split(',');
+		var editionImages = 'undefined';
+		if (textSplit.length == 5) {
 			editionImages = textSplit[2].split(',');
-			images = textSplit[3].split(',');
-		}
+			images = textSplit[4].split(',');
+		} else if (textSplit.length == 4) {
+		    prices = "undefined";
+            editionImages = textSplit[2].split(',');
+            images = textSplit[3].split(',');
+        }
+
+        /*
+		console.log("textSplit", textSplit)
+		console.log("editions", editions)
+		console.log("rarities", rarities)
+		console.log("images", images)
+		console.log("prices", prices)
+		console.log("editionImages", editionImages)
+        */
 
 		var html = ''
 		var showMoreLink = false;
 		editions.forEach(function(element, index, array) {
+		    var edition = element.trim()
 			var title = element + " - " + rarities[index];
 			var cssClass = '';
 			if (index > 19) {
@@ -133,23 +152,29 @@ $(document).ajaxComplete(function() {
 				showMoreLink = true;
 			}
 
-			if (editionImages[index].trim() !== "undefined" && editionImages[index].indexOf('null') == -1) {
-				html += "<div class='" + cssClass + "'>";
+			var price = prices[index];
+			if (prices === "undefined" || price.trim() === "undefined") price = ""
+			else price = "<span class=\"label label-info\">$" + round(price) + "</span>"
+
+			if (editionImages !== "undefined" && editionImages[index].trim() !== "undefined") {
+				html += "<div class='pic " + cssClass + "'>";
 				html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
-				html += "<img src='" + editionImages[index] + "' alt='" + title + "'/> ";
+				html += "<img src='" + editionImages[index] + "' alt='" + title + "'/>" + price;
 				html += "</a>";
 				html += "</div> ";
 			} else {
 				html += "<div class='label label-important" + cssClass + "'>";
 				html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
-				html += element;
+				html += edition + price;
 				html += "</a>";
 				html += "</div> ";
 			}
 		});
+
 		if (showMoreLink) {
 			html += "<div class='label label-warning showmore'>Show more ...</div>"
 		}
+
 		$(this).html(html);
 	});
 
@@ -217,4 +242,27 @@ function getLifeColors() {
 
 function getSpecialSymbols() {
 	return ['T', 'Q', 'S'];
+}
+
+function round(value) {
+  var exp = 2;
+  var valueAsDouble = parseFloat(value)
+  if (valueAsDouble > 1000) exp = -2
+  else if (valueAsDouble > 100) exp = -1
+  else if (valueAsDouble > 10) exp = 0
+  else if (valueAsDouble > 1) exp = 1
+
+  value = +value;
+  exp = +exp;
+
+  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
+    return NaN;
+
+  // Shift
+  value = value.toString().split('e');
+  value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+
+  // Shift back
+  value = value.toString().split('e');
+  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
 }
