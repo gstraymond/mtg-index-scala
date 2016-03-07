@@ -1,6 +1,7 @@
 package fr.gstraymond.task
 
 import fr.gstraymond.dl.{CardPictureDownloader, EditionPictureDownloader}
+import fr.gstraymond.indexer.EsIndexer
 import fr.gstraymond.model._
 import fr.gstraymond.parser.{CardConverter, OracleConverter}
 import fr.gstraymond.scraper._
@@ -103,9 +104,9 @@ object DoZeMagicTask extends Task[Seq[MTGCard]] {
       mtgCards = CardConverter.convert(rawCards, scrapedCards, formats)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
-      //_ <- EsIndexer.delete()
-      //_ <- EsIndexer.configure()
-      //_ <- EsIndexer.index(mtgCards)
+      _ <- EsIndexer.delete()
+      _ <- EsIndexer.configure()
+      _ <- EsIndexer.index(mtgCards)
     } yield {
       storeRawCards(rawCards)
       storeFormats(formats)
