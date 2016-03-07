@@ -16,9 +16,9 @@ object EsIndexer extends Log {
   val index = "magic"
   val `type` = "card"
   val indexPath = s"http://$host/$index"
-  val bulkPath = s"http://$host/_bulk"
+  val bulkPath = s"$indexPath/${`type`}/_bulk"
 
-  val bulk = 200
+  val bulk = 500
 
   def delete(): Future[Unit] = {
     Http {
@@ -59,36 +59,39 @@ object EsIndexer extends Log {
   }
 
   def index(cards: Seq[MTGCard]): Future[Unit] = {
-    Future.sequence {
-      var count = 0
-      val grouped = cards.grouped(bulk).toSeq
-      val groupedSize = grouped.size
-      val cardSize = cards.size
-      grouped.zipWithIndex.map { case (group, i) =>
-        val body = group.flatMap { card =>
+    val grouped = cards.grouped(bulk).toStream
+    val groupedSize = grouped.size
+    val cardSize = cards.size
 
-          val indexJson = Json.obj("index" -> Json.obj(
-            "_index" -> index,
-            "_type" -> `type`,
-            "_id" -> norm(card.title)
-          ))
-
-          import fr.gstraymond.model.MTGCardFormat._
-          val cardJson = Json.toJson(card)
-
-          Seq(indexJson, cardJson).map(Json.stringify)
-        }.mkString("\n") + "\n"
-
-        Http {
-          url(bulkPath).POST << body OK as.String
-        }.map { response =>
-          count = count + group.size
-          log.info(s"bulk done... ${i + 1}/$groupedSize - $count/$cardSize")
+    grouped
+      .zipWithIndex
+      .foldLeft(Future.successful(0)) { case (acc, (group, i)) =>
+        for {
+          count <- acc
+          _ <- {
+            Http {
+              url(bulkPath).POST << buildBody(group) OK as.String
+            }.map { _ =>
+              log.info(s"prcessed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
+            }
+          }
+        } yield {
+          count + group.size
         }
       }
-    }.map { _ =>
-      log.info(s"bulk finished !")
-    }
+      .map { _ => log.info(s"bulk finished !") }
+  }
+
+  private def buildBody(group: Seq[MTGCard]): String = {
+    group.flatMap { card =>
+
+      val indexJson = Json.obj("index" -> Json.obj("_id" -> norm(card.title)))
+
+      import fr.gstraymond.model.MTGCardFormat._
+      val cardJson = Json.toJson(card)
+
+      Seq(indexJson, cardJson).map(Json.stringify)
+    }.mkString("\n") + "\n"
   }
 
   private def norm(string: String) = StringUtils.normalize(string)
