@@ -105,3 +105,8 @@ strong.title {
 	margin-left: 3px;
 	margin-right: 5px;
 }
+
+img.mtgIcon {
+    position: relative;
+    top: 4px;
+}

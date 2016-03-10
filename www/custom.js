@@ -214,7 +214,7 @@ $(document).ajaxComplete(function() {
 
 		getColors().concat(getSpecialSymbols()).forEach( function(color) {
 			var re = new RegExp('\\{' + color + '\\}', 'g');
-			html = html.replace(re, '<img alt="' + color + '" src="img/hd/' + color + '.jpeg" title="' + color + '" width="16">');
+			html = html.replace(re, '<img class="mtgIcon" alt="' + color + '" src="img/hd/' + color + '.jpeg" title="' + color + '" width="16">');
 		});
 		$(this).html(html);
 	});
@@ -223,7 +223,7 @@ $(document).ajaxComplete(function() {
 function getColors() {
 	return getGuildColors().concat(getLifeColors()).concat([
 		'2B', '2U', '2R', '2W', '2G',
-		'B',  'U',  'R',  'W',  'G',  'X'
+		'B',  'U',  'R',  'W',  'G',  'X',  'C'
 	]).concat(range(16, 0));
 }
 
