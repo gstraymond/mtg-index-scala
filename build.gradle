@@ -151,6 +151,13 @@ task doZeMagic(type: JavaExec, dependsOn: classes) {
     maxHeapSize = '512m'
 }
 
+task gif2png(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.Gif2PngConvertTask'
+    description "convert gif 2 png"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.11'
 }

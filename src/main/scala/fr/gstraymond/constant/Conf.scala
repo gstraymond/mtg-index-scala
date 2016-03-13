@@ -6,11 +6,11 @@ import java.util.Properties
 object Conf {
 
   val props = {
-    val p = new Properties()
+    val properties = new Properties()
     Option(getClass.getResource("/conf.properties")).foreach { resource =>
-      p.load(new FileInputStream(new File(resource.getFile)))
+      properties.load(new FileInputStream(new File(resource.getFile)))
     }
-    p
+    properties
   }
 
   def pictureLocation =
