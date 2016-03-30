@@ -73,6 +73,11 @@ class CardConverterColorsTest extends Specification {
       _colors("8 C C") ===
         Seq(COLORLESS.lbl, UNCOLORED)
     }
+
+    "Abstruse Interference" in {
+      CardConverter._colors(Some("2 U"), Seq("Devoid (This card has no color.)")).sorted ===
+        Seq(UNCOLORED)
+    }
   }
 
   private def _colors(cc: String) = CardConverter._colors(Some(cc), Seq.empty).sorted

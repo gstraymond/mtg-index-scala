@@ -1,7 +1,7 @@
 package fr.gstraymond.parser
 
 import fr.gstraymond.constant.Color._
-import fr.gstraymond.constant.{URIs, Abilities, Color}
+import fr.gstraymond.constant.{Abilities, Color, URIs}
 import fr.gstraymond.model._
 import fr.gstraymond.utils.{Log, StringUtils}
 
@@ -86,27 +86,28 @@ object CardConverter extends Log {
   }
 
   def _colors(maybeCastingCost: Option[String], hints: Seq[String]) = {
-    maybeCastingCost.map { castingCost =>
-      def find(colors: Seq[Color]) = colors.filter(c => castingCost.contains(c.symbol))
+    val uncoloredHint = hints.contains("Devoid (This card has no color.)")
+    maybeCastingCost -> uncoloredHint match {
+      case (Some(castingCost), false) =>
+        def find(colors: Seq[Color]) = colors.filter(c => castingCost.contains(c.symbol))
 
-      val colorHint = hints.find(_.contains("color indicator")).getOrElse("")
-      val hintSymbols = ONLY_COLORED_SYMBOLS.map(_.lbl).filter(colorHint.contains)
+        val colorHint = hints.find(_.contains("color indicator")).getOrElse("")
+        val hintSymbols = ONLY_COLORED_SYMBOLS.map(_.lbl).filter(colorHint.contains)
 
-      val colorCount = Math.max(hintSymbols.size, find(ONLY_COLORED_SYMBOLS).size)
+        val colorCount = Math.max(hintSymbols.size, find(ONLY_COLORED_SYMBOLS).size)
 
-      val colorNumber = colorCount match {
-        case 0 => Seq(UNCOLORED)
-        case 1 => Seq(MONOCOLORED)
-        case s => Seq(MULTICOLORED(s), GOLD)
-      }
+        val colorNumber = colorCount match {
+          case 0 => Seq(UNCOLORED)
+          case 1 => Seq(MONOCOLORED)
+          case s => Seq(MULTICOLORED(s), GOLD)
+        }
 
-      val guild = if (GUILDS.exists(castingCost.contains)) Seq(GUILD) else Seq.empty
+        val guild = if (GUILDS.exists(castingCost.contains)) Seq(GUILD) else Seq.empty
 
-      val symbols = find(ALL_COLORS_SYMBOLS).map(_.lbl)
+        val symbols = find(ALL_COLORS_SYMBOLS).map(_.lbl)
 
-      colorNumber ++ guild ++ symbols ++ hintSymbols
-    }.getOrElse {
-      Seq(UNCOLORED)
+        colorNumber ++ guild ++ symbols ++ hintSymbols
+      case _ => Seq(UNCOLORED)
     }
   }
 
@@ -177,7 +178,7 @@ object CardConverter extends Log {
     case abilities => abilities
   }
 
-  def _formats(rawCard: RawCard,scrapedCards: Seq[ScrapedCard], formats: Seq[ScrapedFormat]) = {
+  def _formats(rawCard: RawCard, scrapedCards: Seq[ScrapedCard], formats: Seq[ScrapedFormat]) = {
     formats.filter { format =>
       lazy val isInSet = format.availableSets.isEmpty || format.availableSets.exists(scrapedCards.map(_.edition.name).contains)
       lazy val isBanned = format.bannedCards.exists {
@@ -200,8 +201,9 @@ object CardConverter extends Log {
 
   def _hiddenHints(rawCard: RawCard) = {
     rawCard.description.collect {
+      case desc@"Devoid (This card has no color.)" => Seq(desc)
       case desc if desc.contains("[") && desc.contains("]") =>
-        desc.split("\\[")(1).split("\\]").head.split("\\.")
+        desc.split("\\[")(1).split("\\]").head.split("\\.").toSeq
     }.flatten
   }
 
