@@ -43,6 +43,13 @@ task cardConvert(type: JavaExec, dependsOn: classes) {
     maxHeapSize = '512m'
 }
 
+task setCardConvert(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.SetCardConvertTask'
+    description "convert mtg card -> set mtg card"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
 task fullScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.FullScrapTask'
     description "Scrap cards + prices"

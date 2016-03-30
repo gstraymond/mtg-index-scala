@@ -36,8 +36,9 @@ trait Task[A] extends Log {
 
   def process: Future[A]
 
-  import fr.gstraymond.model.MTGCardFormat._
   import fr.gstraymond.model.RawCardFormat._
+  import fr.gstraymond.model.MTGCardFormat._
+  import fr.gstraymond.model.MTGSetCardFormat._
   import fr.gstraymond.model.ScrapedCardFormat._
   import fr.gstraymond.model.ScrapedEditionFormat._
   import fr.gstraymond.model.ScrapedFormatFormat._
@@ -90,6 +91,16 @@ trait Task[A] extends Log {
     val file = new File(s"${FileUtils.cachePath}/stdCodes.json")
     FileUtils.storeJson(file, Json.toJson(cache))
     cache
+  }
+
+  protected def storeMTGSetCards(cardByEditions: Map[String, Seq[MTGSetCard]]) = {
+    mkDir(FileUtils.outputPath)
+    cardByEditions.foreach { case (edition, mtgSetCards) =>
+      val file = new File(s"${FileUtils.outputPath}/$edition.json")
+      FileUtils.storeJson(file, Json.toJson(mtgSetCards))
+    }
+
+    cardByEditions
   }
 
   protected def loadRawCards: Seq[RawCard] = {

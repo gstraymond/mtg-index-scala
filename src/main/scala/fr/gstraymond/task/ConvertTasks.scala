@@ -1,7 +1,7 @@
 package fr.gstraymond.task
 
-import fr.gstraymond.model.{MTGCard, RawCard}
-import fr.gstraymond.parser.{OracleConverter, CardConverter, OracleRawCardConverter, OracleRawParser}
+import fr.gstraymond.model.{MTGSetCard, MTGCard, RawCard}
+import fr.gstraymond.parser._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -25,5 +25,14 @@ object CardConvertTask extends Task[Seq[MTGCard]] {
     CardConverter.convert(loadRawCards, loadScrapedCards, loadFormats)
   }.map {
     storeMTGCards
+  }
+}
+
+object SetCardConvertTask extends Task[Map[String, Seq[MTGSetCard]]] {
+
+  override def process = Future.successful {
+    MTGSetCardConverter.convert(loadMTGCards)
+  }.map {
+    storeMTGSetCards
   }
 }
