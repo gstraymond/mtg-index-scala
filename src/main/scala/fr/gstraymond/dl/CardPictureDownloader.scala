@@ -12,9 +12,17 @@ import scala.concurrent.Future
 
 object CardPictureDownloader extends MagicCardsInfoScraper with Log {
 
-  def download(cards: Seq[MTGCard]): Future[Unit] = Future.sequence {
-    cards.flatMap(download)
-  }.map(_ => ())
+  def download(cards: Seq[MTGCard]): Future[Unit] = {
+    val init = Future.successful(())
+    cards.flatMap(download).foldLeft(init) { (acc, f) =>
+      for {
+        _ <- acc
+        _ <- f
+      } yield {
+        ()
+      }
+    }
+  }
 
   def download(card: MTGCard): Seq[Future[Unit]] = {
     card.publications.map { publication =>
@@ -24,7 +32,7 @@ object CardPictureDownloader extends MagicCardsInfoScraper with Log {
 
       if (!file.exists()) {
         log.warn(s"picture not found: [${file.getAbsoluteFile}] ${card.title} - ${publication.edition}")
-
+        Thread.sleep(100)
         val path = s"/scans/en/${publication.editionCode}/${publication.collectorNumber}.jpg"
         get(path).map {
           case Array() =>
