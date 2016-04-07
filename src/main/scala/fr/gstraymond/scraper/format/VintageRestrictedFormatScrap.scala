@@ -10,8 +10,8 @@ object VintageRestrictedFormatScrap extends FormatScrap {
 
   override def restrictedCards(doc: Document) = {
     doc
-      .select("table").asScala
-      .filter(_.select("ul a.autocardhref").asScala.nonEmpty).head
-      .select("ul a.autocardhref").asScala.map(_.text())
+      .select("#mw-content-text ul").asScala
+      .filter(_.select("a.autocardhref").asScala.nonEmpty)(1)
+      .select("a.autocardhref").asScala.map(_.text())
   }
 }
