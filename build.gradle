@@ -23,6 +23,7 @@ dependencies {
     runtime "org.codehaus.groovy:groovy:2.4.+"
     compile 'org.jsoup:jsoup:1.8.+'
     compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.11.+"
+    compile "eu.bitwalker:UserAgentUtils:1.+"
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"
@@ -158,9 +159,18 @@ task doZeMagic(type: JavaExec, dependsOn: classes) {
     maxHeapSize = '512m'
 }
 
+// UTILS
+
 task gif2png(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.Gif2PngConvertTask'
     description "convert gif 2 png"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task parseLogs(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.ParseLogTask'
+    description "parse logs"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
