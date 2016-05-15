@@ -208,7 +208,9 @@ object CardConverter extends Log {
   }
 
   def _devotions(rawCard: RawCard, maybeCastingCost: Option[String]) = {
-    val isPermanent = Seq("Instant", "Sorcery").forall(!rawCard.`type`.contains(_))
+    val isPermanent = Seq("Instant", "Sorcery").forall { t =>
+      rawCard.`type`.forall { !_.contains(t) }
+    }
     isPermanent -> maybeCastingCost match {
       case (true, Some(castingCost)) =>
         ONLY_COLORED_SYMBOLS

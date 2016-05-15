@@ -21,6 +21,20 @@ class CardConverterDevotionTest extends Specification {
       CardConverter._devotions(c, None) === Seq.empty
     }
 
+    "Eye of Nowhere" should {
+      "Nope" in {
+        val c = RawCard(
+          title = Some("Eye of Nowhere"),
+          castingCost = Some("U U"),
+          `type` = Some("Sorcery -- Arcane"),
+          powerToughness = None,
+          description = Seq.empty,
+          editionRarity = Seq.empty
+        )
+        CardConverter._devotions(c, Some("U U")) === Seq.empty
+      }
+    }
+
     "Zuran Spellcaster" in {
       _devotion("2 U") === Seq(1)
     }
