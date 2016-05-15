@@ -13,4 +13,6 @@ appender("STDOUT", ConsoleAppender) {
     }
 }
 
-root(INFO, ["STDOUT"])
+logger 'com.ning', WARN
+
+root(DEBUG, ["STDOUT"])
