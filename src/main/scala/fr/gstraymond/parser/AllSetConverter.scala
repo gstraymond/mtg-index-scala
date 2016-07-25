@@ -13,6 +13,8 @@ object AllSetConverter extends Log {
 
   private val dateParser = new SimpleDateFormat("YYYY-MM-DD")
 
+  val editionsCodeWithoutImage = Seq("CEI", "CED", "ATH", "ITP", "DKM", "RQS", "DPA", "CST", "MGB", "CPK")
+
   def convert(
     loadAllSet: Map[String, MTGJsonEdition],
     formats: Seq[ScrapedFormat],
@@ -44,7 +46,7 @@ object AllSetConverter extends Log {
         dateParser.parse(edition.releaseDate)
       }.map { case (card, edition) =>
         val urlTitle = StringUtils.normalize(card.name)
-        val codes = Seq(Some(edition.code), edition.magicCardsInfoCode, edition.gathererCode).flatten
+        val codes = Seq(Some(edition.code), edition.magicCardsInfoCode, edition.gathererCode).flatten.distinct
         (card, edition, _price(urlTitle, codes, priceMap))
       }
       val cards = groupedCardsSorted.map(_._1)
@@ -80,7 +82,7 @@ object AllSetConverter extends Log {
           val rarityCode = rarity.head.toString
           val stdEditionCode = edition.gathererCode.orElse(Some(edition.code).filter { code =>
             !(code.length == 4 && code.startsWith("p")) &&
-              !Seq("CEI", "CED", "ATH", "ITP", "DKM", "RQS", "DPA", "CST").contains(code)
+              !editionsCodeWithoutImage.contains(code)
           })
           Publication(
             collectorNumber = card.number,
@@ -110,7 +112,8 @@ object AllSetConverter extends Log {
         hiddenHints = hints,
         devotions = CardConverter._devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
-        flavor = cards.find(_.flavor.nonEmpty).flatMap(_.flavor) // FIXME multiple flavors
+        flavor = cards.find(_.flavor.nonEmpty).flatMap(_.flavor), // FIXME multiple flavors
+        layout = firstCard.layout
       )
     }.toSeq
 
@@ -155,7 +158,8 @@ object AllSetConverter extends Log {
     "pREL" -> "prm-rel",
     "pCMP" -> "prm-chp",
     "pGPX" -> "prm-gpp",
-    "pPRO" -> "prm-ptp"
+    "pPRO" -> "prm-ptp",
+    "HOP" -> "pc1"
     // prm-msc ?
     // prm-spo ?
   )

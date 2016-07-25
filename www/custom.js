@@ -19,6 +19,7 @@ jQuery(document).ready(function($) {
 	        {'field': 'devotions', 			'display': 'Devotion'},
 	        {'field': 'convertedManaCost',	'display': 'Converted mana cost'},
 	        {'field': 'type',				'display': 'Type'},
+	        {'field': 'layout.exact',		'display': 'Layout'},
 	        {'field': 'abilities.exact',	'display': 'Ability'},
 	        {'field': 'power',				'display': 'Power'},
 	        {'field': 'toughness',			'display': 'Toughness'},
@@ -145,21 +146,22 @@ $(document).ajaxComplete(function() {
 			}
 
 			var price = prices[index];
-			if (typeof price === "undefined" || price === "undefined") price = ""
+			if (isEmpty(price)) price = ""
 			else price = "<span class=\"label label-info\">$" + round(price) + "</span>"
 
             var editionImage = editionImages[index]
-			if (typeof editionImage === "undefined" || editionImage === "undefined") {
+            var image = images[index]
+			if (isEmpty(editionImage)) {
 				html += "<div class='label label-important" + cssClass + "'>";
-				html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
+				if (!isEmpty(image)) html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
 				html += edition + price;
-				html += "</a>";
+				if (!isEmpty(image)) html += "</a>";
 				html += "</div> ";
 			} else {
 				html += "<div class='pic " + cssClass + "'>";
-				html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
+				if (!isEmpty(image)) html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
 				html += "<img src='" + editionImage + "' alt='" + title + "'/>" + price;
-				html += "</a>";
+				if (!isEmpty(image)) html += "</a>";
 				html += "</div> ";
 			}
 		});
@@ -212,6 +214,10 @@ $(document).ajaxComplete(function() {
 		$(this).html(html);
 	});
 });
+
+function isEmpty(elem) {
+    return typeof elem === "undefined" || elem === "undefined"
+}
 
 function extract(field, data) {
     for (index in data) {

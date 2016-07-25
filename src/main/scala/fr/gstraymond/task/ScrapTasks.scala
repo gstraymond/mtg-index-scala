@@ -124,7 +124,18 @@ object AllSetScrapTask extends Task[Unit] {
 }
 
 object AllSetConvertTask extends Task[Seq[MTGCard]] {
-  override def process = AllSetConverter.convert(loadAllSet, loadFormats, loadPrices)
+  override def process = {
+    for {
+      mtgCards <- AllSetConverter.convert(loadAllSet, loadFormats, loadPrices)
+      _ <- EditionPictureDownloader.download(mtgCards)
+      _ <- CardPictureDownloader.download(mtgCards)
+      _ <- EsIndexer.delete()
+      _ <- EsIndexer.configure()
+      _ <- EsIndexer.index(mtgCards)
+    } yield {
+      storeMTGCards(mtgCards)
+    }
+  }
 }
 
 object DEALTask extends Task[Seq[MTGCard]] {

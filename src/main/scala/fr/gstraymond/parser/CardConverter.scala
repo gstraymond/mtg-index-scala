@@ -44,7 +44,8 @@ object CardConverter extends Log {
             hiddenHints = hints,
             devotions = _devotions(rawCard.`type`, castingCost),
             blocks = Seq.empty,
-            flavor = None
+            flavor = None,
+            layout = ""
           )
         }.orElse {
           log.error(s"title not found: $title - $rawCard")

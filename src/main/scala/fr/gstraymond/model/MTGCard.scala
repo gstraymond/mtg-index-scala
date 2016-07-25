@@ -22,7 +22,8 @@ case class MTGCard(
   hiddenHints: Seq[String],
   devotions: Seq[Int],
   blocks: Seq[String],
-  flavor: Option[String]
+  flavor: Option[String],
+  layout: String
 )
 
 object MTGCardFormat {

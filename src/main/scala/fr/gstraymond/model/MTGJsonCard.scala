@@ -38,11 +38,6 @@ case class MTGJsonForeignName(
   name: String
 )
 
-object Layouts extends Enumeration{
-  type Layouts = Value
-  val normal, split, flip, doubleFaced, token, plane, scheme, phenomenon, leveler, vanguard = Value
-}
-
 object MTGJsonFormats {
   implicit val mtgJsonForeignNameFormat = Json.format[MTGJsonForeignName]
   implicit val mtgJsonCardFormat = Json.format[MTGJsonCard]
