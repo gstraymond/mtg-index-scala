@@ -141,7 +141,7 @@ object PriceScraper extends MTGGoldFishScraper {
     }.toMap ++ editionMapping
 
 
-    val mutablePrices = mutable.Map() ++ cardToPrice.toMap
+    val mutablePrices = mutable.Map() ++ cardToPrice
     val result = cards
       .map { card =>
         val editionCode = editionCodeMap.getOrElse(card.edition.code, card.edition.code)

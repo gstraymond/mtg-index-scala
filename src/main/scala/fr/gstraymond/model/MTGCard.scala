@@ -20,7 +20,9 @@ case class MTGCard(
   formats: Seq[String],
   artists: Seq[String],
   hiddenHints: Seq[String],
-  devotions: Seq[Int]
+  devotions: Seq[Int],
+  blocks: Seq[String],
+  flavor: Option[String]
 )
 
 object MTGCardFormat {

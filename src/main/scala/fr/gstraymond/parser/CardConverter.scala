@@ -23,7 +23,7 @@ object CardConverter extends Log {
         def title = getTitle(rawCard)
         groupedScrapedCards.get(title).map { cards =>
           def castingCost = _cc(rawCard)
-          def hints = _hiddenHints(rawCard)
+          def hints = _hiddenHints(rawCard.description)
           MTGCard(
             title = _title(cards),
             frenchTitle = _frenchTitle(cards),
@@ -36,13 +36,15 @@ object CardConverter extends Log {
             toughness = _toughness(rawCard),
             editions = _editions(cards),
             rarities = _rarities(cards),
-            priceRanges = _priceRanges(cards),
+            priceRanges = _priceRanges(cards.flatMap(_.price.map(_.value))),
             publications = _publications(cards),
-            abilities = _abilities(rawCard),
-            formats = _formats(rawCard, cards, formats),
+            abilities = _abilities(rawCard.`type`, rawCard.description),
+            formats = _formats(formats, rawCard.`type`, rawCard.description, scrapedCards.head.title, scrapedCards.map(_.edition.name)),
             artists = _artists(cards),
             hiddenHints = hints,
-            devotions = _devotions(rawCard, castingCost)
+            devotions = _devotions(rawCard.`type`, castingCost),
+            blocks = Seq.empty,
+            flavor = None
           )
         }.orElse {
           log.error(s"title not found: $title - $rawCard")
@@ -140,7 +142,7 @@ object CardConverter extends Log {
 
   def _rarities(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.rarity).distinct
 
-  def _priceRanges(scrapedCards: Seq[ScrapedCard]) = scrapedCards.flatMap(_.price.map(_.value)).map {
+  def _priceRanges(prices: Seq[Double]) = prices.map {
     case p if p < 0.20 => "< 0.20$"
     case p if p >= 0.20 && p < 0.50 => "0.20$ .. 0.50$"
     case p if p >= 0.50 && p < 1 => "0.50$ .. 1$"
@@ -155,42 +157,44 @@ object CardConverter extends Log {
     def rarityCode = scrapedCard.edition.stdEditionCode.map { _ =>
       scrapedCard.rarity.head.toUpper.toString
     }
-    def editionImage = scrapedCard.edition.stdEditionCode.map { _ =>
-      s"${URIs.pictureHost}/sets/${scrapedCard.edition.stdEditionCode.getOrElse("")}/${rarityCode.get}.gif"
+    def editionImage = scrapedCard.edition.stdEditionCode.map { stdEditionCode =>
+      s"${URIs.pictureHost}/sets/$stdEditionCode/${rarityCode.get}.gif"
     }
 
     Publication(
-      collectorNumber = scrapedCard.collectorNumber,
+      collectorNumber = Some(scrapedCard.collectorNumber),
       edition = scrapedCard.edition.name,
       editionCode = scrapedCard.edition.code,
       editionReleaseDate = scrapedCard.edition.releaseDate,
       stdEditionCode = scrapedCard.edition.stdEditionCode,
       rarity = scrapedCard.rarity,
       rarityCode = rarityCode,
-      image = s"${URIs.pictureHost}/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}-$title.jpg",
+      image = Some(s"${URIs.pictureHost}/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}-$title.jpg"),
       editionImage = editionImage,
-      price = scrapedCard.price.map(_.value)
+      price = scrapedCard.price.map(_.value),
+      block = None,
+      multiverseId = None
     )
   }.sortBy(_.editionReleaseDate.map(_.getTime).getOrElse(Long.MaxValue))
 
-  def _abilities(rawCard: RawCard) = Abilities.LIST.filter(rawCard.description.mkString(" ").contains) match {
-    case Seq() if rawCard.`type`.contains("Creature") => Seq("Vanilla")
+  def _abilities(`type`: Option[String], description: Seq[String]) = Abilities.LIST.filter(description.mkString(" ").contains) match {
+    case Seq() if `type`.exists(_.contains("Creature")) && description.isEmpty => Seq("Vanilla")
     case abilities => abilities
   }
 
-  def _formats(rawCard: RawCard, scrapedCards: Seq[ScrapedCard], formats: Seq[ScrapedFormat]) = {
+  def _formats(formats: Seq[ScrapedFormat], `type`: Option[String], description: Seq[String], title: String, editionNames: Seq[String]) = {
     formats.filter { format =>
-      lazy val isInSet = format.availableSets.isEmpty || format.availableSets.exists(scrapedCards.map(_.edition.name).contains)
+      lazy val isInSet = format.availableSets.isEmpty || format.availableSets.exists(editionNames.contains)
       lazy val isBanned = format.bannedCards.exists {
         case banned if banned.startsWith("description->") =>
           val keyword = banned.split("description->")(1)
-          rawCard.description.mkString(" ").toLowerCase.contains(keyword)
+          description.mkString(" ").toLowerCase.contains(keyword)
         case banned if banned.startsWith("type->") =>
           val keyword = banned.split("type->")(1)
-          rawCard.`type`.getOrElse("").toLowerCase.contains(keyword)
-        case banned => banned == scrapedCards.head.title
+          `type`.getOrElse("").toLowerCase.contains(keyword)
+        case banned => banned == title
       }
-      lazy val isRestricted = format.restrictedCards.isEmpty || format.restrictedCards.contains(scrapedCards.head.title)
+      lazy val isRestricted = format.restrictedCards.isEmpty || format.restrictedCards.contains(title)
       isInSet && !isBanned && isRestricted
     }.map {
       _.name
@@ -199,17 +203,17 @@ object CardConverter extends Log {
 
   def _artists(scrapedCards: Seq[ScrapedCard]) = scrapedCards.map(_.artist).distinct
 
-  def _hiddenHints(rawCard: RawCard) = {
-    rawCard.description.collect {
+  def _hiddenHints(description: Seq [String]) = {
+    description.collect {
       case desc@"Devoid (This card has no color.)" => Seq(desc)
       case desc if desc.contains("[") && desc.contains("]") =>
         desc.split("\\[")(1).split("\\]").head.split("\\.").toSeq
     }.flatten
   }
 
-  def _devotions(rawCard: RawCard, maybeCastingCost: Option[String]) = {
+  def _devotions(`type`: Option[String], maybeCastingCost: Option[String]) = {
     val isPermanent = Seq("Instant", "Sorcery").forall { t =>
-      rawCard.`type`.forall { !_.contains(t) }
+      `type`.exists { !_.contains(t) }
     }
     isPermanent -> maybeCastingCost match {
       case (true, Some(castingCost)) =>

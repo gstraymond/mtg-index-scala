@@ -43,6 +43,7 @@ trait Task[A] extends Log {
   import fr.gstraymond.model.ScrapedEditionFormat._
   import fr.gstraymond.model.ScrapedFormatFormat._
   import fr.gstraymond.model.ScrapedPriceFormat._
+  import fr.gstraymond.model.MTGJsonFormats._
 
   protected def storeRawCards(cards: Seq[RawCard]) = {
     mkDir(FileUtils.oraclePath)
@@ -106,6 +107,11 @@ trait Task[A] extends Log {
   protected def loadRawCards: Seq[RawCard] = {
     val json = Source.fromFile(s"${FileUtils.oraclePath}/cards.json").mkString
     Json.parse(json).as[Seq[RawCard]]
+  }
+
+  protected def loadAllSet: Map[String, MTGJsonEdition] = {
+    val json = Source.fromFile(s"${FileUtils.scrapPath}/AllSets-x.json").mkString
+    Json.parse(json).as[Map[String, MTGJsonEdition]]
   }
 
   protected def loadScrapedCards: Seq[ScrapedCard] = {

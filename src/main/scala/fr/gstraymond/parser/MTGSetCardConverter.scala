@@ -44,9 +44,13 @@ object MTGSetCardConverter extends Log {
   private def sort(mtgSetCard: MTGSetCard): Int = {
     def toInt(chars: Seq[Char]) = chars.mkString.toInt * 100
 
-    mtgSetCard.collectorNumber.toSeq match {
-      case number :+ letter if letter.isLetter => toInt(number) + letter.toInt
-      case number => toInt(number)
+    mtgSetCard.collectorNumber.map {
+      _.toSeq match {
+        case number :+ letter if letter.isLetter => toInt(number) + letter.toInt
+        case number => toInt(number)
+      }
+    }.getOrElse{
+      Int.MaxValue
     }
   }
 }

@@ -78,8 +78,7 @@ strong.title {
 }
 
 .thumbnail {
-	background: black;
-	padding: 2px;
+	padding: 0;
 	border: 0;
 }
 

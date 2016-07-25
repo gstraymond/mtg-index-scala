@@ -83,6 +83,10 @@ trait GathererScraper extends Scraper {
   override val host = "gatherer.wizards.com"
 }
 
+trait MtgJsonScraper extends Scraper {
+  override val host = "mtgjson.com"
+}
+
 object HttpClients {
   private val list = mutable.Buffer[Http]()
 

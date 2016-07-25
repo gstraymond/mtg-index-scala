@@ -14,14 +14,14 @@ case class MTGSetCard(
   toughness: Option[String],
   formats: Seq[String],
   artists: Seq[String],
-  collectorNumber: String,
+  collectorNumber: Option[String],
   edition: String,
   editionCode: String,
   editionReleaseDate: Option[Date],
   stdEditionCode: Option[String],
   rarity: String,
   rarityCode: Option[String],
-  image: String,
+  image: Option[String],
   editionImage: Option[String],
   price: Option[Double]
 )

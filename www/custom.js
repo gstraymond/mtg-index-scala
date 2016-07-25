@@ -25,6 +25,7 @@ jQuery(document).ready(function($) {
 	        {'field': 'rarities',			'display': 'Rarity'},
 	        {'field': 'priceRanges.exact',	'display': 'Price'},
 	        {'field': 'editions.exact',		'display': 'Set'},
+	        {'field': 'blocks.exact',		'display': 'Block'},
 	        {'field': 'formats.exact',		'display': 'Format'},
 	        {'field': 'artists.exact',		'display': 'Artist'},
 	    ],
@@ -73,23 +74,23 @@ jQuery(document).ready(function($) {
 		 	        "post": "</pre>"
 		    	},
 		 	    {
-		 	        "pre": "<div class='rawPublications'>",
+		 	        "pre": "<div class='rawPublications'>edition:",
 		        	"field": "publications.edition",
 		    	},
 		 	    {
-		 	        "pre": "|",
+		 	        "pre": "|rarity:",
 		        	"field": "publications.rarity"
 		    	},
 		 	    {
-		 	        "pre": "|",
+		 	        "pre": "|editionImage:",
 		        	"field": "publications.editionImage",
 		    	},
                 {
-                    "pre": "|",
+                    "pre": "|price:",
                     "field": "publications.price",
                 },
                 {
-                    "pre": "|",
+                    "pre": "|image:",
                     "field": "publications.image",
                     "post": "</div>",
                 }
@@ -118,34 +119,25 @@ $(document).ajaxComplete(function() {
 	// transformation des publications
 	$('.rawPublications').each( function() {
 		var textSplit = $(this).text().split('|');
-		var editions = textSplit[0].split(',');
-		var rarities = textSplit[1].split(',');
-		var images = textSplit[2].split(',');
-		var prices = textSplit[3].split(',');
-		var editionImages = 'undefined';
-		if (textSplit.length == 5) {
-			editionImages = textSplit[2].split(',');
-			images = textSplit[4].split(',');
-		} else if (textSplit.length == 4) {
-		    prices = "undefined";
-            editionImages = textSplit[2].split(',');
-            images = textSplit[3].split(',');
-        }
+
+		var editions = extract("edition:", textSplit);
+		var rarities = extract("rarity:", textSplit);
+		var images = extract("image:", textSplit);
+		var prices = extract("price:", textSplit);
+        var editionImages = extract("editionImage:", textSplit);
 
         /*
-		console.log("textSplit", textSplit)
 		console.log("editions", editions)
 		console.log("rarities", rarities)
 		console.log("images", images)
 		console.log("prices", prices)
 		console.log("editionImages", editionImages)
-        */
+		*/
 
 		var html = ''
 		var showMoreLink = false;
-		editions.forEach(function(element, index, array) {
-		    var edition = element.trim()
-			var title = element + " - " + rarities[index];
+		editions.forEach(function(edition, index, array) {
+			var title = edition + " - " + rarities[index];
 			var cssClass = '';
 			if (index > 19) {
 				cssClass = ' hidden';
@@ -153,19 +145,20 @@ $(document).ajaxComplete(function() {
 			}
 
 			var price = prices[index];
-			if (prices === "undefined" || price.trim() === "undefined") price = ""
+			if (typeof price === "undefined" || price === "undefined") price = ""
 			else price = "<span class=\"label label-info\">$" + round(price) + "</span>"
 
-			if (editionImages !== "undefined" && editionImages[index].trim() !== "undefined") {
-				html += "<div class='pic " + cssClass + "'>";
-				html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
-				html += "<img src='" + editionImages[index] + "' alt='" + title + "'/>" + price;
-				html += "</a>";
-				html += "</div> ";
-			} else {
+            var editionImage = editionImages[index]
+			if (typeof editionImage === "undefined" || editionImage === "undefined") {
 				html += "<div class='label label-important" + cssClass + "'>";
 				html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
 				html += edition + price;
+				html += "</a>";
+				html += "</div> ";
+			} else {
+				html += "<div class='pic " + cssClass + "'>";
+				html += "<a title=\"" + title + "\" href='" + images[index] + "'>";
+				html += "<img src='" + editionImage + "' alt='" + title + "'/>" + price;
 				html += "</a>";
 				html += "</div> ";
 			}
@@ -219,6 +212,17 @@ $(document).ajaxComplete(function() {
 		$(this).html(html);
 	});
 });
+
+function extract(field, data) {
+    for (index in data) {
+        var d = data[index]
+        if (d.startsWith(field)) {
+            var split = d.replace(field, "").split(",")
+            return split.map(function(s) { return s.trim() })
+        }
+    }
+    return []
+}
 
 function getColors() {
 	return getGuildColors().concat(getLifeColors()).concat([

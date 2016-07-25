@@ -3,7 +3,7 @@ package fr.gstraymond.task
 import fr.gstraymond.dl.{CardPictureDownloader, EditionPictureDownloader}
 import fr.gstraymond.indexer.EsIndexer
 import fr.gstraymond.model._
-import fr.gstraymond.parser.{CardConverter, OracleConverter}
+import fr.gstraymond.parser.{AllSetConverter, CardConverter, OracleConverter}
 import fr.gstraymond.scraper._
 import fr.gstraymond.utils.FileUtils
 
@@ -114,6 +114,32 @@ object DoZeMagicTask extends Task[Seq[MTGCard]] {
       storeStdCodeCache(cache)
       storePrices(prices)
       storeScrapedCards(scrapedCards)
+      storeMTGCards(mtgCards)
+    }
+  }
+}
+
+object AllSetScrapTask extends Task[Unit] {
+  override def process = AllSetScraper.scrap
+}
+
+object AllSetConvertTask extends Task[Seq[MTGCard]] {
+  override def process = AllSetConverter.convert(loadAllSet, loadFormats, loadPrices)
+}
+
+object DEALTask extends Task[Seq[MTGCard]] {
+  override def process = {
+    for {
+      _ <- AllSetScraper.scrap
+      formats <- FormatScraper.scrap
+      prices <- PriceScraper.scrap
+      mtgCards <- AllSetConverter.convert(loadAllSet, formats, prices)
+      _ <- EditionPictureDownloader.download(mtgCards)
+      _ <- CardPictureDownloader.download(mtgCards)
+      _ <- EsIndexer.delete()
+      _ <- EsIndexer.configure()
+      _ <- EsIndexer.index(mtgCards)
+    } yield {
       storeMTGCards(mtgCards)
     }
   }

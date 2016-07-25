@@ -159,6 +159,28 @@ task doZeMagic(type: JavaExec, dependsOn: classes) {
     maxHeapSize = '512m'
 }
 
+task allSetScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.AllSetScrapTask'
+    description "MTG Json all sets parse"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task allSetConvert(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.AllSetConvertTask'
+    description "MTG Json all sets convert"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task DEAL(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.DEALTask'
+    description "DEAL"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+    maxHeapSize = '768m'
+}
+
 // UTILS
 
 task gif2png(type: JavaExec, dependsOn: classes) {
