@@ -17,7 +17,7 @@ trait Scraper extends Log {
   val TIMEOUT: Int = 60 * 1000
 
   def oldScrap(path: String): Future[Document] = {
-    val fullUrl = s"http://$host$path"
+    val fullUrl = s"https://$host$path"
     Future {
       val now = new Date().getTime
       now -> Jsoup.connect(fullUrl).timeout(TIMEOUT).get()
