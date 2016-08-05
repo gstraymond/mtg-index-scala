@@ -28,7 +28,7 @@ trait Scraper extends Log {
   }
 
   def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
-    val fullUrl = s"http://$host$path"
+    val fullUrl = s"https://$host$path"
     val http = followRedirect match {
       case true =>
         val h = Http.configure(_ setFollowRedirect true)
