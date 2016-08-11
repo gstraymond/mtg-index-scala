@@ -27,7 +27,7 @@ object CardPictureDownloader extends GathererScraper with Log {
   def download(card: MTGCard): Seq[Future[Unit]] = {
     card.publications.map { publication =>
       publication.multiverseId.map { multiverseId =>
-        val file = new File(s"${URIs.pictureLocation}/images/${publication.editionCode}/${formatTitle(card)}")
+        val file = new File(s"${URIs.pictureLocation}/pics/${publication.editionCode}/$multiverseId-${formatTitle(card)}")
 
         if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
 

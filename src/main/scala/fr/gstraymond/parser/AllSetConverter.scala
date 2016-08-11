@@ -66,9 +66,10 @@ object AllSetConverter extends Log {
       val urlTitle = StringUtils.normalize(firstCard.name)
       MTGCard(
         title = firstCard.name,
+        altTitles = firstCard.names.getOrElse(Seq.empty),
         frenchTitle = cards.flatMap(_.foreignNames).flatten.find(_.language == "French").map(_.name),
         castingCost = castingCost,
-        colors = CardConverter._colors(castingCost, hints),
+        colors = CardConverter._colors(castingCost, hints, firstCard.colors),
         convertedManaCost = firstCard.cmc.map(_.toInt).getOrElse(0),
         `type` = firstCard.`type`,
         description = firstCard.text.getOrElse(""),
@@ -95,8 +96,8 @@ object AllSetConverter extends Log {
             stdEditionCode = stdEditionCode,
             rarity = rarity,
             rarityCode = Some(rarityCode),
-            image = card.multiverseid.map { _ =>
-              s"${URIs.pictureHost}/images/${edition.code}/$urlTitle.jpg"
+            image = card.multiverseid.map { multiverseId =>
+              s"${URIs.pictureHost}/pics/${edition.code}/$multiverseId-$urlTitle.jpg"
             },
             editionImage = stdEditionCode.map { code =>
               s"${URIs.pictureHost}/sets/$code/$rarityCode.gif"
@@ -109,10 +110,8 @@ object AllSetConverter extends Log {
         abilities = CardConverter._abilities(Some(firstCard.`type`), description),
         formats = CardConverter._formats(formats, Some(firstCard.`type`), description, firstCard.name, editions.map(_.name)),
         artists = cards.map(_.artist).distinct,
-        hiddenHints = hints,
         devotions = CardConverter._devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
-        flavor = cards.find(_.flavor.nonEmpty).flatMap(_.flavor), // FIXME multiple flavors
         layout = firstCard.layout
       )
     }.toSeq

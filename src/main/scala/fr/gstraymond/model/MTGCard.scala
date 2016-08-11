@@ -4,6 +4,7 @@ import play.api.libs.json.Json
 
 case class MTGCard(
   title: String,
+  altTitles: Seq[String],
   frenchTitle: Option[String],
   castingCost: Option[String],
   colors: Seq[String],
@@ -19,10 +20,8 @@ case class MTGCard(
   abilities: Seq[String],
   formats: Seq[String],
   artists: Seq[String],
-  hiddenHints: Seq[String],
   devotions: Seq[Int],
   blocks: Seq[String],
-  flavor: Option[String],
   layout: String
 )
 

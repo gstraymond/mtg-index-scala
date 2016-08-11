@@ -10,7 +10,7 @@ class CardConverterColorsTest extends Specification {
 
   "card converter" should {
     "Nope" in {
-      CardConverter._colors(None, Seq.empty) ===
+      CardConverter._colors(None, Seq.empty, None) ===
         Seq(UNCOLORED)
     }
 
@@ -65,7 +65,12 @@ class CardConverterColorsTest extends Specification {
     }
 
     "Transguild Courier" in {
-      CardConverter._colors(Some("4"), Seq("White/Blue/Black/Red/Green color indicator")).sorted ===
+      CardConverter._colors(Some("4"), Seq("White/Blue/Black/Red/Green color indicator"), None).sorted ===
+        Seq(GREEN.lbl, WHITE.lbl, BLUE.lbl, BLACK.lbl, RED.lbl, GOLD, MULTICOLORED(5)).sorted
+    }
+
+    "Transguild Courier - new" in {
+      CardConverter._colors(Some("4"), Seq.empty, Some(Seq("White", "Blue", "Black", "Red", "Green"))).sorted ===
         Seq(GREEN.lbl, WHITE.lbl, BLUE.lbl, BLACK.lbl, RED.lbl, GOLD, MULTICOLORED(5)).sorted
     }
 
@@ -75,10 +80,15 @@ class CardConverterColorsTest extends Specification {
     }
 
     "Abstruse Interference" in {
-      CardConverter._colors(Some("2 U"), Seq("Devoid (This card has no color.)")).sorted ===
+      CardConverter._colors(Some("2 U"), Seq("Devoid (This card has no color.)"), None).sorted ===
         Seq(UNCOLORED)
+    }
+
+    "Ludevic's Abomination" in {
+      CardConverter._colors(None, Seq.empty, Some(Seq("Blue"))).sorted ===
+        Seq(MONOCOLORED, BLUE.lbl)
     }
   }
 
-  private def _colors(cc: String) = CardConverter._colors(Some(cc), Seq.empty).sorted
+  private def _colors(cc: String) = CardConverter._colors(Some(cc), Seq.empty, None).sorted
 }

@@ -26,9 +26,10 @@ object CardConverter extends Log {
           def hints = _hiddenHints(rawCard.description)
           MTGCard(
             title = _title(cards),
+            altTitles = Seq.empty,
             frenchTitle = _frenchTitle(cards),
             castingCost = castingCost,
-            colors = _colors(castingCost, hints),
+            colors = _colors(castingCost, hints, None),
             convertedManaCost = _cmc(castingCost),
             `type` = _type(rawCard),
             description = _desc(rawCard),
@@ -41,10 +42,8 @@ object CardConverter extends Log {
             abilities = _abilities(rawCard.`type`, rawCard.description),
             formats = _formats(formats, rawCard.`type`, rawCard.description, scrapedCards.head.title, scrapedCards.map(_.edition.name)),
             artists = _artists(cards),
-            hiddenHints = hints,
             devotions = _devotions(rawCard.`type`, castingCost),
             blocks = Seq.empty,
-            flavor = None,
             layout = ""
           )
         }.orElse {
@@ -88,10 +87,16 @@ object CardConverter extends Log {
     }._1.trim.toUpperCase()
   }
 
-  def _colors(maybeCastingCost: Option[String], hints: Seq[String]) = {
+  def _colors(maybeCastingCost: Option[String], hints: Seq[String], additionalColors: Option[Seq[String]]) = {
     val uncoloredHint = hints.contains("Devoid (This card has no color.)")
-    maybeCastingCost -> uncoloredHint match {
-      case (Some(castingCost), false) =>
+    val cc = maybeCastingCost.getOrElse("") ++ additionalColors.map {
+        _.flatMap { color =>
+          ALL_COLORS_SYMBOLS.find(_.lbl == color).map(_.symbol)
+        }.mkString(" ")
+      }.getOrElse("")
+
+    cc -> uncoloredHint match {
+      case (castingCost, false) if castingCost != "" =>
         def find(colors: Seq[Color]) = colors.filter(c => castingCost.contains(c.symbol))
 
         val colorHint = hints.find(_.contains("color indicator")).getOrElse("")

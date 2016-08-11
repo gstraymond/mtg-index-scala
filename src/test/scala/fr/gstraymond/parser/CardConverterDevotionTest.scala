@@ -1,6 +1,5 @@
 package fr.gstraymond.parser
 
-import fr.gstraymond.model.RawCard
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
@@ -10,29 +9,11 @@ class CardConverterDevotionTest extends Specification {
 
   "card converter" should {
     "Nope" in {
-      val c = RawCard(
-        title = None,
-        castingCost = None,
-        `type` = Some("Instant"),
-        powerToughness = None,
-        description = Seq.empty,
-        editionRarity = Seq.empty
-      )
-      CardConverter._devotions(c, None) === Seq.empty
+      CardConverter._devotions(Some("Instant"), None) === Seq.empty
     }
 
-    "Eye of Nowhere" should {
-      "Nope" in {
-        val c = RawCard(
-          title = Some("Eye of Nowhere"),
-          castingCost = Some("U U"),
-          `type` = Some("Sorcery -- Arcane"),
-          powerToughness = None,
-          description = Seq.empty,
-          editionRarity = Seq.empty
-        )
-        CardConverter._devotions(c, Some("U U")) === Seq.empty
-      }
+    "Eye of Nowhere" in {
+      CardConverter._devotions(Some("Sorcery -- Arcane"), Some("U U")) === Seq.empty
     }
 
     "Zuran Spellcaster" in {
@@ -81,14 +62,5 @@ class CardConverterDevotionTest extends Specification {
   }
 
   private def _devotion(cc: String) =
-    CardConverter._devotions(card(), Some(cc)).sorted
-
-  private def card() = RawCard(
-    title = None,
-    castingCost = None,
-    `type` = Some("Creature"),
-    powerToughness = None,
-    description = Seq.empty,
-    editionRarity = Seq.empty
-  )
+    CardConverter._devotions(Some("Creature"), Some(cc)).sorted
 }
