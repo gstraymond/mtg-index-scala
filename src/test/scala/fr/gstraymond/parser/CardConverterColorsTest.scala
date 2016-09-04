@@ -88,6 +88,11 @@ class CardConverterColorsTest extends Specification {
       CardConverter._colors(None, Seq.empty, Some(Seq("Blue"))).sorted ===
         Seq(MONOCOLORED, BLUE.lbl)
     }
+
+    "Dralnu, seigneur liche" in {
+      CardConverter._colors(Some("3 U B"), Seq.empty, Some(Seq("Blue", "Black"))).sorted ===
+        Seq(BLACK.lbl, BLUE.lbl, GOLD, MULTICOLORED(2)).sorted
+    }
   }
 
   private def _colors(cc: String) = CardConverter._colors(Some(cc), Seq.empty, None).sorted

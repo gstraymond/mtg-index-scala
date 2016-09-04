@@ -92,7 +92,7 @@ object CardConverter extends Log {
     val cc = maybeCastingCost.getOrElse("") ++ additionalColors.map {
         _.flatMap { color =>
           ALL_COLORS_SYMBOLS.find(_.lbl == color).map(_.symbol)
-        }.mkString(" ")
+        }.mkString(" ", " ", "")
       }.getOrElse("")
 
     cc -> uncoloredHint match {
