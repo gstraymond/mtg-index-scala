@@ -1,7 +1,7 @@
 package fr.gstraymond.task
 
 import fr.gstraymond.dl.{CardPictureDownloader, EditionPictureDownloader}
-import fr.gstraymond.indexer.EsIndexer
+import fr.gstraymond.indexer.{EsAutocompleteIndexer, EsCardIndexer}
 import fr.gstraymond.model._
 import fr.gstraymond.parser.{AllSetConverter, CardConverter, OracleConverter}
 import fr.gstraymond.scraper._
@@ -104,9 +104,12 @@ object DoZeMagicTask extends Task[Seq[MTGCard]] {
       mtgCards = CardConverter.convert(rawCards, scrapedCards, formats)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
-      _ <- EsIndexer.delete()
-      _ <- EsIndexer.configure()
-      _ <- EsIndexer.index(mtgCards)
+      _ <- EsCardIndexer.delete()
+      _ <- EsCardIndexer.configure()
+      _ <- EsCardIndexer.index(mtgCards)
+      _ <- EsAutocompleteIndexer.delete()
+      _ <- EsAutocompleteIndexer.configure()
+      _ <- EsAutocompleteIndexer.index(mtgCards)
     } yield {
       storeRawCards(rawCards)
       storeFormats(formats)
@@ -129,9 +132,12 @@ object AllSetConvertTask extends Task[Seq[MTGCard]] {
       mtgCards <- AllSetConverter.convert(loadAllSet, loadFormats, loadPrices)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
-      _ <- EsIndexer.delete()
-      _ <- EsIndexer.configure()
-      _ <- EsIndexer.index(mtgCards)
+      _ <- EsCardIndexer.delete()
+      _ <- EsCardIndexer.configure()
+      _ <- EsCardIndexer.index(mtgCards)
+      _ <- EsAutocompleteIndexer.delete()
+      _ <- EsAutocompleteIndexer.configure()
+      _ <- EsAutocompleteIndexer.index(mtgCards)
     } yield {
       storeMTGCards(mtgCards)
     }
@@ -147,9 +153,12 @@ object DEALTask extends Task[Seq[MTGCard]] {
       mtgCards <- AllSetConverter.convert(loadAllSet, formats, prices)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
-      _ <- EsIndexer.delete()
-      _ <- EsIndexer.configure()
-      _ <- EsIndexer.index(mtgCards)
+      _ <- EsCardIndexer.delete()
+      _ <- EsCardIndexer.configure()
+      _ <- EsCardIndexer.index(mtgCards)
+      _ <- EsAutocompleteIndexer.delete()
+      _ <- EsAutocompleteIndexer.configure()
+      _ <- EsAutocompleteIndexer.index(mtgCards)
     } yield {
       storeMTGCards(mtgCards)
     }

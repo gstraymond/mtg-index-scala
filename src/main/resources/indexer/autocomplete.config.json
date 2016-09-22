@@ -1,0 +1,14 @@
+{
+  "mappings": {
+    "card": {
+      "properties": {
+        "suggest": {
+          "type": "completion",
+          "analyzer": "simple",
+          "search_analyzer": "simple",
+          "payloads": false
+        }
+      }
+    }
+  }
+}

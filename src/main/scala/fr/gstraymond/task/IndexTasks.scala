@@ -1,19 +1,31 @@
 package fr.gstraymond.task
 
-import fr.gstraymond.indexer.EsIndexer
+import fr.gstraymond.indexer.{EsAutocompleteIndexer, EsCardIndexer}
 
-object DeleteIndexTask extends Task[Unit]{
-  override def process = EsIndexer.delete()
+object DeleteCardIndexTask extends Task[Unit]{
+  override def process = EsCardIndexer.delete()
 }
 
-object ConfigureIndexTask extends Task[Unit]{
-  override def process = EsIndexer.configure()
+object ConfigureCardIndexTask extends Task[Unit]{
+  override def process = EsCardIndexer.configure()
 }
 
 object CardIndexTask extends Task[Unit]{
-  override def process = EsIndexer.index(loadMTGCards)
+  override def process = EsCardIndexer.index(loadMTGCards)
 }
 
 object CardExistsTask extends Task[Seq[String]]{
-  override def process = EsIndexer.exists(loadMTGCards)
+  override def process = EsCardIndexer.exists(loadMTGCards)
+}
+
+object DeleteAutocompleteIndexTask extends Task[Unit]{
+  override def process = EsAutocompleteIndexer.delete()
+}
+
+object ConfigureAutocompleteIndexTask extends Task[Unit]{
+  override def process = EsAutocompleteIndexer.configure()
+}
+
+object AutocompleteIndexTask extends Task[Unit]{
+  override def process = EsAutocompleteIndexer.index(loadMTGCards)
 }

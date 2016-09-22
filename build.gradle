@@ -94,16 +94,16 @@ task releaseDateScrap(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
-task deleteIndex(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.DeleteIndexTask'
-    description "Delete Es Index"
+task deleteCardIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.DeleteCardIndexTask'
+    description "Delete Es Card Index"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
 
-task configureIndex(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.ConfigureIndexTask'
-    description "Configure Es Index"
+task configureCardIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.ConfigureCardIndexTask'
+    description "Configure Es Card Index"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
@@ -121,6 +121,28 @@ task cardExists(type: JavaExec, dependsOn: classes) {
     description "Check card exists"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
+}
+
+task deleteAutocompleteIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.DeleteAutocompleteIndexTask'
+    description "Delete Es Autocomplete Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task configureAutocompleteIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.ConfigureAutocompleteIndexTask'
+    description "Configure Es Autocomplete Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task autocompleteIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.AutocompleteIndexTask'
+    description "Autocomplete Es Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+    maxHeapSize = '512m'
 }
 
 task cardPictureDL(type: JavaExec, dependsOn: classes) {
