@@ -44,7 +44,8 @@ object CardConverter extends Log {
             artists = _artists(cards),
             devotions = _devotions(rawCard.`type`, castingCost),
             blocks = Seq.empty,
-            layout = ""
+            layout = "",
+            loyalty = None
           )
         }.orElse {
           log.error(s"title not found: $title - $rawCard")

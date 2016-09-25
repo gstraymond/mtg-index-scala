@@ -66,7 +66,7 @@ object AllSetConverter extends Log {
       val urlTitle = StringUtils.normalize(firstCard.name)
       MTGCard(
         title = firstCard.name,
-        altTitles = firstCard.names.getOrElse(Seq.empty),
+        altTitles = firstCard.names.map(_.filterNot(_ == firstCard.name)).getOrElse(Seq.empty),
         frenchTitle = cards.flatMap(_.foreignNames).flatten.find(_.language == "French").map(_.name),
         castingCost = castingCost,
         colors = CardConverter._colors(castingCost, hints, firstCard.colors),
@@ -112,7 +112,8 @@ object AllSetConverter extends Log {
         artists = cards.map(_.artist).distinct,
         devotions = CardConverter._devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
-        layout = firstCard.layout
+        layout = firstCard.layout,
+        loyalty = firstCard.loyalty
       )
     }.toSeq
 

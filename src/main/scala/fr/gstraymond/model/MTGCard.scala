@@ -22,7 +22,8 @@ case class MTGCard(
   artists: Seq[String],
   devotions: Seq[Int],
   blocks: Seq[String],
-  layout: String
+  layout: String,
+  loyalty: Option[Int]
 )
 
 object MTGCardFormat {

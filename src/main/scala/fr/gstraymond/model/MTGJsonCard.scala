@@ -30,6 +30,7 @@ case class MTGJsonCard(
   number: Option[String],
   power: Option[String],
   toughness: Option[String],
+  loyalty: Option[Int],
   multiverseid: Option[Long],
   foreignNames: Option[Seq[MTGJsonForeignName]]
 )
