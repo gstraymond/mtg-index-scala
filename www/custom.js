@@ -28,6 +28,8 @@ jQuery(document).ready(function($) {
 	        {'field': 'editions.exact',		'display': 'Set'},
 	        {'field': 'blocks.exact',		'display': 'Block'},
 	        {'field': 'formats.exact',		'display': 'Format'},
+	        {'field': 'special.exact',      'display': 'Special'},
+	        {'field': 'land.exact',         'display': 'Land'},
 	        {'field': 'artists.exact',		'display': 'Artist'},
 	    ],
 	    paging: { size: 10 },

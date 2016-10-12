@@ -24,6 +24,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.+'
     compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.11.+"
     compile "eu.bitwalker:UserAgentUtils:1.+"
+    compile "ai.x:play-json-extensions_$scalaVersion:0.8.0"
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"

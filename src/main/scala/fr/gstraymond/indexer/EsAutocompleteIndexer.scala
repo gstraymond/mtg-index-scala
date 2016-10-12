@@ -30,7 +30,6 @@ object EsAutocompleteIndexer extends EsIndexer {
 
   private def indexEditions(cards: Seq[MTGCard]): Future[Unit] = {
     val editions = extractEditions(cards)
-    editions.toSeq.sorted.foreach(e => log.debug(e.toString))
     Http {
       url(bulkPath).POST << buildBody("edition", editions) OK as.String
     }.map { _ =>

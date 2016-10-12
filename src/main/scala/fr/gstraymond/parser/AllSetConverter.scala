@@ -4,12 +4,21 @@ import java.text.SimpleDateFormat
 
 import fr.gstraymond.constant.URIs
 import fr.gstraymond.model._
+import fr.gstraymond.parser.field._
 import fr.gstraymond.utils.{Log, StringUtils}
 
 import scala.collection.mutable
 import scala.concurrent.Future
 
-object AllSetConverter extends Log {
+object AllSetConverter extends Log
+  with AbilitiesField
+  with ColorField
+  with DevotionsField
+  with FormatsField
+  with HiddenHintsField
+  with LandField
+  with PriceRangesField
+  with SpecialField {
 
   private val dateParser = new SimpleDateFormat("YYYY-MM-DD")
 
@@ -62,14 +71,14 @@ object AllSetConverter extends Log {
           .replace("2#", "2/")
       }
       val description = firstCard.text.map(_.split("\n").toSeq).getOrElse(Seq.empty)
-      val hints = CardConverter._hiddenHints(description)
+      val hints = _hiddenHints(description)
       val urlTitle = StringUtils.normalize(firstCard.name)
       MTGCard(
         title = firstCard.name,
         altTitles = firstCard.names.map(_.filterNot(_ == firstCard.name)).getOrElse(Seq.empty),
         frenchTitle = cards.flatMap(_.foreignNames).flatten.find(_.language == "French").map(_.name),
         castingCost = castingCost,
-        colors = CardConverter._colors(castingCost, hints, firstCard.colors),
+        colors = _colors(castingCost, hints, firstCard.colors),
         convertedManaCost = firstCard.cmc.map(_.toInt).getOrElse(0),
         `type` = firstCard.`type`,
         description = firstCard.text.getOrElse(""),
@@ -77,7 +86,7 @@ object AllSetConverter extends Log {
         toughness = firstCard.toughness,
         editions = editions.map(_.name).distinct,
         rarities = cards.map(_.rarity).distinct,
-        priceRanges = CardConverter._priceRanges(prices),
+        priceRanges = _priceRanges(prices),
         publications = groupedCardsSorted.map { case (card, edition, price) =>
           val rarity = card.rarity.replace("Basic ", "")
           val rarityCode = rarity.head.toString
@@ -107,13 +116,15 @@ object AllSetConverter extends Log {
             multiverseId = card.multiverseid
           )
         },
-        abilities = CardConverter._abilities(Some(firstCard.`type`), description),
-        formats = CardConverter._formats(formats, Some(firstCard.`type`), description, firstCard.name, editions.map(_.name)),
+        abilities = _abilities(Some(firstCard.`type`), description),
+        formats = _formats(formats, Some(firstCard.`type`), description, firstCard.name, editions.map(_.name)),
         artists = cards.map(_.artist).distinct,
-        devotions = CardConverter._devotions(Some(firstCard.`type`), castingCost),
+        devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
         layout = firstCard.layout,
-        loyalty = firstCard.loyalty
+        loyalty = firstCard.loyalty,
+        special = _special(firstCard.name, firstCard.`type`, description),
+        land = _land(firstCard.`type`, description)
       )
     }.toSeq
 

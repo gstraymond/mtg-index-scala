@@ -1,6 +1,7 @@
 package fr.gstraymond.model
 
-import play.api.libs.json.Json
+import ai.x.play.json.Jsonx
+import play.api.libs.json._
 
 case class MTGCard(
   title: String,
@@ -23,10 +24,12 @@ case class MTGCard(
   devotions: Seq[Int],
   blocks: Seq[String],
   layout: String,
-  loyalty: Option[Int]
+  loyalty: Option[Int],
+  special: Seq[String],
+  land: Seq[String]
 )
 
 object MTGCardFormat {
   implicit val publicationFormat = Json.format[Publication]
-  implicit val mtgCardFormat = Json.format[MTGCard]
+  implicit val mtgCardFormat = Jsonx.formatCaseClass[MTGCard]
 }
