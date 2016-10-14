@@ -3,7 +3,6 @@ package fr.gstraymond.indexer
 import dispatch.Defaults._
 import dispatch._
 import fr.gstraymond.model.MTGCard
-import fr.gstraymond.utils.StringUtils
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
@@ -34,8 +33,7 @@ object EsCardIndexer extends EsIndexer {
 
   override def buildBody(group: Seq[MTGCard]): String = {
     group.flatMap { card =>
-
-      val indexJson = Json.obj("index" -> Json.obj("_id" -> norm(card.title)))
+      val indexJson = Json.obj("index" -> Json.obj("_id" -> getId(card)))
 
       import fr.gstraymond.model.MTGCardFormat._
       val cardJson = Json.toJson(card)
@@ -43,6 +41,4 @@ object EsCardIndexer extends EsIndexer {
       Seq(indexJson, cardJson).map(Json.stringify)
     }.mkString("\n") + "\n"
   }
-
-  private def norm(string: String) = StringUtils.normalize(string)
 }

@@ -5,7 +5,7 @@ import java.io.File
 import dispatch.Defaults._
 import dispatch._
 import fr.gstraymond.model.MTGCard
-import fr.gstraymond.utils.Log
+import fr.gstraymond.utils.{Log, StringUtils}
 
 import scala.concurrent.Future
 
@@ -66,4 +66,11 @@ trait EsIndexer extends Log {
 
 
   def buildBody(group: Seq[MTGCard]): String
+
+  protected def getId(card: MTGCard) = {
+    val id = card.publications.flatMap(_.multiverseId).headOption.getOrElse(0)
+    norm(id + "-" + card.title)
+  }
+
+  protected def norm(string: String) = StringUtils.normalize(string)
 }

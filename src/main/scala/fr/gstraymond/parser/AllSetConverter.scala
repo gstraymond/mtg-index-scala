@@ -170,7 +170,8 @@ object AllSetConverter extends Log
     "pCMP" -> "prm-chp",
     "pGPX" -> "prm-gpp",
     "pPRO" -> "prm-ptp",
-    "HOP" -> "pc1"
+    "HOP" -> "pc1",
+    "MPS" -> "ms2"
     // prm-msc ?
     // prm-spo ?
   )
