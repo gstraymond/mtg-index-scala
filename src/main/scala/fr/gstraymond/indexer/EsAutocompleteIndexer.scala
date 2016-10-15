@@ -47,6 +47,7 @@ object EsAutocompleteIndexer extends EsIndexer {
             .replace("\"", "")
             .replace("'s", "")
             .replace("'", "")
+            .replace(";", "")
         }
         .filter(_.length > 3)
         .groupBy(a => a)
