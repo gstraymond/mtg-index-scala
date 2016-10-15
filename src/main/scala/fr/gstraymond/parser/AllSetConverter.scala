@@ -20,7 +20,7 @@ object AllSetConverter extends Log
   with PriceRangesField
   with SpecialField {
 
-  private val dateParser = new SimpleDateFormat("YYYY-MM-DD")
+  private val dateParser = new SimpleDateFormat("yyyy-MM-dd")
 
   val editionsCodeWithoutImage = Seq("CEI", "CED", "ATH", "ITP", "DKM", "RQS", "DPA", "CST", "MGB", "CPK")
 
