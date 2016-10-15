@@ -14,27 +14,10 @@ object EsAutocompleteIndexer extends EsIndexer {
 
   override def index(cards: Seq[MTGCard]): Future[Unit] = for {
     _ <- super.index(cards)
-    _ <- indexTokens(cards)
-    _ <- indexEditions(cards)
+    _ <- index("token", extractTokens(cards))
+    _ <- index("edition", extractEditions(cards))
+    _ <- index("special", extractSpecials(cards))
   } yield ()
-
-  private def indexTokens(cards: Seq[MTGCard]): Future[Unit] = {
-    val tokens = extractTokens(cards)
-    Http {
-      url(bulkPath).POST << buildBody("token", tokens) OK as.String
-    }.map { _ =>
-      log.info(s"processed: ${tokens.size} tokens")
-    }
-  }
-
-  private def indexEditions(cards: Seq[MTGCard]): Future[Unit] = {
-    val editions = extractEditions(cards)
-    Http {
-      url(bulkPath).POST << buildBody("edition", editions) OK as.String
-    }.map { _ =>
-      log.info(s"processed: ${editions.size} editions")
-    }
-  }
 
   override def buildBody(group: Seq[MTGCard]) = {
     group.flatMap { card =>
@@ -91,12 +74,22 @@ object EsAutocompleteIndexer extends EsIndexer {
     }).distinct.map(_ -> 2).toMap
   }
 
-  private def buildBody(`type`: String, tokens: Map[String, Int]): String = {
-    tokens
+  private def extractSpecials(cards: Seq[MTGCard]): Map[String, Int] = {
+    cards.flatMap(_.special).groupBy(_.toLowerCase).mapValues(_.size)
+  }
+
+  private def index(`type`: String, data: Map[String, Int]): Future[Unit] = {
+    val body = data
       .flatMap { case (token, weight) =>
         val indexJson = Json.obj("index" -> Json.obj("_id" -> s"${`type`}-$token-$weight"))
         val cardJson = Json.obj("suggest" -> Json.obj("input" -> token, "weight" -> weight))
         Seq(indexJson, cardJson)
       }.mkString("\n") + "\n"
+
+    Http {
+      url(bulkPath).POST << body OK as.String
+    }.map { _ =>
+      log.info(s"processed: ${data.size} ${`type`}")
+    }
   }
 }
