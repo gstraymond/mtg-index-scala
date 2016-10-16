@@ -6,7 +6,7 @@
           "type": "completion",
           "analyzer": "simple",
           "search_analyzer": "simple",
-          "payloads": false
+          "payloads": true
         }
       }
     }

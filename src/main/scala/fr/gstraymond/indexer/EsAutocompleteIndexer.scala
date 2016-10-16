@@ -3,7 +3,7 @@ package fr.gstraymond.indexer
 import dispatch.Defaults._
 import dispatch._
 import fr.gstraymond.model.MTGCard
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, JsObject, JsString, Json}
 
 import scala.concurrent.Future
 
@@ -15,14 +15,15 @@ object EsAutocompleteIndexer extends EsIndexer {
   override def index(cards: Seq[MTGCard]): Future[Unit] = for {
     _ <- super.index(cards)
     _ <- index("token", extractTokens(cards))
-    _ <- index("edition", extractEditions(cards))
+    _ <- indexWithPayload("edition", extractEditions(cards))
     _ <- index("special", extractSpecials(cards))
   } yield ()
 
   override def buildBody(group: Seq[MTGCard]) = {
     group.flatMap { card =>
+      val payload = Json.obj("colors" -> JsArray(card.colors.map(JsString)), "type" -> card.`type`)
       val indexJson = Json.obj("index" -> Json.obj("_id" -> getId(card)))
-      val cardJson = Json.obj("suggest" -> card.title)
+      val cardJson = Json.obj("suggest" -> Json.obj("input" -> card.title, "payload" -> payload))
       Seq(indexJson, cardJson).map(Json.stringify)
     }.mkString("\n") + "\n"
   }
@@ -66,13 +67,19 @@ object EsAutocompleteIndexer extends EsIndexer {
       .filter(_._2 > 5)
   }
 
-  private def extractEditions(cards: Seq[MTGCard]): Map[String, Int] = {
+  private def extractEditions(cards: Seq[MTGCard]): Map[String, (Int, JsObject)] = {
     (for {
       card <- cards
       pub <- card.publications
     } yield {
-      pub.edition
-    }).distinct.map(_ -> 2).toMap
+      pub.edition -> pub.stdEditionCode
+    })
+      .distinct
+      .map {
+        case (edition, Some(stdCode)) => edition -> (2 -> Json.obj("stdEditionCode" -> stdCode))
+        case (edition, _) => edition -> (2 -> Json.obj())
+      }
+      .toMap
   }
 
   private def extractSpecials(cards: Seq[MTGCard]): Map[String, Int] = {
@@ -84,6 +91,21 @@ object EsAutocompleteIndexer extends EsIndexer {
       .flatMap { case (token, weight) =>
         val indexJson = Json.obj("index" -> Json.obj("_id" -> s"${`type`}-$token-$weight"))
         val cardJson = Json.obj("suggest" -> Json.obj("input" -> token, "weight" -> weight))
+        Seq(indexJson, cardJson)
+      }.mkString("\n") + "\n"
+
+    Http {
+      url(bulkPath).POST << body OK as.String
+    }.map { _ =>
+      log.info(s"processed: ${data.size} ${`type`}")
+    }
+  }
+
+  private def indexWithPayload(`type`: String, data: Map[String, (Int, JsObject)]): Future[Unit] = {
+    val body = data
+      .flatMap { case (token, (weight, payload)) =>
+        val indexJson = Json.obj("index" -> Json.obj("_id" -> s"${`type`}-$token-$weight"))
+        val cardJson = Json.obj("suggest" -> Json.obj("input" -> token, "weight" -> weight, "payload" -> payload))
         Seq(indexJson, cardJson)
       }.mkString("\n") + "\n"
 

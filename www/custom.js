@@ -253,7 +253,7 @@ function getLifeColors() {
 }
 
 function getSpecialSymbols() {
-	return ['T', 'Q', 'S'];
+	return ['T', 'Q', 'S', 'E'];
 }
 
 function round(value) {
