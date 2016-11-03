@@ -16,8 +16,10 @@ trait Scraper extends Log {
 
   val TIMEOUT: Int = 60 * 1000
 
+  val protocol = "https"
+
   def oldScrap(path: String): Future[Document] = {
-    val fullUrl = s"https://$host$path"
+    val fullUrl = s"$protocol://$host$path"
     Future {
       val now = new Date().getTime
       now -> Jsoup.connect(fullUrl).timeout(TIMEOUT).get()
@@ -28,7 +30,7 @@ trait Scraper extends Log {
   }
 
   def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
-    val fullUrl = s"https://$host$path"
+    val fullUrl = s"$protocol://$host$path"
     val http = followRedirect match {
       case true =>
         val h = Http.configure(_ setFollowRedirect true)
@@ -73,6 +75,7 @@ trait MTGGoldFishScraper extends Scraper {
 
 trait MTGSalvationScraper extends Scraper {
   override val host = "mtgsalvation.gamepedia.com"
+  override val protocol = "http"
 }
 
 trait YawgatogScraper extends Scraper {

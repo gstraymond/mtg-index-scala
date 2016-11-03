@@ -16,6 +16,6 @@ object StandardFormatScrap extends FormatScrap {
   override def currentRotation(doc: Document) = {
     doc
       .select("ul").asScala(4)
-      .select("li").asScala.map(_.text().split(" (").head)
+      .select("li").asScala.map(_.text().split(" \\(").head)
   }
 }
