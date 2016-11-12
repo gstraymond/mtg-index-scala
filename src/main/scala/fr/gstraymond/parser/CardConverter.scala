@@ -51,7 +51,7 @@ object CardConverter extends Log
             priceRanges = _priceRanges(cards.flatMap(_.price.map(_.value))),
             publications = _publications(cards),
             abilities = _abilities(rawCard.`type`, rawCard.description),
-            formats = _formats(formats, rawCard.`type`, rawCard.description, title, scrapedCards.map(_.edition.name)),
+            formats = _old_formats(formats, rawCard.`type`, rawCard.description, title, scrapedCards.map(_.edition.name)),
             artists = _artists(cards),
             devotions = _devotions(rawCard.`type`, castingCost),
             blocks = Seq.empty,
