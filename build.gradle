@@ -19,7 +19,7 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.+'
     compile "org.scala-lang:scala-library:$scalaVersion.+"
     compile "org.scala-lang:scala-compiler:$scalaVersion.+"
-    compile "com.typesafe.play:play-json_$scalaVersion:2.+"
+    compile "com.typesafe.play:play-json_$scalaVersion:2.5.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
     compile 'org.jsoup:jsoup:1.8.+'
     compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.11.+"
