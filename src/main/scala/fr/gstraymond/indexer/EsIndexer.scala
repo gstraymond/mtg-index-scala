@@ -67,10 +67,10 @@ trait EsIndexer extends Log {
 
   def buildBody(group: Seq[MTGCard]): String
 
-  protected def getId(card: MTGCard) = {
-    val id = card.publications.flatMap(_.multiverseId).headOption.getOrElse(0)
+  protected def getId(card: MTGCard): String = {
+    val id = card.publications.flatMap(_.multiverseId).headOption.getOrElse("na")
     norm(id + "-" + card.title)
   }
 
-  protected def norm(string: String) = StringUtils.normalize(string)
+  protected def norm(string: String): String = StringUtils.normalize(string)
 }
