@@ -114,7 +114,7 @@ object AllSetConverter extends Log
           )
         },
         abilities = _abilities(Some(firstCard.`type`), description),
-        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty)),
+        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions.map(_.name).distinct),
         artists = cards.map(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
