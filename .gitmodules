@@ -1,0 +1,3 @@
+[submodule "pics"]
+	path = pics
+	url = git@github.com:mtg-search/pics.git

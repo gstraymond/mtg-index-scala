@@ -2,7 +2,7 @@ package fr.gstraymond.constant
 
 object URIs {
 
-  val pictureHost = "https://dl.dropboxusercontent.com/u/22449802/mtg"
+  val pictureHost = "https://raw.githubusercontent.com/mtg-search/pics/master"
 
-  val pictureLocation = s"${Conf.pictureLocation}/Public/mtg" // sets / pics
+  val pictureLocation = "pics" // sets / pics
 }

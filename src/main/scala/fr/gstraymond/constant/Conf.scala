@@ -5,7 +5,7 @@ import java.util.Properties
 
 object Conf {
 
-  val props = {
+  val props: Properties = {
     val properties = new Properties()
     Option(getClass.getResource("/conf.properties")).foreach { resource =>
       properties.load(new FileInputStream(new File(resource.getFile)))
@@ -13,11 +13,7 @@ object Conf {
     properties
   }
 
-  def pictureLocation =
-    Option(props.getProperty("pictureLocation"))
-      .getOrElse("/root/Dropbox")
-
-  def coloredLogs =
+  def coloredLogs: Boolean =
     Option(props.getProperty("coloredLogs"))
       .exists(_.toBoolean)
 }
