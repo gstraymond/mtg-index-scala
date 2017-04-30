@@ -6,7 +6,7 @@ import fr.gstraymond.model.{MTGJsonLegality, ScrapedFormat}
 
 trait FormatsField {
 
-  private val aetherRevoltHackEnabled = LocalDate.now().getYear == 2017
+  private val formatHackEnabled = LocalDate.now().getYear == 2017
 
   val allFormats = Seq(
     "Vintage",
@@ -23,7 +23,7 @@ trait FormatsField {
 
     val restricted = legalities.find(_.legality == "Restricted")
 
-    if (aetherRevoltHackEnabled && editions.contains("Aether Revolt")) {
+    if (formatHackEnabled && editions.contains("Amonkhet")) {
       allFormats
     } else {
       legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality)
