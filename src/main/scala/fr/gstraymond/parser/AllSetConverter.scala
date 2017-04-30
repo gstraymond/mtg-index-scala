@@ -44,7 +44,7 @@ object AllSetConverter extends Log
       edition.cards.map { card =>
         card -> editionWithNoCards
       }
-    }.groupBy { case (card, edition) =>
+    }.groupBy { case (card, _) =>
       (card.name, card.manaCost, card.`type`)
     }.values
 
@@ -172,7 +172,8 @@ object AllSetConverter extends Log
     "pGPX" -> "prm-gpp",
     "pPRO" -> "prm-ptp",
     "HOP" -> "pc1",
-    "MPS" -> "ms2"
+    "MPS" -> "ms2",
+    "MPS_AKH" -> "ms3" // Masterpiece Series: Amonkhet Invocations
     // prm-msc ?
     // prm-spo ?
   )

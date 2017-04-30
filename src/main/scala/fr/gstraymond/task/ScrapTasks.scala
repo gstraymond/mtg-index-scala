@@ -159,6 +159,7 @@ object DEALTask extends Task[Seq[MTGCard]] {
       _ <- EsAutocompleteIndexer.configure()
       _ <- EsAutocompleteIndexer.index(mtgCards)
     } yield {
+      storePrices(prices)
       storeMTGCards(mtgCards)
     }
   }
