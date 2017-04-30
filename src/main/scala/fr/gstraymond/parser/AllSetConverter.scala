@@ -6,6 +6,7 @@ import fr.gstraymond.constant.URIs
 import fr.gstraymond.model._
 import fr.gstraymond.parser.field._
 import fr.gstraymond.utils.{Log, StringUtils}
+import play.api.libs.json.JsString
 
 import scala.collection.mutable
 import scala.concurrent.Future
@@ -119,7 +120,10 @@ object AllSetConverter extends Log
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
         layout = firstCard.layout,
-        loyalty = firstCard.loyalty,
+        loyalty = firstCard.loyalty.map {
+          case string: JsString => string.value
+          case other => other.toString()
+        },
         special = _special(firstCard.name, firstCard.`type`, description),
         land = _land(firstCard.`type`, description)
       )

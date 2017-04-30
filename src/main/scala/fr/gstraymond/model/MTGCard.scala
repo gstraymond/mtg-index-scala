@@ -24,7 +24,7 @@ case class MTGCard(
   devotions: Seq[Int],
   blocks: Seq[String],
   layout: String,
-  loyalty: Option[Int],
+  loyalty: Option[String],
   special: Seq[String],
   land: Seq[String]
 )

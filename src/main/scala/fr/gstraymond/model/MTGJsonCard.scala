@@ -1,6 +1,6 @@
 package fr.gstraymond.model
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 
 case class MTGJsonEdition(name: String,
                           code: String,
@@ -28,7 +28,7 @@ case class MTGJsonCard(//id: String,
                        number: Option[String],
                        power: Option[String],
                        toughness: Option[String],
-                       loyalty: Option[Int],
+                       loyalty: Option[JsValue], // string or int
                        multiverseid: Option[Long],
                        foreignNames: Option[Seq[MTGJsonForeignName]],
                        legalities: Option[Seq[MTGJsonLegality]])
