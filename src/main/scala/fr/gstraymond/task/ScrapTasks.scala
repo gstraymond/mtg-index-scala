@@ -129,7 +129,8 @@ object AllSetScrapTask extends Task[Unit] {
 object AllSetConvertTask extends Task[Seq[MTGCard]] {
   override def process = {
     for {
-      mtgCards <- AllSetConverter.convert(loadAllSet, loadPrices)
+      abilities <- AbilityScraper.scrap
+      mtgCards <- AllSetConverter.convert(loadAllSet, loadPrices, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
@@ -148,8 +149,9 @@ object DEALTask extends Task[Seq[MTGCard]] {
   override def process = {
     for {
       _ <- AllSetScraper.scrap
+      abilities <- AbilityScraper.scrap
       prices <- PriceScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, prices)
+      mtgCards <- AllSetConverter.convert(loadAllSet, prices, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()

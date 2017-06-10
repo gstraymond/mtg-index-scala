@@ -90,6 +90,10 @@ trait MtgJsonScraper extends Scraper {
   override val host = "mtgjson.com"
 }
 
+trait WikipediaScraper extends Scraper {
+  override val host = "en.wikipedia.org"
+}
+
 object HttpClients {
   private val list = mutable.Buffer[Http]()
 

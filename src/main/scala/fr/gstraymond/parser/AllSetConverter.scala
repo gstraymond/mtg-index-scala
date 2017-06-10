@@ -26,7 +26,8 @@ object AllSetConverter extends Log
   val editionsCodeWithoutImage = Seq("CEI", "CED", "ATH", "ITP", "DKM", "RQS", "DPA", "CST", "MGB", "CPK")
 
   def convert(loadAllSet: Map[String, MTGJsonEdition],
-              prices: Seq[ScrapedPrice]): Future[Seq[MTGCard]] = Future.successful {
+              prices: Seq[ScrapedPrice],
+              abilities: Seq[String]): Future[Seq[MTGCard]] = Future.successful {
 
     val priceMap = mutable.Map() ++ prices.flatMap {
       case price if price.card.contains(" // ") =>
@@ -114,7 +115,7 @@ object AllSetConverter extends Log
             multiverseId = card.multiverseid
           )
         },
-        abilities = _abilities(Some(firstCard.`type`), description),
+        abilities = _abilities(firstCard.name, description, abilities),
         formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions.map(_.name).distinct),
         artists = cards.map(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
