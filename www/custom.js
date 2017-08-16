@@ -12,7 +12,7 @@ jQuery(document).ready(function($) {
   $('.facet-view-simple').each(function() {
 	  $(this).facetview({
 	    search_url: searchUrl,
-	    search_index: 'magic',
+	    search_index: 'mtg',
 	    datatype: 'json',
 	    facets: [
 	        {'field': 'colors.exact', 		'display': 'Color'},
