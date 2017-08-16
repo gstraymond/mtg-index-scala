@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 object EsCardIndexer extends EsIndexer {
 
-  override val index = "magic"
+  override val index = "mtg"
   override val `type` = "card"
 
   def exists(cards: Seq[MTGCard]): Future[Seq[String]] = Future.sequence {
