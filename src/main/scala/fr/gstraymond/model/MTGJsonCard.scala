@@ -1,6 +1,6 @@
 package fr.gstraymond.model
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json}
 
 case class MTGJsonEdition(name: String,
                           code: String,
@@ -31,7 +31,8 @@ case class MTGJsonCard(//id: String,
                        loyalty: Option[JsValue], // string or int
                        multiverseid: Option[Long],
                        foreignNames: Option[Seq[MTGJsonForeignName]],
-                       legalities: Option[Seq[MTGJsonLegality]])
+                       legalities: Option[Seq[MTGJsonLegality]],
+                       rulings: Option[Seq[MTGJsonRuling]])
 
 case class MTGJsonForeignName(language: String,
                               name: String)
@@ -39,9 +40,13 @@ case class MTGJsonForeignName(language: String,
 case class MTGJsonLegality(format: String,
                            legality: String)
 
+case class MTGJsonRuling(date: String,
+                         text: String)
+
 object MTGJsonFormats {
-  implicit val mtgJsonLegalityFormat = Json.format[MTGJsonLegality]
-  implicit val mtgJsonForeignNameFormat = Json.format[MTGJsonForeignName]
-  implicit val mtgJsonCardFormat = Json.format[MTGJsonCard]
-  implicit val mtgJsonEditionFormat = Json.format[MTGJsonEdition]
+  implicit val mtgJsonRulingFormat: Format[MTGJsonRuling] = Json.format
+  implicit val mtgJsonLegalityFormat: Format[MTGJsonLegality] = Json.format
+  implicit val mtgJsonForeignNameFormat: Format[MTGJsonForeignName] = Json.format
+  implicit val mtgJsonCardFormat: Format[MTGJsonCard] = Json.format
+  implicit val mtgJsonEditionFormat: Format[MTGJsonEdition] = Json.format
 }

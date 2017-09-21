@@ -126,7 +126,8 @@ object AllSetConverter extends Log
           case other => other.toString()
         },
         special = _special(firstCard.name, firstCard.`type`, description),
-        land = _land(firstCard.`type`, description)
+        land = _land(firstCard.`type`, description),
+        ruling = firstCard.rulings.getOrElse(Nil).map(r => Ruling(r.date, r.text))
       )
     }.toSeq
 

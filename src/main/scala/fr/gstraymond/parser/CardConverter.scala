@@ -58,7 +58,8 @@ object CardConverter extends Log
             layout = "",
             loyalty = None,
             special = _special(title, `type`, rawCard.description),
-            land = _land(`type`, rawCard.description)
+            land = _land(`type`, rawCard.description),
+            ruling = Nil
           )
         }.orElse {
           log.error(s"title not found: $title - $rawCard")

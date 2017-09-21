@@ -26,10 +26,15 @@ case class MTGCard(
   layout: String,
   loyalty: Option[String],
   special: Seq[String],
-  land: Seq[String]
+  land: Seq[String],
+  ruling: Seq[Ruling]
 )
 
+case class Ruling(date: String,
+                  text: String)
+
 object MTGCardFormat {
-  implicit val publicationFormat = Json.format[Publication]
-  implicit val mtgCardFormat = Jsonx.formatCaseClass[MTGCard]
+  implicit val rulingFormat: Format[Ruling] = Json.format
+  implicit val publicationFormat: Format[Publication] = Json.format
+  implicit val mtgCardFormat: Format[MTGCard] = Jsonx.formatCaseClass
 }
