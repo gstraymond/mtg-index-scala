@@ -23,7 +23,7 @@ trait FormatsField {
 
     val restricted = legalities.find(_.legality == "Restricted")
 
-    if (formatHackEnabled && editions.contains("Amonkhet")) {
+    if (formatHackEnabled && editions.contains("Ixalan")) {
       allFormats
     } else {
       legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality)
