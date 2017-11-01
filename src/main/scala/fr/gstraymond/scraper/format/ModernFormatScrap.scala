@@ -5,7 +5,7 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConverters._
 
 object ModernFormatScrap extends FormatScrap {
-  override val name = "modern"
+  override val name = "Modern"
   override val path = "/Modern"
 
   override def bannedCards(doc: Document) = {

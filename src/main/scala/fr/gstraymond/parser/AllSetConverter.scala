@@ -26,6 +26,7 @@ object AllSetConverter extends Log
   val editionsCodeWithoutImage = Seq("CEI", "CED", "ATH", "ITP", "DKM", "RQS", "DPA", "CST", "MGB", "CPK")
 
   def convert(loadAllSet: Map[String, MTGJsonEdition],
+              formats: Seq[ScrapedFormat],
               prices: Seq[ScrapedPrice],
               abilities: Seq[String]): Future[Seq[MTGCard]] = Future.successful {
 
@@ -116,7 +117,7 @@ object AllSetConverter extends Log
           )
         },
         abilities = _abilities(firstCard.name, description, abilities),
-        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions.map(_.name).distinct),
+        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions.map(_.name).distinct, formats),
         artists = cards.map(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,

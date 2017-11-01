@@ -10,7 +10,7 @@ object LegacyFormatScrap extends FormatScrap {
 
   override def bannedCards(doc: Document) = {
     doc
-      .select("table").asScala
+      .select("div#mw-content-text").asScala
       .filter(_.select("ul a.autocardhref").asScala.nonEmpty).head
       .select("ul a.autocardhref").asScala.map(_.text())
   }

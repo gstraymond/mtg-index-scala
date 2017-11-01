@@ -11,11 +11,11 @@ object FormatScraper extends MTGSalvationScraper with Log{
 
   val scrapers = Seq(
     StandardFormatScrap,
-    ExtendedFormatScrap,
-    ModernFormatScrap,
-    LegacyFormatScrap,
-    VintageFormatScrap,
-    VintageRestrictedFormatScrap
+    //ExtendedFormatScrap,
+    ModernFormatScrap//,
+    //LegacyFormatScrap,
+    //VintageFormatScrap,
+    //VintageRestrictedFormatScrap
   )
 
   def scrap: Future[Seq[ScrapedFormat]] = {

@@ -5,17 +5,19 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConverters._
 
 object StandardFormatScrap extends FormatScrap {
-  override val name = "standard"
+  override val name = "Standard"
   override val path = "/Standard"
 
   override def bannedCards(doc: Document) = {
     doc
-      .select("a.autocardhref").asScala.map(_.text())
+      .select("ul").asScala
+      .filter(_.select("li a.autocardhref").asScala.nonEmpty).head
+      .select("li a.autocardhref").asScala.map(_.text())
   }
 
   override def currentRotation(doc: Document) = {
     doc
-      .select("ul").asScala(4)
-      .select("li").asScala.map(_.text().split(" \\(").head)
+      .select("div#mw-content-text ul").asScala(2)
+      .select("a").asScala.map(_.text().split(" \\(").head)
   }
 }
