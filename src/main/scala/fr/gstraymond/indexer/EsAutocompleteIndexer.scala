@@ -21,7 +21,7 @@ object EsAutocompleteIndexer extends EsIndexer {
 
   override def buildBody(group: Seq[MTGCard]) = {
     group.flatMap { card =>
-      val payload = Json.obj("colors" -> JsArray(card.colors.map(JsString)), "type" -> card.`type`)
+      val payload = Json.obj("colors" -> card.colors, "type" -> card.`type`, "land" -> card.land)
       val indexJson = Json.obj("index" -> Json.obj("_id" -> getId(card)))
       val cardJson = Json.obj("suggest" -> Json.obj("input" -> card.title, "payload" -> payload))
       Seq(indexJson, cardJson).map(Json.stringify)

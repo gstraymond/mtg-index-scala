@@ -57,6 +57,7 @@ trait LandField {
   private val produceLandKeywords = Seq("Add ", " to your mana pool")
 
   private def canLandProduce(color: String)(card: LandCard) =
+    (card.`type`.contains("Basic") && card.`type`.contains(Land.REV.getOrElse(color, "???"))) ||
       card.description.exists { line =>
         produceLandKeywords.forall(line.contains) && landProduce(line, color)
       }

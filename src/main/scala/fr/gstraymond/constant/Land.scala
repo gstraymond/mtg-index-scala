@@ -10,4 +10,6 @@ object Land {
     "Swamp" -> "B",
     "Island" -> "U"
   )
+
+  val REV = ALL.map(_.swap)
 }

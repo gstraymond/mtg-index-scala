@@ -72,6 +72,12 @@ class CardConverterLandTest extends Specification {
         "{1}, {T}: Target Blinkmoth creature gets +1/+1 until end of turn."
       ) === Seq("Man land", "Produce Colorless Mana")
     }
+
+    "Swamp" in {
+      _land(
+        "Basic Land -- Swamp"
+      ) === Seq("Produce Black Mana")
+    }
   }
 
   private def _land(`type`: String, description: String*) =
