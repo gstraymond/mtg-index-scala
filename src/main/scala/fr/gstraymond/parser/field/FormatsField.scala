@@ -7,9 +7,9 @@ trait FormatsField {
   val allFormats = Seq(
     "Vintage",
     "Commander",
-    "Legacy"//,
-    //"Modern",
-    //"Standard"
+    "Legacy",
+    "Modern",
+    "Standard"
   )
 
   def _formats(formats: Seq[MTGJsonLegality], editions: Seq[String], scrapedFormats: Seq[ScrapedFormat]): Seq[String] = {
@@ -20,11 +20,12 @@ trait FormatsField {
 
     val restricted = legalities.find(_.legality == "Restricted")
 
-    val standardModern = scrapedFormats.filter { format =>
-      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
-    }.map(_.name)
+    // Bug: when scraping mtg salvation Modern: MTG 2015 doesn't contains core set
+//    val standardModern = scrapedFormats.filter { format =>
+//      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
+//    }.map(_.name)
 
-    legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality) ++ standardModern
+    legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality)// ++ standardModern
   }
 
   def _old_formats(formats: Seq[ScrapedFormat], `type`: Option[String], description: Seq[String], title: String, editionNames: Seq[String]) = {
