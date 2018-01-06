@@ -85,6 +85,7 @@ trait YawgatogScraper extends Scraper {
 
 trait GathererScraper extends Scraper {
   override val host = "gatherer.wizards.com"
+  override val protocol = "http"
 }
 
 trait MtgJsonScraper extends Scraper {
@@ -96,7 +97,7 @@ trait WikipediaScraper extends Scraper {
 }
 
 trait WizardsScraper extends Scraper {
-  override val host: String = "magic.wizards.com"
+  override val host = "magic.wizards.com"
 }
 
 object HttpClients {
