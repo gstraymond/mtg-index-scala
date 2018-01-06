@@ -1,9 +1,11 @@
 package fr.gstraymond.task
 
 import fr.gstraymond.dl.{CardPictureDownloader, EditionPictureDownloader}
-import fr.gstraymond.indexer.{EsAutocompleteIndexer, EsCardIndexer}
+import fr.gstraymond.indexer.{EsAutocompleteIndexer, EsCardIndexer, EsRulesIndexer}
 import fr.gstraymond.model._
 import fr.gstraymond.parser.{AllSetConverter, CardConverter, OracleConverter}
+import fr.gstraymond.rules.model.Rules
+import fr.gstraymond.rules.parser.RulesParser
 import fr.gstraymond.scraper._
 import fr.gstraymond.utils.FileUtils
 
@@ -84,6 +86,14 @@ object GathererEditionCodeScrapTask extends Task[Seq[ScrapedEdition]] {
   }
 }
 
+object RulesScrapTask extends Task[Rules] {
+  override def process = RulesScraper.scrap.map(RulesParser.parse).map { rules =>
+    storeRules(rules)
+    rules
+  }
+}
+
+@deprecated("use DEALTask", "")
 object DoZeMagicTask extends Task[Seq[MTGCard]] {
   override def process = {
     for {
@@ -153,6 +163,8 @@ object DEALTask extends Task[Seq[MTGCard]] {
       abilities <- AbilityScraper.scrap
       formats <- FormatScraper.scrap
       prices <- PriceScraper.scrap
+      rawRules <- RulesScraper.scrap
+      rules = RulesParser.parse(rawRules)
       mtgCards <- AllSetConverter.convert(loadAllSet, formats, prices, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
@@ -162,7 +174,12 @@ object DEALTask extends Task[Seq[MTGCard]] {
       _ <- EsAutocompleteIndexer.delete()
       _ <- EsAutocompleteIndexer.configure()
       _ <- EsAutocompleteIndexer.index(mtgCards)
+      _ <- EsRulesIndexer.delete()
+      _ <- EsRulesIndexer.configure()
+      _ <- EsRulesIndexer.index(Seq(rules))
     } yield {
+      storeRules(rules)
+      storeFormats(formats)
       storePrices(prices)
       storeMTGCards(mtgCards)
     }

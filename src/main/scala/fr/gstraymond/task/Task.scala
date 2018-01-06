@@ -3,6 +3,7 @@ package fr.gstraymond.task
 import java.io.{File, FileNotFoundException}
 
 import fr.gstraymond.model._
+import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.scraper.HttpClients
 import fr.gstraymond.stats.Timing
 import fr.gstraymond.utils.{FileUtils, Log}
@@ -36,14 +37,15 @@ trait Task[A] extends Log {
 
   def process: Future[A]
 
-  import fr.gstraymond.model.RawCardFormat._
   import fr.gstraymond.model.MTGCardFormat._
+  import fr.gstraymond.model.MTGJsonFormats._
   import fr.gstraymond.model.MTGSetCardFormat._
+  import fr.gstraymond.model.RawCardFormat._
   import fr.gstraymond.model.ScrapedCardFormat._
   import fr.gstraymond.model.ScrapedEditionFormat._
   import fr.gstraymond.model.ScrapedFormatFormat._
   import fr.gstraymond.model.ScrapedPriceFormat._
-  import fr.gstraymond.model.MTGJsonFormats._
+  import fr.gstraymond.rules.model.RuleFormats._
 
   protected def storeRawCards(cards: Seq[RawCard]) = {
     mkDir(FileUtils.oraclePath)
@@ -104,6 +106,13 @@ trait Task[A] extends Log {
     cardByEditions
   }
 
+  protected def storeRules(rules: Rules) = {
+    mkDir(FileUtils.outputPath)
+    val file = new File(s"${FileUtils.outputPath}/rules.json")
+    FileUtils.storeJson(file, Json.toJson(rules))
+    rules
+  }
+
   protected def loadRawCards: Seq[RawCard] = {
     val json = Source.fromFile(s"${FileUtils.oraclePath}/cards.json").mkString
     Json.parse(json).as[Seq[RawCard]]
@@ -154,6 +163,11 @@ trait Task[A] extends Log {
     } catch {
       case e: FileNotFoundException => Map.empty
     }
+  }
+
+  protected def loadRules: Seq[Rules] = {
+    val json = Source.fromFile(s"${FileUtils.outputPath}/rules.json").mkString
+    Seq(Json.parse(json).as[Rules])
   }
 
   private def mkDir(path: String) = {

@@ -14,5 +14,7 @@ appender("STDOUT", ConsoleAppender) {
 }
 
 logger 'com.ning', WARN
+logger 'io.netty', INFO
+logger 'org.asynchttpclient.netty', INFO
 
 root(DEBUG, ["STDOUT"])

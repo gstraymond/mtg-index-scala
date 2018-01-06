@@ -33,9 +33,9 @@ trait Scraper extends Log {
     val fullUrl = s"$protocol://$host$path"
     val http = followRedirect match {
       case true =>
-        val h = Http.configure(_ setFollowRedirect true)
+        val h = Http.withConfiguration(_ setFollowRedirect true)
         HttpClients.addClient(h)
-      case _ => Http
+      case _ => Http.default
     }
 
     http {
@@ -46,9 +46,10 @@ trait Scraper extends Log {
     }
   }
 
-  def get(path: String): Future[Array[Byte]] = {
-    val fullUrl = s"http://$host$path"
-    Http {
+  def get(path: String): Future[Array[Byte]] = download(s"$protocol://$host$path")
+
+  def download(fullUrl: String): Future[Array[Byte]] = {
+    Http.default {
       url(fullUrl) OK as.Bytes
     }.map { bytes =>
       log.info(s"scraping url $fullUrl done")
@@ -94,6 +95,10 @@ trait WikipediaScraper extends Scraper {
   override val host = "en.wikipedia.org"
 }
 
+trait WizardsScraper extends Scraper {
+  override val host: String = "magic.wizards.com"
+}
+
 object HttpClients {
   private val list = mutable.Buffer[Http]()
 
@@ -104,6 +109,6 @@ object HttpClients {
 
   def shutdown() = {
     list.foreach(_.shutdown())
-    Http.shutdown()
+    Http.default.shutdown()
   }
 }

@@ -9,7 +9,7 @@ import fr.gstraymond.utils.{Log, StringUtils}
 
 import scala.concurrent.Future
 
-trait EsIndexer extends Log {
+trait EsIndexer[A] extends Log {
 
   val host = "localhost:9200"
 
@@ -23,7 +23,7 @@ trait EsIndexer extends Log {
   val bulk = 500
 
   def delete(): Future[Unit] = {
-    Http {
+    Http.default {
       url(indexPath).DELETE > as.String
     }.map { result =>
       log.info(s"delete: $result")
@@ -33,17 +33,17 @@ trait EsIndexer extends Log {
 
   def configure(): Future[Unit] = {
     val file = new File(getClass.getResource(s"/indexer/$index.config.json").getFile)
-    Http {
+    Http.default {
       url(indexPath).PUT <<< file OK as.String
     }.map { result =>
       log.info(s"configure: $result")
     }
   }
 
-  def index(cards: Seq[MTGCard]): Future[Unit] = {
-    val grouped = cards.grouped(bulk).toStream
+  def index(elems: Seq[A]): Future[Unit] = {
+    val grouped = elems.grouped(bulk).toStream
     val groupedSize = grouped.size
-    val cardSize = cards.size
+    val cardSize = elems.size
 
     grouped
       .zipWithIndex
@@ -51,7 +51,7 @@ trait EsIndexer extends Log {
         for {
           count <- acc
           _ <- {
-            Http {
+            Http.default {
               url(bulkPath).POST << buildBody(group) OK as.String
             }.map { _ =>
               log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
@@ -65,7 +65,7 @@ trait EsIndexer extends Log {
   }
 
 
-  def buildBody(group: Seq[MTGCard]): String
+  def buildBody(group: Seq[A]): String
 
   protected def getId(card: MTGCard): String = {
     val id = card.publications.flatMap(_.multiverseId).headOption.getOrElse("na")

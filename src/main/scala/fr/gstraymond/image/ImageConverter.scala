@@ -9,7 +9,7 @@ import scala.sys.process._
 
 object ImageConverter extends Log {
 
-  val dest = "/home/guillaume/git/magic-card-search/app/src/main/assets/sets"
+  val dest = "/Users/guillaume/git/magic-card-search/app/src/main/assets/sets"
 
   //val destFile = new File(dest)
 

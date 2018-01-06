@@ -7,7 +7,7 @@ import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
-object EsCardIndexer extends EsIndexer {
+object EsCardIndexer extends EsIndexer[MTGCard] {
 
   override val index = "mtg"
   override val `type` = "card"
@@ -15,7 +15,7 @@ object EsCardIndexer extends EsIndexer {
   def exists(cards: Seq[MTGCard]): Future[Seq[String]] = Future.sequence {
     cards.map { card =>
       val s = s"$indexPath/${`type`}/${norm(card.title)}-${norm(card.`type`)}"
-      Http {
+      Http.default {
         url(s) > as.String
       }.map { resp =>
         (Json.parse(resp) \ "found").as[Boolean] match {

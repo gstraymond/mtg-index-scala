@@ -12,19 +12,19 @@ repositories {
 
 // https://github.com/gradle/gradle/tree/master/subprojects/docs/src/samples/scala
 
-def scalaVersion = "2.11"
+def scalaVersion = "2.12"
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.+'
     compile 'ch.qos.logback:logback-classic:1.+'
     compile "org.scala-lang:scala-library:$scalaVersion.+"
     compile "org.scala-lang:scala-compiler:$scalaVersion.+"
-    compile "com.typesafe.play:play-json_$scalaVersion:2.5.+"
+    compile "com.typesafe.play:play-json_$scalaVersion:2.6.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
     compile 'org.jsoup:jsoup:1.8.+'
-    compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.11.+"
+    compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.13.+"
     compile "eu.bitwalker:UserAgentUtils:1.+"
-    compile "ai.x:play-json-extensions_$scalaVersion:0.8.0"
+    compile "ai.x:play-json-extensions_$scalaVersion:0.10.+"
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"
@@ -95,6 +95,13 @@ task releaseDateScrap(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
+task rulesScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.RulesScrapTask'
+    description "Scrap rules"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
 task deleteCardIndex(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.DeleteCardIndexTask'
     description "Delete Es Card Index"
@@ -141,6 +148,28 @@ task configureAutocompleteIndex(type: JavaExec, dependsOn: classes) {
 task autocompleteIndex(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.AutocompleteIndexTask'
     description "Autocomplete Es Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+    maxHeapSize = '512m'
+}
+
+task deleteRulesIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.DeleteRulesIndexTask'
+    description "Delete Es Rules Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task configureRulesIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.ConfigureRulesIndexTask'
+    description "Configure Es Rules Index"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task rulesIndex(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.RulesIndexTask'
+    description "Rules Es Index"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
     maxHeapSize = '512m'

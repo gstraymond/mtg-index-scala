@@ -7,7 +7,7 @@ import play.api.libs.json.{JsArray, JsObject, JsString, Json}
 
 import scala.concurrent.Future
 
-object EsAutocompleteIndexer extends EsIndexer {
+object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
 
   override val index = "autocomplete"
   override val `type` = "card"
@@ -94,7 +94,7 @@ object EsAutocompleteIndexer extends EsIndexer {
         Seq(indexJson, cardJson)
       }.mkString("\n") + "\n"
 
-    Http {
+    Http.default {
       url(bulkPath).POST << body OK as.String
     }.map { _ =>
       log.info(s"processed: ${data.size} ${`type`}")
@@ -109,7 +109,7 @@ object EsAutocompleteIndexer extends EsIndexer {
         Seq(indexJson, cardJson)
       }.mkString("\n") + "\n"
 
-    Http {
+    Http.default {
       url(bulkPath).POST << body OK as.String
     }.map { _ =>
       log.info(s"processed: ${data.size} ${`type`}")
