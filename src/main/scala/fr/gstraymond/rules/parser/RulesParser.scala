@@ -4,6 +4,8 @@ import fr.gstraymond.rules.model.{Rule, Rules}
 
 object RulesParser {
 
+  private val linkCharacters = Set('<', '[', ']', '>')
+
   def parse(lines: Seq[String]): Rules = {
     val nonEmptyLines = lines.filter(_.nonEmpty)
     val glossaryIndex = nonEmptyLines.indexOf("Glossary")
@@ -26,8 +28,14 @@ object RulesParser {
     Rules {
       rules.zipWithIndex.map { case (rule, i) =>
         val text = ids.foldLeft(rule.text) { (acc, id) =>
-          if (acc.contains(s"<[$id") || i < 5) acc
-          else acc.replace(id, s"<[$id]>")
+          if (acc.contains(s"<[$id") || i < 5 || i > rules.size - 5) acc
+          else {
+            val replaced = acc.replace(id, s"<[$id]>")
+            replaced.filter(linkCharacters) match {
+              case s if s.contains("<[<[") => acc
+              case _ => replaced
+            }
+          }
         }
         rule.copy(text = text)
       }

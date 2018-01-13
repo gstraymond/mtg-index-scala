@@ -5,7 +5,6 @@ import fr.gstraymond.utils.Log
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.io.Codec.ISO8859
 import scala.io.Source
 
 object RulesScraper extends WizardsScraper with Log {
@@ -18,6 +17,6 @@ object RulesScraper extends WizardsScraper with Log {
     _ = log.info(s"scrap: $path -> $rulesTxt")
     bytes <- download(rulesTxt)
   } yield {
-    Source.fromBytes(bytes)(ISO8859).getLines().toSeq
+    Source.fromBytes(bytes)("CP1252").getLines().toSeq
   }
 }
