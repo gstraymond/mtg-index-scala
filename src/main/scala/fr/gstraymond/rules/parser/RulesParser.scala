@@ -38,6 +38,12 @@ object RulesParser {
           }
         }
         rule.copy(text = text)
+      }.foldLeft(Seq[Rule]()) { (acc, rule) =>
+        acc :+ (rule match {
+          case _ if rule.text.startsWith("Example:") =>
+            rule.copy(level = acc.last.level)
+          case _ => rule
+        })
       }
     }
   }
