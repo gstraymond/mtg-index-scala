@@ -87,7 +87,7 @@ object GathererEditionCodeScrapTask extends Task[Seq[ScrapedEdition]] {
 }
 
 object RulesScrapTask extends Task[Rules] {
-  override def process = RulesScraper.scrap.map(RulesParser.parse).map { rules =>
+  override def process = RulesScraper.scrap.map((RulesParser.parse _).tupled).map { rules =>
     storeRules(rules)
     rules
   }
@@ -164,7 +164,7 @@ object DEALTask extends Task[Seq[MTGCard]] {
       formats <- FormatScraper.scrap
       prices <- PriceScraper.scrap
       rawRules <- RulesScraper.scrap
-      rules = RulesParser.parse(rawRules)
+      rules = (RulesParser.parse _).tupled(rawRules)
       mtgCards <- AllSetConverter.convert(loadAllSet, formats, prices, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)

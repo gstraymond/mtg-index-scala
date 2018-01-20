@@ -16,12 +16,12 @@ def scalaVersion = "2.12"
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.+'
-    compile 'ch.qos.logback:logback-classic:1.+'
+    compile 'ch.qos.logback:logback-classic:1.2.+'
     compile "org.scala-lang:scala-library:$scalaVersion.+"
     compile "org.scala-lang:scala-compiler:$scalaVersion.+"
     compile "com.typesafe.play:play-json_$scalaVersion:2.6.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
-    compile 'org.jsoup:jsoup:1.8.+'
+    compile 'org.jsoup:jsoup:1.11.+'
     compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.13.+"
     compile "eu.bitwalker:UserAgentUtils:1.+"
     compile "ai.x:play-json-extensions_$scalaVersion:0.10.+"

@@ -7,7 +7,8 @@ case class Rule(id: Option[String],
                 link: Option[String],
                 level: Int)
 
-case class Rules(rules: Seq[Rule])
+case class Rules(filename: String,
+                 rules: Seq[Rule])
 
 object RuleFormats {
   implicit val ruleFormat: Format[Rule] = Json.format

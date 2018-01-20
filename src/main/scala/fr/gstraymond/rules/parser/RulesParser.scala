@@ -6,7 +6,8 @@ object RulesParser {
 
   private val linkCharacters = Set('<', '[', ']', '>')
 
-  def parse(lines: Seq[String]): Rules = {
+  def parse(filename: String,
+            lines: Seq[String]): Rules = {
     val nonEmptyLines = lines.filter(_.nonEmpty)
     val glossaryIndex = nonEmptyLines.indexOf("Glossary")
     val rules = nonEmptyLines.zipWithIndex.map {
@@ -25,8 +26,9 @@ object RulesParser {
 
     val ids = rules.flatMap(_.id).filter(_.length > 2).sortBy(-_.length)
 
-    Rules {
-      rules.zipWithIndex.map { case (rule, i) =>
+    Rules(
+      filename = filename,
+      rules = rules.zipWithIndex.map { case (rule, i) =>
         val text = ids.foldLeft(rule.text) { (acc, id) =>
           if (acc.contains(s"<[$id") || i < 5 || i > rules.size - 5) acc
           else {
@@ -45,7 +47,7 @@ object RulesParser {
           case _ => rule
         })
       }
-    }
+    )
   }
 
   private def parseLevel(maybeId: Option[String]): Int =
