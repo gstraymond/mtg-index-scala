@@ -42,7 +42,7 @@ object AllSetConverter extends Log
     }.mapValues(_.head)
 
     val allCards = loadAllSet.values.flatMap { edition =>
-      val editionWithNoCards = edition.copy(cards = Seq.empty)
+      val editionWithNoCards = edition.copy(cards = Nil)
       edition.cards.map { card =>
         card -> editionWithNoCards
       }
@@ -117,7 +117,7 @@ object AllSetConverter extends Log
           )
         },
         abilities = _abilities(firstCard.name, description, abilities),
-        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions.map(_.name).distinct, formats),
+        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions, formats, firstCard.name),
         artists = cards.map(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,

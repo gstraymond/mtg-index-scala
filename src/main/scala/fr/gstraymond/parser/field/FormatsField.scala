@@ -1,8 +1,13 @@
 package fr.gstraymond.parser.field
 
-import fr.gstraymond.model.{MTGJsonLegality, ScrapedFormat}
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter.ISO_DATE
+import java.time.temporal.ChronoUnit.MONTHS
 
-trait FormatsField {
+import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality, ScrapedFormat}
+import fr.gstraymond.utils.Log
+
+trait FormatsField extends Log {
 
   val allFormats = Seq(
     "Vintage",
@@ -12,7 +17,24 @@ trait FormatsField {
     "Standard"
   )
 
-  def _formats(formats: Seq[MTGJsonLegality], editions: Seq[String], scrapedFormats: Seq[ScrapedFormat]): Seq[String] = {
+  private val THREE_MONTH_AGO = LocalDate.now().minus(3, MONTHS)
+
+  def _formats(formats: Seq[MTGJsonLegality],
+               editions: Seq[MTGJsonEdition],
+               scrapedFormats: Seq[ScrapedFormat],
+               title: String): Seq[String] = {
+
+    val notInStandard = formats.forall(_.format != "Standard")
+    val isNewEdition = editions.map(_.releaseDate).map(LocalDate.parse(_, ISO_DATE)).exists(_.isAfter(THREE_MONTH_AGO))
+
+    val standard =
+      if (notInStandard && isNewEdition) {
+        scrapedFormats
+          .filter(format => format.availableSets.isEmpty || format.availableSets.exists(editions.map(_.name).contains))
+          .filterNot(_.bannedCards.contains(title))
+          .map(_.name.capitalize)
+      } else Nil
+
     val legalities =
       formats
         .filter(l => allFormats.contains(l.format))
@@ -25,7 +47,7 @@ trait FormatsField {
 //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
 //    }.map(_.name)
 
-    legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality)// ++ standardModern
+    legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality) ++ standard
   }
 
   def _old_formats(formats: Seq[ScrapedFormat], `type`: Option[String], description: Seq[String], title: String, editionNames: Seq[String]) = {
