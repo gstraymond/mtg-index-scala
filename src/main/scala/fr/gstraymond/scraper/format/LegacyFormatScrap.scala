@@ -8,10 +8,7 @@ object LegacyFormatScrap extends FormatScrap {
   override val name = "legacy"
   override val path = "/Legacy"
 
-  override def bannedCards(doc: Document) = {
-    doc
-      .select("div#mw-content-text").asScala
-      .filter(_.select("ul a.autocardhref").asScala.nonEmpty).head
-      .select("ul a.autocardhref").asScala.map(_.text())
-  }
+  override def bannedCards(doc: Document): Seq[String] =
+    doc.select(".div-col > ul:nth-child(1) > li > a")
+      .asScala.map(_.text())
 }

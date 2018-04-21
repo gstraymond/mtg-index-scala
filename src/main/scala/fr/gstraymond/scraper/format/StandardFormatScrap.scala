@@ -8,16 +8,11 @@ object StandardFormatScrap extends FormatScrap {
   override val name = "Standard"
   override val path = "/Standard"
 
-  override def bannedCards(doc: Document) = {
-    doc
-      .select("ul").asScala
-      .filter(_.select("li a.autocardhref").asScala.nonEmpty).head
-      .select("li a.autocardhref").asScala.map(_.text())
-  }
+  override def bannedCards(doc: Document): Seq[String] =
+    doc.select("#mw-content-text > ul:nth-child(16) > li > a")
+      .asScala.map(_.text())
 
-  override def currentRotation(doc: Document) = {
-    doc
-      .select("div#mw-content-text ul").asScala(2)
-      .select("a").asScala.map(_.text().split(" \\(").head)
-  }
+  override def currentRotation(doc: Document): Seq[String] =
+    doc.select(".wikitable > tbody:nth-child(1) > tr > td > i > a")
+      .asScala.map(_.text().split(" \\(").head)
 }

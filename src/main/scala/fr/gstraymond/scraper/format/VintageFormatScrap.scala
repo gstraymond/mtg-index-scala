@@ -8,16 +8,13 @@ object VintageFormatScrap extends FormatScrap {
   override val name = "vintage"
   override val path = "/Vintage"
 
-  override def bannedCards(doc: Document) = {
-    doc
-      .select("#mw-content-text ul").asScala
-      .filter(_.select("a.autocardhref").asScala.nonEmpty).head
-      .select("a.autocardhref").asScala.map(_.text()) ++
+  override def bannedCards(doc: Document): Seq[String] =
+    doc.select("#mw-content-text > ul:nth-child(8) > li > a")
+      .asScala.drop(3).map(_.text()) ++
       // Any card referencing ante
       // Any card with Conspiracy card type
       Seq(
         "description->playing for ante",
         "type->conspiracy"
       )
-  }
 }
