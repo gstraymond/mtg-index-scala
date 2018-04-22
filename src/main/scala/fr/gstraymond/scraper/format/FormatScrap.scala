@@ -2,6 +2,8 @@ package fr.gstraymond.scraper.format
 
 import org.jsoup.nodes.Document
 
+import scala.collection.JavaConverters._
+
 trait FormatScrap {
 
   def name: String
@@ -13,4 +15,13 @@ trait FormatScrap {
   def bannedCards(doc: Document): Seq[String] = Seq.empty
 
   def restrictedCards(doc: Document): Seq[String] = Seq.empty
+
+  implicit class DocScrap(doc: Document) {
+    def getTexts(cssPath: String): Seq[String] = {
+      val result = doc.select(cssPath).asScala.map(_.text())
+      assert(result.nonEmpty, s"no result for $name [$cssPath]")
+      result
+    }
+  }
+
 }
