@@ -14,6 +14,7 @@ object FormatScraper extends MTGSalvationScraper with Log{
     //ExtendedFormatScrap,
     ModernFormatScrap,
     LegacyFormatScrap,
+    CommanderFormatScrap,
     VintageFormatScrap,
     //VintageRestrictedFormatScrap
   )

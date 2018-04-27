@@ -160,11 +160,11 @@ object DEALTask extends Task[Seq[MTGCard]] {
   override def process = {
     for {
       _ <- AllSetScraper.scrap
+      rawRules <- RulesScraper.scrap
+      rules = (RulesParser.parse _).tupled(rawRules)
       abilities <- AbilityScraper.scrap
       formats <- FormatScraper.scrap
       prices <- PriceScraper.scrap
-      rawRules <- RulesScraper.scrap
-      rules = (RulesParser.parse _).tupled(rawRules)
       mtgCards <- AllSetConverter.convert(loadAllSet, formats, prices, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)

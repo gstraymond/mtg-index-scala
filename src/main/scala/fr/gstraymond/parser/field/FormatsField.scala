@@ -17,7 +17,7 @@ trait FormatsField extends Log {
     "Standard"
   )
 
-  private val THREE_MONTH_AGO = LocalDate.now().minus(3, MONTHS)
+  private val SIX_MONTH_AGO = LocalDate.now().minus(6, MONTHS)
 
   def _formats(formats: Seq[MTGJsonLegality],
                editions: Seq[MTGJsonEdition],
@@ -25,13 +25,14 @@ trait FormatsField extends Log {
                title: String): Seq[String] = {
 
     val notInStandard = formats.forall(_.format != "Standard")
-    val isNewEdition = editions.map(_.releaseDate).map(LocalDate.parse(_, ISO_DATE)).exists(_.isAfter(THREE_MONTH_AGO))
+    val isNewEdition = editions.map(_.releaseDate).map(LocalDate.parse(_, ISO_DATE)).exists(_.isAfter(SIX_MONTH_AGO))
 
     val standard =
       if (notInStandard && isNewEdition) {
-        scrapedFormats
+        (scrapedFormats
           .filter(format => format.availableSets.isEmpty || format.availableSets.exists(editions.map(_.name).contains))
           .filterNot(_.bannedCards.contains(title))
+          ++ scrapedFormats.find(_.name == "Modern").filterNot(_.bannedCards.contains(title)).toSeq) // if modern is not up to date
           .map(_.name.capitalize)
       } else Nil
 
@@ -47,7 +48,7 @@ trait FormatsField extends Log {
 //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
 //    }.map(_.name)
 
-    legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality) ++ standard
+    (legalities.map(_.format) ++ Seq(restricted).flatten.map(_.legality) ++ standard).distinct
   }
 
   def _old_formats(formats: Seq[ScrapedFormat], `type`: Option[String], description: Seq[String], title: String, editionNames: Seq[String]) = {

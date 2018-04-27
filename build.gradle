@@ -230,7 +230,7 @@ task DEAL(type: JavaExec, dependsOn: classes) {
     description "DEAL"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
-    maxHeapSize = '850m'
+    maxHeapSize = '1g'
 }
 
 // UTILS
