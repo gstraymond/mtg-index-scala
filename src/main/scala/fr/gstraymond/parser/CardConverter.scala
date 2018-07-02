@@ -41,6 +41,8 @@ object CardConverter extends Log
             frenchTitle = _frenchTitle(cards),
             castingCost = castingCost,
             colors = _colors(castingCost, hints, None),
+            dualColors = Nil,
+            tripleColors = Nil,
             convertedManaCost = _cmc(castingCost),
             `type` = `type`,
             description = _desc(rawCard),

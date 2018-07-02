@@ -9,6 +9,8 @@ case class MTGCard(
   frenchTitle: Option[String],
   castingCost: Option[String],
   colors: Seq[String],
+  dualColors: Seq[String],
+  tripleColors: Seq[String],
   convertedManaCost: Int,
   `type`: String,
   description: String,

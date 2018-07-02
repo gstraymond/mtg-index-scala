@@ -31,7 +31,11 @@ object Color {
     X, COLORLESS
   )
 
-  val ONLY_COLORED_SYMBOLS = ALL_COLORS_SYMBOLS.filter(_.colored)
+  val ONLY_COLORED_SYMBOLS: Seq[Color] = ALL_COLORS_SYMBOLS.filter(_.colored)
+
+  val ALL_DUAL_COLORS: Seq[Seq[Color]] = ONLY_COLORED_SYMBOLS.toSet.subsets(2).toSeq.map(_.toSeq.sortBy(_.lbl))
+
+  val ALL_TRIPLE_COLORS: Seq[Seq[Color]] = ONLY_COLORED_SYMBOLS.toSet.subsets(3).toSeq.map(_.toSeq.sortBy(_.lbl))
 
   // Azorius Senate
   val WU = "WU"

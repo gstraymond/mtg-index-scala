@@ -79,6 +79,8 @@ object AllSetConverter extends Log
         frenchTitle = cards.flatMap(_.foreignNames).flatten.find(_.language == "French").map(_.name),
         castingCost = castingCost,
         colors = _colors(castingCost, hints, firstCard.colors),
+        dualColors = _dualColors(castingCost, firstCard.colors),
+        tripleColors = _tripleColors(castingCost, firstCard.colors),
         convertedManaCost = firstCard.cmc.map(_.toInt).getOrElse(0),
         `type` = firstCard.`type`,
         description = firstCard.text.getOrElse(""),

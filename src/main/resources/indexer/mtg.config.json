@@ -138,6 +138,32 @@
             }
           }
         },
+        "dualColors": {
+          "type": "multi_field",
+          "fields": {
+            "dualColors": {
+              "type": "string",
+              "index": "analyzed"
+            },
+            "exact": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "tripleColors": {
+          "type": "multi_field",
+          "fields": {
+            "tripleColors": {
+              "type": "string",
+              "index": "analyzed"
+            },
+            "exact": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
         "editions": {
           "type": "multi_field",
           "fields": {
