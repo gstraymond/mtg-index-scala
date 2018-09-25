@@ -60,7 +60,7 @@ object AllSetConverter extends Log
       }
       val cards = groupedCardsSorted.map(_._1)
       val editions = groupedCardsSorted.map(_._2)
-      val prices = groupedCardsSorted.flatMap(_._3)
+      val prices = groupedCardsSorted.flatMap(_._3).map(_.price)
       val firstCard = cards.head
       val castingCost = firstCard.manaCost.map {
         _.replace("}{", " ")
@@ -113,7 +113,8 @@ object AllSetConverter extends Log
             editionImage = stdEditionCode.map { code =>
               s"${URIs.pictureHost}/sets/$code/$rarityCode.gif"
             },
-            price = price,
+            price = price.map(_.price),
+            foilPrice = price.flatMap(_.foilPrice),
             block = edition.block,
             multiverseId = card.multiverseid
           )
@@ -142,17 +143,19 @@ object AllSetConverter extends Log
     result
   }
 
-  def _price(name: String, codes: Seq[String], priceMap: mutable.Map[(String, String), ScrapedPrice]) = {
+  private def _price(name: String,
+             codes: Seq[String],
+             priceMap: mutable.Map[(String, String), ScrapedPrice]) = {
 
-    def getPrice(name: String, code: String): Option[Double] = {
+    def getPrice(name: String, code: String): Option[ScrapedPrice] = {
       val k = name -> priceCodeMap.getOrElse(code, code.toLowerCase)
-      priceMap.get(k).map {
+      priceMap.get(k).map { price =>
         priceMap remove k
-        _.price
+        price
       }
     }
 
-    codes.foldLeft(None: Option[Double]) {
+    codes.foldLeft(None: Option[ScrapedPrice]) {
       (acc, code) =>
         acc.orElse {
           getPrice(name, code)

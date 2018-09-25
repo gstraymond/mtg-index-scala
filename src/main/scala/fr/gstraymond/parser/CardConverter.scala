@@ -153,6 +153,7 @@ object CardConverter extends Log
       image = Some(s"${URIs.pictureHost}/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}-$title.jpg"),
       editionImage = editionImage,
       price = scrapedCard.price.map(_.value),
+      foilPrice = None,
       block = None,
       multiverseId = None
     )

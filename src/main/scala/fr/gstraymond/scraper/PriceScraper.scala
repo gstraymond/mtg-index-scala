@@ -15,15 +15,28 @@ object PriceScraper extends MTGGoldFishScraper {
 
   def scrap: Future[Seq[ScrapedPrice]] = {
     scrapEditionUrls.flatMap { editionUrls =>
-      val init = Future.successful(Seq.empty[ScrapedPrice])
+      val init: Future[Seq[ScrapedPrice]] = Future.successful(Nil)
       editionUrls.foldLeft(init) { (acc, editionUrl) =>
         for {
           prices <- acc
           _ = Thread.sleep(100)
-          newPrices <- scrapEditionPrices(editionUrl)
+          eventualPrices = scrapEditionPrices(editionUrl)
+          eventualFoilPrices = scrapEditionPrices(editionUrl + "_F")
+          newPrices <- eventualPrices
+          newPricesFoil <- eventualFoilPrices
         } yield {
-          prices ++ newPrices
+          prices ++ mergePrices(newPrices, newPricesFoil)
         }
+      }
+    }
+  }
+
+  private def mergePrices(newPrices: Seq[ScrapedPrice],
+                          newPricesFoil: Seq[ScrapedPrice]): Seq[ScrapedPrice] = {
+    val foilMap = newPricesFoil.groupBy(_.card).mapValues(_.head)
+    newPrices.map { price =>
+      foilMap.get(price.card).fold(price) { foil =>
+        price.copy(foilPrice = Some(foil.price))
       }
     }
   }
@@ -46,7 +59,9 @@ object PriceScraper extends MTGGoldFishScraper {
 
   private def priceAsMap(card: ScrapedPrice): Seq[(String, ScrapedPrice)] = {
     def getTitle1(t1: String, t2: String) = normalize(s"$t1 ($t1/$t2)")
+
     def getTitle2(t1: String, t2: String) = normalize(s"$t2 ($t1/$t2)")
+
     def normalize(text: String): String = {
       StringUtils.normalize(text) match {
         case t if t.endsWith(")") && !t.contains("/") => t.split(" \\(").head
@@ -89,14 +104,13 @@ object PriceScraper extends MTGGoldFishScraper {
         .filter(_.select("td").asScala.nonEmpty)
         .map { tr =>
           tr.select("td").asScala match {
-            case Seq(card, _, _, price, daily, _, weekly, _) =>
+            case Seq(card, _, _, price, _, _, _, _) =>
               ScrapedPrice(
                 card.text(),
                 editionCode,
                 editionName,
                 parseDouble(price.text()),
-                parseDouble(daily.text()),
-                parseDouble(weekly.text())
+                None
               )
           }
         }
@@ -137,7 +151,7 @@ object PriceScraper extends MTGGoldFishScraper {
     )
 
     val editionCodeMap = cardEditions.collect {
-      case (name, code) if priceEditions.get(name).isDefined => code -> priceEditions.get(name).get
+      case (name, code) if priceEditions.contains(name) => code -> priceEditions(name)
     }.toMap ++ editionMapping
 
 
@@ -148,13 +162,10 @@ object PriceScraper extends MTGGoldFishScraper {
         val key = s"$editionCode$sep${StringUtils.normalize(card.title)}"
         mutablePrices
           .get(key)
-          .map { p =>
+          .fold(card) { p =>
             mutablePrices.remove(key)
-            val price = Price(p.price, p.daily, p.weekly)
-            card.copy(price = Some(price))
-          }.getOrElse {
-          card
-        }
+            card.copy(price = Some(Price(p.price, p.foilPrice)))
+          }
       }
 
     val editionCodes = mutablePrices.keys.map(_.split(sep).head)

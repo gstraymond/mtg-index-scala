@@ -13,6 +13,7 @@ case class Publication(
   image: Option[String],
   editionImage: Option[String],
   price: Option[Double],
+  foilPrice: Option[Double],
   block: Option[String],
   multiverseId: Option[Long]
 )

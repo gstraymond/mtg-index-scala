@@ -1,16 +1,13 @@
 package fr.gstraymond.model
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
-case class ScrapedPrice(
-  card: String,
-  editionCode: String,
-  editionName: String,
-  price: Double,
-  daily: Double,
-  weekly: Double
-)
+case class ScrapedPrice(card: String,
+                        editionCode: String,
+                        editionName: String,
+                        price: Double,
+                        foilPrice: Option[Double])
 
 object ScrapedPriceFormat {
-  implicit val scrapedPriceFormat = Json.format[ScrapedPrice]
+  implicit val scrapedPriceFormat: Format[ScrapedPrice] = Json.format
 }
