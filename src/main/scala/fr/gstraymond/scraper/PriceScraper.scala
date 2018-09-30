@@ -23,7 +23,7 @@ object PriceScraper extends MTGGoldFishScraper {
           eventualPrices = scrapEditionPrices(editionUrl)
           eventualFoilPrices = scrapEditionPrices(editionUrl + "_F")
           newPrices <- eventualPrices
-          newPricesFoil <- eventualFoilPrices
+          newPricesFoil <- eventualFoilPrices.map(_.map(p => p.copy(price = 0, foilPrice = Some(p.price))))
         } yield {
           prices ++ mergePrices(newPrices, newPricesFoil)
         }
@@ -33,11 +33,12 @@ object PriceScraper extends MTGGoldFishScraper {
 
   private def mergePrices(newPrices: Seq[ScrapedPrice],
                           newPricesFoil: Seq[ScrapedPrice]): Seq[ScrapedPrice] = {
-    val foilMap = newPricesFoil.groupBy(_.card).mapValues(_.head)
-    newPrices.map { price =>
-      foilMap.get(price.card).fold(price) { foil =>
-        price.copy(foilPrice = Some(foil.price))
-      }
+    (newPrices ++ newPricesFoil).groupBy(_.card).values.toSeq.map {
+      case Seq(p) => p
+      case Seq(p1, p2) => p1.copy(
+        price = p1.price + p2.price,
+        foilPrice = p1.foilPrice.orElse(p2.foilPrice)
+      )
     }
   }
 
