@@ -116,8 +116,8 @@ object PriceScraper extends MTGGoldFishScraper {
           }
         }
     }.recover { case e: Exception =>
-      log.error(s"error parsing $host $path", e)
-      Seq.empty
+      log.error(s"error parsing $host $path -- ${e.getMessage}")
+      Nil
     }
   }
 

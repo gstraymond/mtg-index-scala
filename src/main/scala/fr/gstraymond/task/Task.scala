@@ -12,7 +12,7 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import scala.io.Source
+import scala.io.{Codec, Source}
 import scala.util.control.NonFatal
 
 /**
@@ -119,7 +119,7 @@ trait Task[A] extends Log {
   }
 
   protected def loadAllSet: Map[String, MTGJsonEdition] = {
-    val json = Source.fromFile(s"${FileUtils.scrapPath}/AllSets-x.json").mkString
+    val json = Source.fromFile(s"${FileUtils.scrapPath}/AllSets-x.json")(Codec.UTF8).mkString
     Json.parse(json).as[Map[String, MTGJsonEdition]]
   }
 

@@ -13,6 +13,7 @@ appender("STDOUT", ConsoleAppender) {
     }
 }
 
+logger 'org.asynchttpclient', INFO
 logger 'com.ning', WARN
 logger 'io.netty', INFO
 logger 'org.asynchttpclient.netty', INFO
