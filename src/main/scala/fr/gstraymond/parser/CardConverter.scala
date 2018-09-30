@@ -50,7 +50,7 @@ object CardConverter extends Log
             toughness = _toughness(rawCard),
             editions = _editions(cards),
             rarities = _rarities(cards),
-            priceRanges = _priceRanges(cards.flatMap(_.price.map(_.value))),
+            priceRanges = _priceRanges(cards.flatMap(_.price.flatMap(_.value))),
             publications = _publications(cards),
             abilities = _abilities(rawCard.title.getOrElse(""), rawCard.description, Nil), // FIXME
             formats = _old_formats(formats, rawCard.`type`, rawCard.description, title, scrapedCards.map(_.edition.name)),
@@ -152,7 +152,7 @@ object CardConverter extends Log
       rarityCode = rarityCode,
       image = Some(s"${URIs.pictureHost}/pics/${scrapedCard.edition.code}/${scrapedCard.collectorNumber}-$title.jpg"),
       editionImage = editionImage,
-      price = scrapedCard.price.map(_.value),
+      price = scrapedCard.price.flatMap(_.value),
       foilPrice = None,
       block = None,
       multiverseId = None

@@ -60,7 +60,7 @@ object AllSetConverter extends Log
       }
       val cards = groupedCardsSorted.map(_._1)
       val editions = groupedCardsSorted.map(_._2)
-      val prices = groupedCardsSorted.flatMap(_._3).map(_.price)
+      val prices = groupedCardsSorted.flatMap(_._3).flatMap(_.price)
       val firstCard = cards.head
       val castingCost = firstCard.manaCost.map {
         _.replace("}{", " ")
@@ -113,7 +113,7 @@ object AllSetConverter extends Log
             editionImage = stdEditionCode.map { code =>
               s"${URIs.pictureHost}/sets/$code/$rarityCode.gif"
             },
-            price = price.map(_.price),
+            price = price.flatMap(_.price),
             foilPrice = price.flatMap(_.foilPrice),
             block = edition.block,
             multiverseId = card.multiverseid

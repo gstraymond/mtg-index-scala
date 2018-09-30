@@ -5,7 +5,7 @@ import play.api.libs.json.{Format, Json}
 case class ScrapedPrice(card: String,
                         editionCode: String,
                         editionName: String,
-                        price: Double,
+                        price: Option[Double],
                         foilPrice: Option[Double])
 
 object ScrapedPriceFormat {

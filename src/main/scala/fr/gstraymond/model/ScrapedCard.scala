@@ -12,7 +12,7 @@ case class ScrapedCard(collectorNumber: String,
   val uniqueId = s"${edition.code} - $collectorNumber"
 }
 
-case class Price(value: Double,
+case class Price(value: Option[Double],
                  foil: Option[Double])
 
 object ScrapedCardFormat {

@@ -21,9 +21,9 @@ object PriceScraper extends MTGGoldFishScraper {
           prices <- acc
           _ = Thread.sleep(100)
           eventualPrices = scrapEditionPrices(editionUrl)
-          eventualFoilPrices = scrapEditionPrices(editionUrl + "_F")
+          eventualFoilPrices = scrapEditionPrices(editionUrl + "_F", foil = true)
           newPrices <- eventualPrices
-          newPricesFoil <- eventualFoilPrices.map(_.map(p => p.copy(price = 0, foilPrice = Some(p.price))))
+          newPricesFoil <- eventualFoilPrices
         } yield {
           prices ++ mergePrices(newPrices, newPricesFoil)
         }
@@ -36,7 +36,7 @@ object PriceScraper extends MTGGoldFishScraper {
     (newPrices ++ newPricesFoil).groupBy(_.card).values.toSeq.map {
       case Seq(p) => p
       case Seq(p1, p2) => p1.copy(
-        price = p1.price + p2.price,
+        price = p1.price.orElse(p2.price),
         foilPrice = p1.foilPrice.orElse(p2.foilPrice)
       )
     }
@@ -94,7 +94,7 @@ object PriceScraper extends MTGGoldFishScraper {
     }
   }
 
-  def scrapEditionPrices(path: String): Future[Seq[ScrapedPrice]] = {
+  def scrapEditionPrices(path: String, foil: Boolean = false): Future[Seq[ScrapedPrice]] = {
     def parseDouble(str: String) = str.replace(",", "").toDouble
 
     scrap(path).map { doc =>
@@ -108,10 +108,16 @@ object PriceScraper extends MTGGoldFishScraper {
             case Seq(card, _, _, price, _, _, _, _) =>
               ScrapedPrice(
                 card.text(),
-                editionCode,
-                editionName,
-                parseDouble(price.text()),
-                None
+                editionCode match {
+                  case _ if foil => editionCode.dropRight(" f".length)
+                  case _ => editionCode
+                },
+                editionName match {
+                  case _ if foil => editionName.dropRight(" Foils".length)
+                  case _ => editionName
+                },
+                if (foil) None else Some(parseDouble(price.text())),
+                if (foil) Some(parseDouble(price.text())) else None
               )
           }
         }
