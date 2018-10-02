@@ -12,14 +12,14 @@ class CardConverterLandTest extends Specification {
     "Tundra" in {
       _land(
         "Land — Plains Island",
-        "({T}: Add {W} or {U} to your mana pool.)"
+        "({T}: Add {W} or {U}.)"
       ) === Seq("Dual Land", "Dual Basic Land", "Produce Blue Mana", "Produce White Mana")
     }
 
     "Gavony Township" in {
       _land(
         "Land",
-        "{T}: Add {C} to your mana pool.",
+        "{T}: Add {C}.",
         "{2}{G}{W}, {T}: Put a +1/+1 counter on each creature you control."
       ) === Seq("Produce Colorless Mana")
     }
@@ -29,7 +29,7 @@ class CardConverterLandTest extends Specification {
         "Land",
         "Graypelt Refuge enters the battlefield tapped.",
         "When Graypelt Refuge enters the battlefield, you gain 1 life.",
-        "{T}: Add {G} or {W} to your mana pool."
+        "{T}: Add {G} or {W}."
       ) === Seq("Dual Land", "Produce Green Mana", "Produce White Mana")
     }
 
@@ -37,15 +37,15 @@ class CardConverterLandTest extends Specification {
       _land(
         "Land",
         "Jungle Shrine enters the battlefield tapped.",
-        "{T}: Add {R}, {G}, or {W} to your mana pool."
+        "{T}: Add {R}, {G}, or {W}."
       ) === Seq("Triple Land", "Produce Red Mana", "Produce Green Mana", "Produce White Mana")
     }
 
     "Crystal Quarry" in {
       _land(
         "Land",
-        "{T}: Add {C} to your mana pool.",
-        "{5}, {T}: Add {W}{U}{B}{R}{G} to your mana pool."
+        "{T}: Add {C}.",
+        "{5}, {T}: Add {W}{U}{B}{R}{G}."
       ) === Seq("Produce Black Mana", "Produce Blue Mana", "Produce Red Mana", "Produce Green Mana", "Produce White Mana", "Produce Colorless Mana")
     }
 
@@ -67,7 +67,7 @@ class CardConverterLandTest extends Specification {
     "Blinkmoth Nexus" in {
       _land(
         "Land",
-        "{T}: Add {C} to your mana pool.",
+        "{T}: Add {C}.",
         "{1}: Blinkmoth Nexus becomes a 1/1 Blinkmoth artifact creature with flying until end of turn. It's still a land.",
         "{1}, {T}: Target Blinkmoth creature gets +1/+1 until end of turn."
       ) === Seq("Man land", "Produce Colorless Mana")
