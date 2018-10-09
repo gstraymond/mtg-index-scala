@@ -25,9 +25,9 @@ object FormatScraper extends MTGSalvationScraper with Log{
         scrap(scraper.path, followRedirect = true).map { doc =>
           val format = ScrapedFormat(
             scraper.name,
-            scraper.currentRotation(doc),
-            scraper.bannedCards(doc),
-            scraper.restrictedCards(doc)
+            scraper.currentRotation(doc).toSet,
+            scraper.bannedCards(doc).toSet,
+            scraper.restrictedCards(doc).toSet
           )
           log.info(s"format scraped: $format")
           format
