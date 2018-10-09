@@ -2,7 +2,7 @@ package fr.gstraymond.parser.field
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_DATE
-import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.YEARS
 
 import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality, ScrapedFormat}
 import fr.gstraymond.utils.Log
@@ -17,7 +17,7 @@ trait FormatsField extends Log {
     "Standard"
   )
 
-  private val SIX_MONTH_AGO = LocalDate.now().minus(6, MONTHS)
+  private val STANDARD_EXP = LocalDate.now().minus(2, YEARS)
 
   def _formats(formats: Seq[MTGJsonLegality],
                editions: Seq[MTGJsonEdition],
@@ -25,7 +25,7 @@ trait FormatsField extends Log {
                title: String): Seq[String] = {
 
     val notInStandard = formats.forall(_.format != "Standard")
-    val isNewEdition = editions.map(_.releaseDate).map(LocalDate.parse(_, ISO_DATE)).exists(_.isAfter(SIX_MONTH_AGO))
+    val isNewEdition = editions.map(_.releaseDate).map(LocalDate.parse(_, ISO_DATE)).exists(_.isAfter(STANDARD_EXP))
 
     val standard =
       if (notInStandard && isNewEdition) {
