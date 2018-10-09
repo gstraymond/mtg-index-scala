@@ -24,11 +24,10 @@ trait FormatsField extends Log {
                scrapedFormats: Seq[ScrapedFormat],
                title: String): Seq[String] = {
 
-    val notInStandard = formats.forall(_.format != "Standard")
     val isNewEdition = editions.map(_.releaseDate).map(LocalDate.parse(_, ISO_DATE)).exists(_.isAfter(STANDARD_EXP))
 
     val standard =
-      if (notInStandard && isNewEdition) {
+      if (isNewEdition) {
         (scrapedFormats
           .filter(format => format.availableSets.isEmpty || format.availableSets.exists(editions.map(_.name).contains))
           .filterNot(_.bannedCards.contains(title))
