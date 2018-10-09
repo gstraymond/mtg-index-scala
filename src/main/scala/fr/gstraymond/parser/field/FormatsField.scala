@@ -21,7 +21,7 @@ trait FormatsField extends Log {
                scrapedFormats: Seq[ScrapedFormat],
                title: String): Seq[String] = {
 
-    val editionNames = editions.map(_.name).toSet
+    val editionNames = editions.map(_.name.replace(" Core Set", "")).toSet
 
     val newLegalities =
         scrapedFormats
