@@ -7,7 +7,7 @@ import fr.gstraymond.utils.Log
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object FormatScraper extends MTGSalvationScraper with Log{
+object FormatScraper extends MTGSalvationScraper with Log {
 
   val scrapers = Seq(
     StandardFormatScrap,
@@ -15,24 +15,22 @@ object FormatScraper extends MTGSalvationScraper with Log{
     ModernFormatScrap,
     LegacyFormatScrap,
     CommanderFormatScrap,
+    PauperFormatScrap,
     VintageFormatScrap,
     //VintageRestrictedFormatScrap
   )
 
-  def scrap: Future[Seq[ScrapedFormat]] = {
-    Future.sequence {
-      scrapers.map { scraper =>
-        scrap(scraper.path, followRedirect = true).map { doc =>
-          val format = ScrapedFormat(
-            scraper.name,
-            scraper.currentRotation(doc).toSet,
-            scraper.bannedCards(doc).toSet,
-            scraper.restrictedCards(doc).toSet
-          )
-          log.info(s"format scraped: $format")
-          format
-        }
+  def scrap: Future[Seq[ScrapedFormat]] =
+    Future.traverse(scrapers) { scraper =>
+      scrap(scraper.path, followRedirect = true).map { doc =>
+        val format = ScrapedFormat(
+          scraper.name,
+          scraper.currentRotation(doc).toSet,
+          scraper.bannedCards(doc).toSet,
+          scraper.restrictedCards(doc).toSet
+        )
+        log.info(s"format scraped: $format")
+        format
       }
     }
-  }
 }

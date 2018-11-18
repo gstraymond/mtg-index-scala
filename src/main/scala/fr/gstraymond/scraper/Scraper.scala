@@ -62,14 +62,6 @@ trait Scraper extends Log {
   }
 }
 
-trait MagicCardsInfoScraper extends Scraper {
-  override val host = "magiccards.info"
-}
-
-trait MTGPriceScraper extends Scraper {
-  override val host = "www.mtgprice.com"
-}
-
 trait MTGGoldFishScraper extends Scraper {
   override val host = "www.mtggoldfish.com"
 }
@@ -77,10 +69,6 @@ trait MTGGoldFishScraper extends Scraper {
 trait MTGSalvationScraper extends Scraper {
   override val host = "mtgsalvation.gamepedia.com"
   override val protocol = "http"
-}
-
-trait YawgatogScraper extends Scraper {
-  override val host = "www.yawgatog.com"
 }
 
 trait GathererScraper extends Scraper {

@@ -3,8 +3,8 @@ package fr.gstraymond.dl
 import java.io.{File, FileOutputStream}
 
 import fr.gstraymond.constant.URIs
-import fr.gstraymond.model.{MTGCard, Publication}
-import fr.gstraymond.scraper.{GathererScraper, MagicCardsInfoScraper}
+import fr.gstraymond.model.MTGCard
+import fr.gstraymond.scraper.GathererScraper
 import fr.gstraymond.utils.{Log, StringUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -52,7 +52,7 @@ object CardPictureDownloader extends GathererScraper with Log {
   }
 
 
-  def formatTitle(card: MTGCard) = {
+  def formatTitle(card: MTGCard): String = {
     def name = StringUtils.normalize(card.title)
     s"$name.jpg"
   }

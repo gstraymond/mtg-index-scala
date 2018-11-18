@@ -12,8 +12,10 @@ object AbilityScraper extends WikipediaScraper with Log {
 
   def scrap: Future[Seq[String]] =
     scrap(path).map { doc =>
-      val abilities = doc.select("h3 span.mw-headline").asScala.map(_.text)
+      val cssPath = "h3 span.mw-headline"
+      val abilities = doc.select(cssPath).asScala.map(_.text)
       log.info(abilities.mkString(", "))
+      assert(abilities.nonEmpty, s"no result for ${getClass.getSimpleName} [$cssPath]")
       abilities
     }
 }

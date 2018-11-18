@@ -9,9 +9,7 @@ object FileUtils {
   val mainPath = "src/main/resources"
 
   val scrapPath = s"$mainPath/scrap"
-  val oraclePath = s"$mainPath/oracle"
   val outputPath = s"$mainPath/output"
-  val cachePath = s"$mainPath/cache"
 
   def storeJson(file: java.io.File, json: JsValue) {
     val writer = new java.io.PrintWriter(file)

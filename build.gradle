@@ -10,8 +10,6 @@ repositories {
     maven { url 'http://repo.typesafe.com/typesafe/releases' }
 }
 
-// https://github.com/gradle/gradle/tree/master/subprojects/docs/src/samples/scala
-
 def scalaVersion = "2.12"
 
 dependencies {
@@ -28,43 +26,6 @@ dependencies {
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"
-}
-
-task oracleConvert(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.OracleConvertTask'
-    description "Import data"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
-
-task cardConvert(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.CardConvertTask'
-    description "convert raw card -> mtg card"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-    maxHeapSize = '512m'
-}
-
-task setCardConvert(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.SetCardConvertTask'
-    description "convert mtg card -> set mtg card"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
-
-task fullScrap(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.FullScrapTask'
-    description "Scrap cards + prices"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-    maxHeapSize = '512m'
-}
-
-task cardScrap(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.CardScrapTask'
-    description "Scrap cards"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
 }
 
 task priceScrap(type: JavaExec, dependsOn: classes) {
@@ -84,13 +45,6 @@ task priceProcess(type: JavaExec, dependsOn: classes) {
 task formatScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.FormatScrapTask'
     description "Scrap formats"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
-
-task releaseDateScrap(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.ReleaseDateScrapTask'
-    description "Scrap release date"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
@@ -189,28 +143,6 @@ task editionPictureDL(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
-task oracleScrap(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.OracleScrapTask'
-    description "Scrap oracle cards"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
-
-task editionCodeScrap(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.GathererEditionCodeScrapTask'
-    description "Scrap std edition code"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
-
-task doZeMagic(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.DoZeMagicTask'
-    description "DO EVERY-THING"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-    maxHeapSize = '512m'
-}
-
 task allSetScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.AllSetScrapTask'
     description "MTG Json all sets parse"
@@ -249,8 +181,8 @@ task parseLogs(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.11'
+wrapper {
+    version = '4.10.2'
 }
 
 test {
@@ -261,17 +193,10 @@ test {
     systemProperties 'logback.configurationFile': new File(projectDir, 'src/test/resources/logback-test.groovy').absolutePath
 }
 
-// START SNIPPET use-zinc
-tasks.withType(ScalaCompile) {
-    scalaCompileOptions.useAnt = false
-}
-// END SNIPPET use-zinc
-
 // START SNIPPET adjust-memory
 tasks.withType(ScalaCompile) {
     configure(scalaCompileOptions.forkOptions) {
         memoryMaximumSize = '1g'
-        jvmArgs = ['-XX:MaxPermSize=512m']
     }
 }
 // END SNIPPET adjust-memory

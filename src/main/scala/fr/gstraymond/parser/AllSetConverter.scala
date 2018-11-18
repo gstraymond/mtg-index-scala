@@ -73,6 +73,7 @@ object AllSetConverter extends Log
       val description = firstCard.text.map(_.split("\n").toSeq).getOrElse(Seq.empty)
       val hints = _hiddenHints(description)
       val urlTitle = StringUtils.normalize(firstCard.name)
+      val rarities = cards.map(_.rarity).distinct
       MTGCard(
         title = firstCard.name,
         altTitles = firstCard.names.map(_.filterNot(_ == firstCard.name)).getOrElse(Seq.empty),
@@ -87,7 +88,7 @@ object AllSetConverter extends Log
         power = firstCard.power,
         toughness = firstCard.toughness,
         editions = editions.map(_.name).distinct,
-        rarities = cards.map(_.rarity).distinct,
+        rarities = rarities,
         priceRanges = _priceRanges(prices),
         publications = groupedCardsSorted.map { case (card, edition, price) =>
           val rarity = card.rarity.replace("Basic ", "")
@@ -120,7 +121,7 @@ object AllSetConverter extends Log
           )
         },
         abilities = _abilities(firstCard.name, description, abilities),
-        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions, formats, firstCard.name),
+        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions, formats, firstCard.name, rarities),
         artists = cards.map(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
