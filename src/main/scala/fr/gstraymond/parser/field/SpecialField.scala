@@ -134,8 +134,10 @@ trait SpecialField {
 
   private val millKeywords = Seq(
     Seq(" put", " the top ", " of his or her library", " into his or her graveyard"),
+    Seq(" put", " the top ", " of their library", " into their graveyard"),
     Seq("Exile the top ", "opponent", " library"),
-    Seq("reveals cards from the top of his or her library", "puts those cards into his or her graveyard")
+    Seq("reveals cards from the top of his or her library", "puts those cards into his or her graveyard"),
+    Seq("reveals cards from the top of their library", "puts those cards into their graveyard")
   )
 
   private def isMill(card: SpecialCard) =

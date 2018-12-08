@@ -1,6 +1,8 @@
 package fr.gstraymond.task
 
-import java.io.File
+import java.io.{File, FileInputStream}
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 import fr.gstraymond.model._
 import fr.gstraymond.rules.model.Rules
@@ -12,7 +14,6 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import scala.io.{Codec, Source}
 import scala.util.control.NonFatal
 
 trait Task[A] extends Log {
@@ -88,32 +89,39 @@ trait Task[A] extends Log {
   }
 
   protected def loadAllSet: Map[String, MTGJsonEdition] = {
-    val json = Source.fromFile(s"${FileUtils.scrapPath}/AllSets-x.json")(Codec.UTF8).mkString
+    val json = new FileInputStream(s"${FileUtils.scrapPath}/AllSets.json")
     Json.parse(json).as[Map[String, MTGJsonEdition]]
   }
 
   protected def loadScrapedCards: Seq[ScrapedCard] = {
-    val json = Source.fromFile(s"${FileUtils.scrapPath}/cards.json").mkString
+    val json = new FileInputStream(s"${FileUtils.scrapPath}/cards.json")
     Json.parse(json).as[Seq[ScrapedCard]]
   }
 
+  protected def pricesUpToDate: Boolean = {
+    val prices = new File(s"${FileUtils.scrapPath}/prices.json")
+    val lastModified = Instant.ofEpochMilli(prices.lastModified())
+    log.info(s"pricesUpToDate: lastModified $lastModified")
+    prices.exists() && lastModified.isAfter(Instant.now.minus(1, ChronoUnit.DAYS))
+  }
+
   protected def loadPrices: Seq[ScrapedPrice] = {
-    val json = Source.fromFile(s"${FileUtils.scrapPath}/prices.json").mkString
+    val json = new FileInputStream(s"${FileUtils.scrapPath}/prices.json")
     Json.parse(json).as[Seq[ScrapedPrice]]
   }
 
   protected def loadFormats: Seq[ScrapedFormat] = {
-    val json = Source.fromFile(s"${FileUtils.scrapPath}/formats.json").mkString
+    val json = new FileInputStream(s"${FileUtils.scrapPath}/formats.json")
     Json.parse(json).as[Seq[ScrapedFormat]]
   }
 
   protected def loadMTGCards: Seq[MTGCard] = {
-    val json = Source.fromFile(s"${FileUtils.outputPath}/cards.json").mkString
+    val json = new FileInputStream(s"${FileUtils.outputPath}/cards.json")
     Json.parse(json).as[Seq[MTGCard]]
   }
 
   protected def loadRules: Seq[Rules] = {
-    val json = Source.fromFile(s"${FileUtils.outputPath}/rules.json").mkString
+    val json = new FileInputStream(s"${FileUtils.outputPath}/rules.json")
     Seq(Json.parse(json).as[Rules])
   }
 

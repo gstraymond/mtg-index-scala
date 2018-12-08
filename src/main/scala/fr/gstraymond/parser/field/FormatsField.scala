@@ -11,14 +11,17 @@ trait FormatsField extends Log {
     "Legacy",
   )
 
+  val excludedFormats = Set(
+    "1v1", "brawl", "duel", "frontier", "pauper", "penny", "future"
+  )
+
   val newFormats = Set(
     "modern",
     "standard",
   )
 
   private val pauperRarities = Set(
-    "Common",
-    "Basic Land"
+    "common"
   )
 
   def _formats(formats: Seq[MTGJsonLegality],
@@ -27,19 +30,21 @@ trait FormatsField extends Log {
                title: String,
                rarities: Seq[String]): Seq[String] = {
 
-    val editionNames = editions.map(_.name.replace(" Core Set", "")).toSet
+    //    val editionNames = editions.map(_.name.replace(" Core Set", "")).toSet
 
-    val newLegalities =
-        scrapedFormats
-          .filter(f => newFormats(f.name.toLowerCase))
-          .filter(format => format.availableSets.isEmpty || format.availableSets.exists(editionNames))
-          .filterNot(_.bannedCards(title))
-          .map(_.name.capitalize)
+    //    val newLegalities =
+    //        scrapedFormats
+    //          .filter(f => newFormats(f.name.toLowerCase))
+    //          .filter(format => format.availableSets.isEmpty || format.availableSets.exists(editionNames))
+    //          .filterNot(_.bannedCards(title))
+    //          .map(_.name.capitalize)
 
     val oldLegalities =
       formats
-        .filter(l => oldFormats(l.format))
+        //.filter(l => oldFormats(l.format))
+        .filterNot(l => excludedFormats(l.format))
         .filterNot(_.legality == "Banned")
+        .filterNot(_.legality == "Future")
 
     val restricted = oldLegalities.find(_.legality == "Restricted")
 
@@ -50,10 +55,10 @@ trait FormatsField extends Log {
       .map(_.name.capitalize)
 
     // Bug: when scraping mtg salvation Modern: MTG 2015 doesn't contains core set
-//    val standardModern = scrapedFormats.filter { format =>
-//      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
-//    }.map(_.name)
+    //    val standardModern = scrapedFormats.filter { format =>
+    //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
+    //    }.map(_.name)
 
-    (oldLegalities.map(_.format) ++ restricted.toSeq.map(_.legality) ++ newLegalities ++ pauper).distinct
+    (oldLegalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) /*++ newLegalities*/ ++ pauper).distinct
   }
 }

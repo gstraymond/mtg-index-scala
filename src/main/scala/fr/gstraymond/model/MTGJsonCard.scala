@@ -1,21 +1,20 @@
 package fr.gstraymond.model
 
-import play.api.libs.json.{Format, JsValue, Json}
+import play.api.libs.json.{Format, Json}
 
 case class MTGJsonEdition(name: String,
                           code: String,
-                          gathererCode: Option[String],
-                          magicCardsInfoCode: Option[String],
-                          releaseDate: String,
+                          releaseDate: Option[String],
+                          isOnlineOnly: Option[Boolean],
                           block: Option[String],
                           cards: Seq[MTGJsonCard])
 
-case class MTGJsonCard(//id: String,
+case class MTGJsonCard(//uuid: String,
                        layout: String,
                        name: String,
                        names: Option[Seq[String]],
                        manaCost: Option[String],
-                       cmc: Option[Double],
+                       convertedManaCost: Option[Double],
                        colors: Option[Seq[String]],
                        `type`: String,
                        //supertypes: Option[Seq[String]],
@@ -23,19 +22,19 @@ case class MTGJsonCard(//id: String,
                        //subtypes: Option[Seq[String]],
                        rarity: String,
                        text: Option[String],
-                       //flavor: Option[String],
+                       //flavorText: Option[String],
                        artist: String,
                        number: Option[String],
                        power: Option[String],
                        toughness: Option[String],
-                       loyalty: Option[JsValue], // string or int
-                       multiverseid: Option[Long],
-                       foreignNames: Option[Seq[MTGJsonForeignName]],
-                       legalities: Option[Seq[MTGJsonLegality]],
+                       loyalty: Option[String],
+                       multiverseId: Option[Long],
+                       foreignData: Option[Seq[MTGJsonForeignData]],
+                       legalities: Option[Map[String, String]],
                        rulings: Option[Seq[MTGJsonRuling]])
 
-case class MTGJsonForeignName(language: String,
-                              name: String)
+case class MTGJsonForeignData(language: String,
+                              name: Option[String])
 
 case class MTGJsonLegality(format: String,
                            legality: String)
@@ -45,8 +44,7 @@ case class MTGJsonRuling(date: String,
 
 object MTGJsonFormats {
   implicit val mtgJsonRulingFormat: Format[MTGJsonRuling] = Json.format
-  implicit val mtgJsonLegalityFormat: Format[MTGJsonLegality] = Json.format
-  implicit val mtgJsonForeignNameFormat: Format[MTGJsonForeignName] = Json.format
+  implicit val mtgJsonForeignDataFormat: Format[MTGJsonForeignData] = Json.format
   implicit val mtgJsonCardFormat: Format[MTGJsonCard] = Json.format
   implicit val mtgJsonEditionFormat: Format[MTGJsonEdition] = Json.format
 }

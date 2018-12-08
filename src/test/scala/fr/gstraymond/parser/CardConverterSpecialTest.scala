@@ -1,5 +1,6 @@
 package fr.gstraymond.parser
 
+import fr.gstraymond.parser.field.SpecialField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
@@ -181,5 +182,5 @@ class CardConverterSpecialTest extends Specification {
   }
 
   private def _special(title: String, `type`: String, description: String*) =
-    CardConverter._special(title, `type`, description)
+    new SpecialField {}._special(title, `type`, description)
 }

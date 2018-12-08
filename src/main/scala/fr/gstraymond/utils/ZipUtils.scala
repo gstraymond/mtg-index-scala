@@ -13,7 +13,7 @@ object ZipUtils {
     Stream.continually(zis.getNextEntry)
       .takeWhile(_ != null)
       .foreach { entry => {
-        val fos = new FileOutputStream(new File(targetFolder, entry.getName))
+        val fos = new FileOutputStream(new File(targetFolder, entry.getName.split("/").last))
 
         Stream.continually(zis.read(buffer))
           .takeWhile(_ != -1)

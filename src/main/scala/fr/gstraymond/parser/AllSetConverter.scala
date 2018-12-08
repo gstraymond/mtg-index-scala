@@ -6,7 +6,6 @@ import fr.gstraymond.constant.URIs
 import fr.gstraymond.model._
 import fr.gstraymond.parser.field._
 import fr.gstraymond.utils.{Log, StringUtils}
-import play.api.libs.json.JsString
 
 import scala.collection.mutable
 import scala.concurrent.Future
@@ -23,7 +22,94 @@ object AllSetConverter extends Log
 
   private val dateParser = new SimpleDateFormat("yyyy-MM-dd")
 
-  val editionsCodeWithoutImage = Seq("CEI", "CED", "ATH", "ITP", "DKM", "RQS", "DPA", "CST", "MGB", "CPK")
+  val editionsCodeWithoutImage = Set(
+    "ANA",
+    "CP1",
+    "CP2",
+    "CP3",
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F16",
+    "F17",
+    "F18",
+    "FBB",
+    "FNM",
+    "G00",
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "G09",
+    "G10",
+    "G11",
+    "G99",
+    "H17",
+    "HHO",
+    "HTR",
+    "J12",
+    "J13",
+    "J14",
+    "J15",
+    "J16",
+    "J17",
+    "J18",
+    "JGP",
+    "L12",
+    "L13",
+    "L14",
+    "L15",
+    "L16",
+    "L17",
+    "MED",
+    "MP2",
+    "MPR",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "PR2",
+    "PRM",
+    "PTC",
+    "PZ1",
+    "PZ2",
+    "REN",
+    "RIN",
+    "SUM",
+    "TD0",
+
+    "CEI",
+    "CED",
+    "ATH",
+    "ITP",
+    "DKM",
+    "RQS",
+    "DPA",
+    "CST",
+    "MGB",
+    "CPK"
+  )
 
   def convert(loadAllSet: Map[String, MTGJsonEdition],
               formats: Seq[ScrapedFormat],
@@ -41,22 +127,19 @@ object AllSetConverter extends Log
       StringUtils.normalize(price.card) -> price.editionCode
     }.mapValues(_.head)
 
-    val allCards = loadAllSet.values.flatMap { edition =>
-      val editionWithNoCards = edition.copy(cards = Nil)
-      edition.cards.map { card =>
-        card -> editionWithNoCards
-      }
+    val allCards = loadAllSet.values.filter(_.releaseDate.isDefined).filterNot(_.isOnlineOnly.getOrElse(false)).flatMap { edition =>
+      edition.cards.map { _ -> edition.copy(cards = Nil) }
     }.groupBy { case (card, _) =>
       (card.name, card.manaCost, card.`type`)
     }.values
 
     val result = allCards.map { groupedCards =>
       val groupedCardsSorted = groupedCards.toSeq.sortBy { case (_, edition) =>
-        dateParser.parse(edition.releaseDate)
+        dateParser.parse(edition.releaseDate.getOrElse("1970-01-01"))
       }.map { case (card, edition) =>
         val urlTitle = StringUtils.normalize(card.name)
-        val codes = Seq(Some(edition.code), edition.magicCardsInfoCode, edition.gathererCode).flatten.distinct
-        (card, edition, _price(urlTitle, codes, priceMap))
+        val price = _price(urlTitle, edition.code, priceMap)
+        (card, edition, price)
       }
       val cards = groupedCardsSorted.map(_._1)
       val editions = groupedCardsSorted.map(_._2)
@@ -73,16 +156,16 @@ object AllSetConverter extends Log
       val description = firstCard.text.map(_.split("\n").toSeq).getOrElse(Seq.empty)
       val hints = _hiddenHints(description)
       val urlTitle = StringUtils.normalize(firstCard.name)
-      val rarities = cards.map(_.rarity).distinct
+      val rarities = cards.map(_.rarity.replace("timeshifted ", "")).distinct
       MTGCard(
         title = firstCard.name,
         altTitles = firstCard.names.map(_.filterNot(_ == firstCard.name)).getOrElse(Seq.empty),
-        frenchTitle = cards.flatMap(_.foreignNames).flatten.find(_.language == "French").map(_.name),
+        frenchTitle = cards.flatMap(_.foreignData).flatten.find(_.language == "French").flatMap(_.name),
         castingCost = castingCost,
         colors = _colors(castingCost, hints, firstCard.colors),
         dualColors = _dualColors(castingCost, firstCard.colors),
         tripleColors = _tripleColors(castingCost, firstCard.colors),
-        convertedManaCost = firstCard.cmc.map(_.toInt).getOrElse(0),
+        convertedManaCost = firstCard.convertedManaCost.map(_.toInt).getOrElse(0),
         `type` = firstCard.`type`,
         description = firstCard.text.getOrElse(""),
         power = firstCard.power,
@@ -91,25 +174,25 @@ object AllSetConverter extends Log
         rarities = rarities,
         priceRanges = _priceRanges(prices),
         publications = groupedCardsSorted.map { case (card, edition, price) =>
-          val rarity = card.rarity.replace("Basic ", "")
-          val rarityCode = rarity.head.toString
-          val stdEditionCode = edition.gathererCode.orElse(Some(edition.code).filter { code =>
-            !(code.length == 4 && code.startsWith("p")) &&
-              !editionsCodeWithoutImage.contains(code)
-          })
+          val rarity = card.rarity.replace("timeshifted ", "")
+          val rarityCode = rarity.head.toString.toUpperCase
+          val editionCode = edition.code.toUpperCase
+          val stdEditionCode = Some(gathererMap.getOrElse(editionCode, editionCode)).filter { code =>
+            code.length < 4 && !editionsCodeWithoutImage(code)
+          }
           Publication(
             collectorNumber = card.number,
             edition = edition.name match {
               case name if name.contains(",") => name.replace(",", ":")
               case name => name
             },
-            editionCode = edition.code,
-            editionReleaseDate = Some(dateParser.parse(edition.releaseDate)),
+            editionCode = editionCode,
+            editionReleaseDate = Some(dateParser.parse(edition.releaseDate.getOrElse("1970-01-01"))),
             stdEditionCode = stdEditionCode,
             rarity = rarity,
             rarityCode = Some(rarityCode),
-            image = card.multiverseid.map { multiverseId =>
-              s"${URIs.pictureHost}/pics/${edition.code}/$multiverseId-$urlTitle.jpg"
+            image = card.multiverseId.map { multiverseId =>
+              s"${URIs.pictureHost}/pics/$editionCode/$multiverseId-$urlTitle.jpg"
             },
             editionImage = stdEditionCode.map { code =>
               s"${URIs.pictureHost}/sets/$code/$rarityCode.gif"
@@ -117,19 +200,16 @@ object AllSetConverter extends Log
             price = price.flatMap(_.price),
             foilPrice = price.flatMap(_.foilPrice),
             block = edition.block,
-            multiverseId = card.multiverseid
+            multiverseId = card.multiverseId
           )
         },
         abilities = _abilities(firstCard.name, description, abilities),
-        formats = _formats(cards.flatMap(_.legalities).headOption.getOrElse(Seq.empty), editions, formats, firstCard.name, rarities),
+        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions, formats, firstCard.name, rarities),
         artists = cards.map(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
         layout = firstCard.layout,
-        loyalty = firstCard.loyalty.map {
-          case string: JsString => string.value
-          case other => other.toString()
-        },
+        loyalty = firstCard.loyalty,
         special = _special(firstCard.name, firstCard.`type`, description),
         land = _land(firstCard.`type`, description),
         ruling = firstCard.rulings.getOrElse(Nil).map(r => Ruling(r.date, r.text))
@@ -144,46 +224,125 @@ object AllSetConverter extends Log
     result
   }
 
+  private def processLegalities(data: Map[String, String]): Seq[MTGJsonLegality] =
+    data
+      .map { case (format, legality) => MTGJsonLegality(format, legality) }
+      .toSeq
+
   private def _price(name: String,
-             codes: Seq[String],
-             priceMap: mutable.Map[(String, String), ScrapedPrice]) = {
-
-    def getPrice(name: String, code: String): Option[ScrapedPrice] = {
-      val k = name -> priceCodeMap.getOrElse(code, code.toLowerCase)
-      priceMap.get(k).map { price =>
-        priceMap remove k
-        price
-      }
-    }
-
-    codes.foldLeft(None: Option[ScrapedPrice]) {
-      (acc, code) =>
-        acc.orElse {
-          getPrice(name, code)
-        }
+                     code: String,
+                     priceMap: mutable.Map[(String, String), ScrapedPrice]) = {
+    val k = name -> priceCodeMap.getOrElse(code, code.toLowerCase)
+    priceMap.get(k).map { price =>
+      priceMap remove k
+      price
     }
   }
 
-  val priceCodeMap = Map(
-    "pPRE" -> "prm-pre",
-    "pFNM" -> "prm-fnm",
-    "pJGP" -> "prm-jud",
-    "pSUS" -> "prm-jss",
-    "pMEI" -> "prm-med",
-    "pMGD" -> "prm-gdp",
-    "pMPR" -> "prm-mpr",
+  val gathererMap: Map[String, String] = Map(
+    "2ED" -> "2U",
+    "3ED" -> "3E",
+    "4ED" -> "4E",
+    "5ED" -> "5E",
+    "6ED" -> "6E",
+    "7ED" -> "7E",
+    "ALL" -> "AL",
+    "APC" -> "AP",
+    "ARN" -> "AN",
+    "ATQ" -> "AQ",
+    "BRB" -> "BR",
+    "BTD" -> "BD",
+    "CHR" -> "CH",
+    "DRK" -> "DK",
+    "EXO" -> "EX",
+    "FEM" -> "FE",
+    "HML" -> "HM",
+    "ICE" -> "IA",
+    "INV" -> "IN",
+    "LEA" -> "1E",
+    "LEB" -> "2E",
+    "LEG" -> "LE",
+    "MIR" -> "MI",
+    "MMQ" -> "MM",
+    "MPS" -> "MPS_KLD",
+    "NEM" -> "NE",
+    "ODY" -> "OD",
+    "PCY" -> "PR",
+    "PLS" -> "PS",
+    "P02" -> "P2",
+    "POR" -> "PO",
+    "PTK" -> "PK",
+    "S00" -> "P4",
+    "S99" -> "P3",
+    "STH" -> "ST",
+    "TMP" -> "TE",
+    "UDS" -> "CG",
+    "UGL" -> "UG",
+    "ULG" -> "GU",
+    "USG" -> "UZ",
+    "VIS" -> "VI",
+    "WTH" -> "WL",
+
+    "DD1" -> "EVG",
+    "DVD" -> "DD3_DVD",
+
+    "GVL" -> "DD3_GVL",
+    "JVC" -> "DD3_JVC",
+    "ME1" -> "MED",
+  )
+
+  val priceCodeMap: Map[String, String] = Map(
+    // mtgjson -> mtggoldfish
+    "inv" -> "in",
+    "usg" -> "uz",
+    "ody" -> "od",
+    "7ed" -> "7e",
+    "tmp" -> "te",
+    "mmq" -> "mm",
+    "mir" -> "mi",
+    "vis" -> "vi",
+    "wth" -> "wl",
+    "p02" -> "po2",
+    "apc" -> "ap",
+    "sth" -> "st",
+    "ulg" -> "ul",
+    "uds" -> "ud",
+    "pls" -> "ps",
+    "exo" -> "ex",
+    "pcy" -> "pr",
+    "nem" -> "ne",
+    "ppre" -> "prm-pre",
+    "fnm" -> "prm-fnm",
+    "jgp" -> "prm-jud",
+    "g99" -> "prm-jud",
+    //"pMGD" -> "prm-gdp",
+    "pmei" -> "prm-med",
+    "psus" -> "prm-jss",
+    "mpr" -> "prm-mpr",
+    "pr2" -> "prm-mpr",
     "pGTW" -> "prm-gwp",
-    "FRF_UGIN" -> "prm-ugf",
-    "pWPN" -> "prm-wpn",
+    //"FRF_UGIN" -> "prm-ugf",
+    "pwpn" -> "prm-wpn",
     "pLPA" -> "prm-lpc",
-    "pREL" -> "prm-rel",
-    "pCMP" -> "prm-chp",
-    "pGPX" -> "prm-gpp",
-    "pPRO" -> "prm-ptp",
+    "prel" -> "prm-rel",
+    "pcmp" -> "prm-chp",
+    "pgpx" -> "prm-gpp",
+    "ppro" -> "prm-ptp",
     "HOP" -> "pc1",
-    "MPS" -> "ms2",
-    "MPS_AKH" -> "ms3" // Masterpiece Series: Amonkhet Invocations
+    "mps" -> "ms2",
+    "mp2" -> "ms3", // Masterpiece Series: Amonkhet Invocations
+    "psdc" -> "prm-sdcc13",
+    "pss3" -> "prm-ssp",
+    "plpa" -> "prm-lpc",
+    "pgru" -> "prm-gur",
     // prm-msc ?
     // prm-spo ?
-  )
+    // prm-bab ?
+  ) ++
+    (1 to 18).map(i => f"f$i%02d" -> "prm-fnm").toMap ++
+    (0 to 11).map(i => f"g$i%02d" -> "prm-jud").toMap ++
+    (12 to 18).map(i => f"j$i%02d" -> "prm-jud").toMap ++
+    (9 to 12).map(i => f"pwp$i%02d" -> "prm-wpn").toMap ++
+    (3 to 11).map(i => f"p$i%02d" -> "prm-mpr").toMap ++
+    (14 to 17).map(i => s"ps$i" -> s"prm-sdcc$i").toMap
 }

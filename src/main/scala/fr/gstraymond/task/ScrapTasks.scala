@@ -76,7 +76,7 @@ object DEALTask extends Task[Seq[MTGCard]] {
       rules = (RulesParser.parse _).tupled(rawRules)
       abilities <- AbilityScraper.scrap
       formats <- FormatScraper.scrap
-      prices <- PriceScraper.scrap
+      prices <- if (pricesUpToDate) Future.successful(loadPrices) else PriceScraper.scrap
       mtgCards <- AllSetConverter.convert(loadAllSet, formats, prices, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)

@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 object AllSetScraper extends MtgJsonScraper {
 
-  val path = "/json/AllSets-x.json.zip"
+  val path = "/v4/json/AllSets.json.zip"
 
   def scrap: Future[Unit] = {
     get(path).map { bytes =>
