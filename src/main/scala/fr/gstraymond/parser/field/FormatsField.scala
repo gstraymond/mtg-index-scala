@@ -12,7 +12,7 @@ trait FormatsField extends Log {
   )
 
   val excludedFormats = Set(
-    "1v1", "brawl", "duel", "frontier", "pauper", "penny", "future"
+    "1v1", "brawl", "duel", "frontier", "penny", "future"
   )
 
   val newFormats = Set(
