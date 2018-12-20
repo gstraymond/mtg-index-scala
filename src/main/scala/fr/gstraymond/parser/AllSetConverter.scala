@@ -1,6 +1,7 @@
 package fr.gstraymond.parser
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 import fr.gstraymond.constant.URIs
 import fr.gstraymond.model._
@@ -127,11 +128,14 @@ object AllSetConverter extends Log
       StringUtils.normalize(price.card) -> price.editionCode
     }.mapValues(_.head)
 
-    val allCards = loadAllSet.values.filter(_.releaseDate.isDefined).filterNot(_.isOnlineOnly.getOrElse(false)).flatMap { edition =>
-      edition.cards.map { _ -> edition.copy(cards = Nil) }
-    }.groupBy { case (card, _) =>
-      (card.name, card.manaCost, card.`type`)
-    }.values
+    val nextWeek = LocalDate.now().plusWeeks(1)
+
+    val allCards = loadAllSet.values
+      .filter(_.releaseDate.exists(LocalDate.parse(_).isBefore(nextWeek)))
+      .filterNot(_.isOnlineOnly.getOrElse(false))
+      .flatMap(edition => edition.cards.map(_ -> edition.copy(cards = Nil)))
+      .groupBy { case (card, _) => (card.name, card.manaCost, card.`type`) }
+      .values
 
     val result = allCards.map { groupedCards =>
       val groupedCardsSorted = groupedCards.toSeq.sortBy { case (_, edition) =>
