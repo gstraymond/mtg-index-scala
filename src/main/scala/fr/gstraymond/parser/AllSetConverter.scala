@@ -23,7 +23,7 @@ object AllSetConverter extends Log
 
   private val dateParser = new SimpleDateFormat("yyyy-MM-dd")
 
-  val editionsCodeWithoutImage = Set(
+  private val editionsCodeWithoutImage = Set(
     "ANA",
     "CP1",
     "CP2",
@@ -236,7 +236,7 @@ object AllSetConverter extends Log
   private def _price(name: String,
                      code: String,
                      priceMap: mutable.Map[(String, String), ScrapedPrice]) = {
-    val k = name -> priceCodeMap.getOrElse(code, code.toLowerCase)
+    val k = name -> priceCodeMap.getOrElse(code.toLowerCase, code.toLowerCase)
     priceMap.get(k).map { price =>
       priceMap remove k
       price
