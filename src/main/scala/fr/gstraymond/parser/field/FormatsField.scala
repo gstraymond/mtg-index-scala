@@ -1,21 +1,23 @@
 package fr.gstraymond.parser.field
 
+import java.time.LocalDate
+
 import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality, ScrapedFormat}
 import fr.gstraymond.utils.Log
 
 trait FormatsField extends Log {
 
-  val oldFormats = Set(
+  private val oldFormats = Set(
     "Vintage",
     "Commander",
     "Legacy",
   )
 
-  val excludedFormats = Set(
+  private val excludedFormats = Set(
     "1v1", "brawl", "duel", "frontier", "penny", "future"
   )
 
-  val newFormats = Set(
+  private val newFormats = Set(
     "modern",
     "standard",
   )
@@ -54,11 +56,17 @@ trait FormatsField extends Log {
       .filterNot(_.bannedCards(title))
       .map(_.name.capitalize)
 
+    val future = if (formats.contains(MTGJsonLegality("future", "Legal")) &&
+      editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))) {
+      if (formats.length == 1) Seq("Vintage", "Commander", "Legacy", "Modern", "Standard")
+      else Seq("Standard")
+    } else Nil
+
     // Bug: when scraping mtg salvation Modern: MTG 2015 doesn't contains core set
     //    val standardModern = scrapedFormats.filter { format =>
     //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
     //    }.map(_.name)
 
-    (oldLegalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) /*++ newLegalities*/ ++ pauper).distinct
+    (oldLegalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) /*++ newLegalities*/ ++ pauper ++ future).distinct
   }
 }
