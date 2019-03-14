@@ -18,10 +18,12 @@ trait SpecialField {
     isLandDestruction _ -> Seq("Land Destruction"),
     isLord _ -> Seq("Lord"),
     isWrathEffect _ -> Seq("Wrath Effect"),
-    isMill _ -> Seq("Mill")
+    isMill _ -> Seq("Mill"),
+    isManaDork _ -> Seq("Mana Dork"),
+    isManaRock _ -> Seq("Mana Rock")
   )
 
-  def _special(title: String, `type`: String, description: Seq[String]) = {
+  def _special(title: String, `type`: String, description: Seq[String]): Seq[String] = {
     val card = SpecialCard(title, `type`, description)
     specialFilters.flatMap {
       case (filter, specials) if filter(card) => specials
@@ -144,4 +146,26 @@ trait SpecialField {
     card.description.exists { line =>
       millKeywords.exists(_.forall(line.contains))
     }
+
+  private val manaDork = Seq(
+    Seq(":", "Add", "{G}", "."),
+    Seq(":", "Add", "{U}", "."),
+    Seq(":", "Add", "{R}", "."),
+    Seq(":", "Add", "{B}", "."),
+    Seq(":", "Add", "{W}", "."),
+    Seq(":", "Add", "{U}", "."),
+    Seq(":", "Add", "mana", ".")
+  )
+
+  private def isManaDork(card: SpecialCard) =
+    card.`type`.contains("Creature") &&
+      card.description.exists { line =>
+        manaDork.exists(_.forall(line.contains))
+      }
+
+  private def isManaRock(card: SpecialCard) =
+    card.`type`.contains("Artifact") &&
+      card.description.exists { line =>
+        manaDork.exists(_.forall(line.contains))
+      }
 }
