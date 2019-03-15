@@ -153,7 +153,7 @@ trait SpecialField {
     Seq(":", "Add", "{R}", "."),
     Seq(":", "Add", "{B}", "."),
     Seq(":", "Add", "{W}", "."),
-    Seq(":", "Add", "{U}", "."),
+    Seq(":", "Add", "{C}", "."),
     Seq(":", "Add", "mana", ".")
   )
 
