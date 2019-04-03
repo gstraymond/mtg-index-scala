@@ -2,6 +2,7 @@ group 'fr.gstraymond'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'scala'
+apply plugin: 'application'
 
 repositories {
     mavenLocal()
@@ -27,6 +28,8 @@ dependencies {
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"
 }
+
+mainClassName = 'fr.gstraymond.task.DEALTask'
 
 task priceScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.PriceScrapTask'

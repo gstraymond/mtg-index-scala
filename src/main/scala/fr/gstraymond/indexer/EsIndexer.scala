@@ -1,13 +1,12 @@
 package fr.gstraymond.indexer
 
-import java.io.File
-
 import dispatch.Defaults._
 import dispatch._
 import fr.gstraymond.model.MTGCard
 import fr.gstraymond.utils.{Log, StringUtils}
 
 import scala.concurrent.Future
+import scala.io.Source
 
 trait EsIndexer[A] extends Log {
 
@@ -32,9 +31,9 @@ trait EsIndexer[A] extends Log {
   }
 
   def configure(): Future[Unit] = {
-    val file = new File(getClass.getResource(s"/indexer/$index.config.json").getFile)
+    val body = Source.fromInputStream(getClass.getResourceAsStream(s"/indexer/$index.config.json")).mkString
     Http.default {
-      url(indexPath).PUT <<< file OK as.String
+      url(indexPath).PUT << body OK as.String
     }.map { result =>
       log.info(s"configure: $result")
     }
