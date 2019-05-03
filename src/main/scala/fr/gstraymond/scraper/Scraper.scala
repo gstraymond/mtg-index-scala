@@ -73,7 +73,6 @@ trait MTGSalvationScraper extends Scraper {
 
 trait GathererScraper extends Scraper {
   override val host = "gatherer.wizards.com"
-  override val protocol = "http"
 }
 
 trait MtgJsonScraper extends Scraper {

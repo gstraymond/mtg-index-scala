@@ -1,6 +1,7 @@
 package fr.gstraymond.model
 
-import play.api.libs.json.{Format, Json}
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 
 case class MTGJsonEdition(name: String,
                           code: String,
@@ -43,8 +44,5 @@ case class MTGJsonRuling(date: String,
                          text: String)
 
 object MTGJsonFormats {
-  implicit val mtgJsonRulingFormat: Format[MTGJsonRuling] = Json.format
-  implicit val mtgJsonForeignDataFormat: Format[MTGJsonForeignData] = Json.format
-  implicit val mtgJsonCardFormat: Format[MTGJsonCard] = Json.format
-  implicit val mtgJsonEditionFormat: Format[MTGJsonEdition] = Json.format
+  implicit val mtgJsonEditionFormat: JsonValueCodec[Map[String, MTGJsonEdition]] = JsonCodecMaker.make[Map[String, MTGJsonEdition]](CodecMakerConfig())
 }

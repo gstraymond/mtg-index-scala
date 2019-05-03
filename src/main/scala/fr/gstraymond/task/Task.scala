@@ -4,6 +4,7 @@ import java.io.{File, FileInputStream}
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
+import com.github.plokhotnyuk.jsoniter_scala.core.readFromStream
 import fr.gstraymond.model._
 import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.scraper.HttpClients
@@ -88,10 +89,8 @@ trait Task[A] extends Log {
     rules
   }
 
-  protected def loadAllSet: Map[String, MTGJsonEdition] = {
-    val json = new FileInputStream(s"${FileUtils.scrapPath}/AllSets.json")
-    Json.parse(json).as[Map[String, MTGJsonEdition]]
-  }
+  protected def loadAllSet: Map[String, MTGJsonEdition] =
+    readFromStream[Map[String, MTGJsonEdition]](new FileInputStream(s"${FileUtils.scrapPath}/AllSets.json"))
 
   protected def loadScrapedCards: Seq[ScrapedCard] = {
     val json = new FileInputStream(s"${FileUtils.scrapPath}/cards.json")
