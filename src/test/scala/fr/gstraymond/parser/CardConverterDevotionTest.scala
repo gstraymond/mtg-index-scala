@@ -1,19 +1,20 @@
 package fr.gstraymond.parser
 
+import fr.gstraymond.parser.field.DevotionsField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterDevotionTest extends Specification {
+class CardConverterDevotionTest extends Specification with DevotionsField {
 
   "card converter" should {
     "Nope" in {
-      CardConverter._devotions(Some("Instant"), None) === Seq.empty
+      _devotions(Some("Instant"), None) === Seq.empty
     }
 
     "Eye of Nowhere" in {
-      CardConverter._devotions(Some("Sorcery -- Arcane"), Some("U U")) === Seq.empty
+      _devotions(Some("Sorcery -- Arcane"), Some("U U")) === Seq.empty
     }
 
     "Zuran Spellcaster" in {
@@ -62,5 +63,5 @@ class CardConverterDevotionTest extends Specification {
   }
 
   private def _devotion(cc: String) =
-    CardConverter._devotions(Some("Creature"), Some(cc)).sorted
+    _devotions(Some("Creature"), Some(cc)).sorted
 }

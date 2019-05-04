@@ -1,23 +1,24 @@
 package fr.gstraymond.parser
 
+import fr.gstraymond.parser.field.LandField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterLandTest extends Specification {
+class CardConverterLandTest extends Specification with LandField {
 
   "card converter" should {
 
     "Tundra" in {
-      _land(
+      land(
         "Land — Plains Island",
         "({T}: Add {W} or {U}.)"
       ) === Seq("Dual Land", "Dual Basic Land", "Produce Blue Mana", "Produce White Mana")
     }
 
     "Gavony Township" in {
-      _land(
+      land(
         "Land",
         "{T}: Add {C}.",
         "{2}{G}{W}, {T}: Put a +1/+1 counter on each creature you control."
@@ -25,7 +26,7 @@ class CardConverterLandTest extends Specification {
     }
 
     "Greypelt Refuge" in {
-      _land(
+      land(
         "Land",
         "Graypelt Refuge enters the battlefield tapped.",
         "When Graypelt Refuge enters the battlefield, you gain 1 life.",
@@ -34,7 +35,7 @@ class CardConverterLandTest extends Specification {
     }
 
     "Jungle Shrine" in {
-      _land(
+      land(
         "Land",
         "Jungle Shrine enters the battlefield tapped.",
         "{T}: Add {R}, {G}, or {W}."
@@ -42,7 +43,7 @@ class CardConverterLandTest extends Specification {
     }
 
     "Crystal Quarry" in {
-      _land(
+      land(
         "Land",
         "{T}: Add {C}.",
         "{5}, {T}: Add {W}{U}{B}{R}{G}."
@@ -50,14 +51,14 @@ class CardConverterLandTest extends Specification {
     }
 
     "Misty Rainforest" in {
-      _land(
+      land(
         "Land",
         "{T}, Pay 1 life, Sacrifice Misty Rainforest: Search your library for a Forest or Island card and put it onto the battlefield. Then shuffle your library."
       ) === Seq("Fetch land")
     }
 
     "Bad River" in {
-      _land(
+      land(
         "Land",
         "Bad River enters the battlefield tapped.",
         "{T}, Sacrifice Bad River: Search your library for an Island or Swamp card and put it onto the battlefield. Then shuffle your library."
@@ -65,7 +66,7 @@ class CardConverterLandTest extends Specification {
     }
 
     "Blinkmoth Nexus" in {
-      _land(
+      land(
         "Land",
         "{T}: Add {C}.",
         "{1}: Blinkmoth Nexus becomes a 1/1 Blinkmoth artifact creature with flying until end of turn. It's still a land.",
@@ -74,12 +75,12 @@ class CardConverterLandTest extends Specification {
     }
 
     "Swamp" in {
-      _land(
+      land(
         "Basic Land -- Swamp"
       ) === Seq("Produce Black Mana")
     }
   }
 
-  private def _land(`type`: String, description: String*) =
-    CardConverter._land(`type`, description)
+  private def land(`type`: String, description: String*): Seq[String] =
+    _land(`type`, description)
 }

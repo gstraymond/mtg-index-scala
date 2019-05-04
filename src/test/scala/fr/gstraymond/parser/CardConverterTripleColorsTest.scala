@@ -1,16 +1,16 @@
 package fr.gstraymond.parser
 
-import fr.gstraymond.constant.Color._
+import fr.gstraymond.parser.field.ColorField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterTripleColorsTest extends Specification {
+class CardConverterTripleColorsTest extends Specification with ColorField {
 
   "card converter" should {
     "Nope" in {
-      CardConverter._tripleColors(None, None) === Nil
+      _tripleColors(None, None) === Nil
     }
 
     "Zuran Spellcaster" in {
@@ -60,11 +60,11 @@ class CardConverterTripleColorsTest extends Specification {
     }
 
     "Transguild Courier" in {
-      CardConverter._tripleColors(Some("4"), None) === Nil
+      _tripleColors(Some("4"), None) === Nil
     }
 
     "Transguild Courier - new" in {
-      CardConverter._tripleColors(Some("4"), Some(Seq("White", "Blue", "Black", "Red", "Green"))).sorted === Nil
+      _tripleColors(Some("4"), Some(Seq("White", "Blue", "Black", "Red", "Green"))).sorted === Nil
     }
 
     "Kozilek, the Great Distortion" in {
@@ -72,20 +72,20 @@ class CardConverterTripleColorsTest extends Specification {
     }
 
     "Abstruse Interference" in {
-      CardConverter._tripleColors(Some("2 U"), None).sorted ===
+      _tripleColors(Some("2 U"), None).sorted ===
         Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White", "Blue OR Green OR Red", "Blue OR Green OR White", "Blue OR Red OR White").sorted
     }
 
     "Ludevic's Abomination" in {
-      CardConverter._tripleColors(None, Some(Seq("Blue"))).sorted ===
+      _tripleColors(None, Some(Seq("Blue"))).sorted ===
         Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White", "Blue OR Green OR Red", "Blue OR Green OR White", "Blue OR Red OR White").sorted
     }
 
     "Dralnu, seigneur liche" in {
-      CardConverter._tripleColors(Some("3 U B"), Some(Seq("Blue", "Black"))).sorted ===
+      _tripleColors(Some("3 U B"), Some(Seq("Blue", "Black"))).sorted ===
         Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White").sorted
     }
   }
 
-  private def _tripleColors(cc: String) = CardConverter._tripleColors(Some(cc), None).sorted
+  private def _tripleColors(cc: String): Seq[String] = _tripleColors(Some(cc), None).sorted
 }

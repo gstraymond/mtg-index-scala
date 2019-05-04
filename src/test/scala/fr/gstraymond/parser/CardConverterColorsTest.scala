@@ -1,16 +1,17 @@
 package fr.gstraymond.parser
 
 import fr.gstraymond.constant.Color._
+import fr.gstraymond.parser.field.ColorField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterColorsTest extends Specification {
+class CardConverterColorsTest extends Specification with ColorField {
 
   "card converter" should {
     "Nope" in {
-      CardConverter._colors(None, Seq.empty, None) ===
+      _colors(None, Seq.empty, None) ===
         Seq(UNCOLORED)
     }
 
@@ -65,12 +66,12 @@ class CardConverterColorsTest extends Specification {
     }
 
     "Transguild Courier" in {
-      CardConverter._colors(Some("4"), Seq("White/Blue/Black/Red/Green color indicator"), None).sorted ===
+      _colors(Some("4"), Seq("White/Blue/Black/Red/Green color indicator"), None).sorted ===
         Seq(GREEN.lbl, WHITE.lbl, BLUE.lbl, BLACK.lbl, RED.lbl, GOLD, MULTICOLORED(5)).sorted
     }
 
     "Transguild Courier - new" in {
-      CardConverter._colors(Some("4"), Seq.empty, Some(Seq("White", "Blue", "Black", "Red", "Green"))).sorted ===
+      _colors(Some("4"), Seq.empty, Some(Seq("White", "Blue", "Black", "Red", "Green"))).sorted ===
         Seq(GREEN.lbl, WHITE.lbl, BLUE.lbl, BLACK.lbl, RED.lbl, GOLD, MULTICOLORED(5)).sorted
     }
 
@@ -80,20 +81,20 @@ class CardConverterColorsTest extends Specification {
     }
 
     "Abstruse Interference" in {
-      CardConverter._colors(Some("2 U"), Seq("Devoid (This card has no color.)"), None).sorted ===
+      _colors(Some("2 U"), Seq("Devoid (This card has no color.)"), None).sorted ===
         Seq(UNCOLORED)
     }
 
     "Ludevic's Abomination" in {
-      CardConverter._colors(None, Seq.empty, Some(Seq("Blue"))).sorted ===
+      _colors(None, Seq.empty, Some(Seq("Blue"))).sorted ===
         Seq(MONOCOLORED, BLUE.lbl)
     }
 
     "Dralnu, seigneur liche" in {
-      CardConverter._colors(Some("3 U B"), Seq.empty, Some(Seq("Blue", "Black"))).sorted ===
+      _colors(Some("3 U B"), Seq.empty, Some(Seq("Blue", "Black"))).sorted ===
         Seq(BLACK.lbl, BLUE.lbl, GOLD, MULTICOLORED(2)).sorted
     }
   }
 
-  private def _colors(cc: String) = CardConverter._colors(Some(cc), Seq.empty, None).sorted
+  private def _colors(cc: String): Seq[String] = _colors(Some(cc), Seq.empty, None).sorted
 }

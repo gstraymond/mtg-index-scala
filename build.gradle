@@ -21,7 +21,7 @@ dependencies {
     compile "com.typesafe.play:play-json_$scalaVersion:2.6.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
     compile 'org.jsoup:jsoup:1.11.+'
-    compile "net.databinder.dispatch:dispatch-core_$scalaVersion:0.13.+"
+    compile "org.dispatchhttp:dispatch-core_$scalaVersion:1.0.0"
     compile "eu.bitwalker:UserAgentUtils:1.+"
     compile "ai.x:play-json-extensions_$scalaVersion:0.10.+"
     compile "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_$scalaVersion:0.46.2"

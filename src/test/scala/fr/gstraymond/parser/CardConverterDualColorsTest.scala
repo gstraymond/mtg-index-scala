@@ -1,15 +1,16 @@
 package fr.gstraymond.parser
 
+import fr.gstraymond.parser.field.ColorField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterDualColorsTest extends Specification {
+class CardConverterDualColorsTest extends Specification with ColorField {
 
   "card converter" should {
     "Nope" in {
-      CardConverter._dualColors(None, None) ===
+      _dualColors(None, None) ===
         Nil
     }
 
@@ -59,11 +60,11 @@ class CardConverterDualColorsTest extends Specification {
     }
 
     "Transguild Courier" in {
-      CardConverter._dualColors(Some("4"), None) === Nil
+      _dualColors(Some("4"), None) === Nil
     }
 
     "Transguild Courier - new" in {
-      CardConverter._dualColors(Some("4"), Some(Seq("White", "Blue", "Black", "Red", "Green"))) === Nil
+      _dualColors(Some("4"), Some(Seq("White", "Blue", "Black", "Red", "Green"))) === Nil
     }
 
     "Kozilek, the Great Distortion" in {
@@ -71,19 +72,19 @@ class CardConverterDualColorsTest extends Specification {
     }
 
     "Abstruse Interference" in {
-      CardConverter._dualColors(Some("2 U"), None).sorted ===
+      _dualColors(Some("2 U"), None).sorted ===
         Seq("Black OR Blue", "Blue OR Green", "Blue OR Red", "Blue OR White").sorted
     }
 
     "Ludevic's Abomination" in {
-      CardConverter._dualColors(None, Some(Seq("Blue"))).sorted ===
+      _dualColors(None, Some(Seq("Blue"))).sorted ===
         Seq("Black OR Blue", "Blue OR Green", "Blue OR Red", "Blue OR White").sorted
     }
 
     "Dralnu, seigneur liche" in {
-      CardConverter._dualColors(Some("3 U B"), Some(Seq("Blue", "Black"))).sorted === Seq("Black OR Blue")
+      _dualColors(Some("3 U B"), Some(Seq("Blue", "Black"))).sorted === Seq("Black OR Blue")
     }
   }
 
-  private def _dualColors(cc: String) = CardConverter._dualColors(Some(cc), None).sorted
+  private def _dualColors(cc: String): Seq[String] = _dualColors(Some(cc), None).sorted
 }
