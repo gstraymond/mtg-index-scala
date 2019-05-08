@@ -13,14 +13,12 @@ object EsRulesIndexer extends EsIndexer[Rules] {
   override def buildBody(group: Seq[Rules]): String = {
     group.flatMap { rules =>
       val indexJson = Index(IndexId("rules"))
-      val rulesJson = rules
-
       val indexVersionJson = Index(IndexId("version"))
       val versionJson = RuleVersion(rules.filename)
 
       Seq(
         writeToString(indexJson),
-        writeToString(rulesJson, WriterConfig()),
+        writeToString(rules),
         writeToString(indexVersionJson),
         writeToString(versionJson)
       )

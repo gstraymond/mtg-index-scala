@@ -20,6 +20,6 @@ object RulesScraper extends WizardsScraper with Log {
     bytes <- download(rulesTxt)
   } yield {
     val url = URLDecoder.decode(rulesTxt, "utf-8")
-    url.split("/").last.split("\\.").head -> Source.fromBytes(bytes)("CP1252").getLines().toSeq
+    url.split("/").last.split("\\.").head -> Source.fromBytes(bytes)("utf-8").getLines().toSeq
   }
 }
