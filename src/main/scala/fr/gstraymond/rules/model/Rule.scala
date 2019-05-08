@@ -1,6 +1,7 @@
 package fr.gstraymond.rules.model
 
-import play.api.libs.json.{Format, Json}
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 
 case class Rule(id: Option[String],
                 text: String,
@@ -15,7 +16,5 @@ case class Rules(filename: String,
                  rules: Seq[Rule])
 
 object RuleFormats {
-  implicit val ruleLinkFormat: Format[RuleLink] = Json.format
-  implicit val ruleFormat: Format[Rule] = Json.format
-  implicit val rulesFormat: Format[Rules] = Json.format
+  implicit val RulesCodec: JsonValueCodec[Rules] = JsonCodecMaker.make[Rules](CodecMakerConfig(transientEmpty = false))
 }

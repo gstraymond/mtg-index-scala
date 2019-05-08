@@ -191,7 +191,7 @@ object AllSetConverter extends Log
               case name => name
             },
             editionCode = editionCode,
-            editionReleaseDate = Some(dateParser.parse(edition.releaseDate.getOrElse("1970-01-01"))),
+            editionReleaseDate = Some(dateParser.parse(edition.releaseDate.getOrElse("1970-01-01")).getTime),
             stdEditionCode = stdEditionCode,
             rarity = rarity,
             rarityCode = Some(rarityCode),

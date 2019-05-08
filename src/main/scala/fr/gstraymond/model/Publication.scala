@@ -1,12 +1,10 @@
 package fr.gstraymond.model
 
-import java.util.Date
-
 case class Publication(
   collectorNumber: Option[String],
   edition: String,
   editionCode: String,
-  editionReleaseDate: Option[Date],
+  editionReleaseDate: Option[Long],
   stdEditionCode: Option[String],
   rarity: String,
   rarityCode: Option[String],

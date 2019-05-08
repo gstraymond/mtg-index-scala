@@ -1,6 +1,6 @@
 package fr.gstraymond.utils
 
-import play.api.libs.json.{JsValue, Json}
+import com.github.plokhotnyuk.jsoniter_scala.core._
 
 object FileUtils {
 
@@ -11,10 +11,12 @@ object FileUtils {
   val scrapPath = s"$mainPath/scrap"
   val outputPath = s"$mainPath/output"
 
-  def storeJson(file: java.io.File, json: JsValue) {
+  def storeJson[A](file: java.io.File,
+                   a: A)
+                  (implicit codec: JsonValueCodec[A]){
     val writer = new java.io.PrintWriter(file)
     try {
-      writer.println(Json.prettyPrint(json))
+      writer.println(writeToString(a, WriterConfig(indentionStep = 2)))
     } finally {
       writer.close()
     }

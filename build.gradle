@@ -18,12 +18,10 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.+'
     compile "org.scala-lang:scala-library:$scalaVersion.+"
     compile "org.scala-lang:scala-compiler:$scalaVersion.+"
-    compile "com.typesafe.play:play-json_$scalaVersion:2.6.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
     compile 'org.jsoup:jsoup:1.11.+'
     compile "org.dispatchhttp:dispatch-core_$scalaVersion:1.0.0"
     compile "eu.bitwalker:UserAgentUtils:1.+"
-    compile "ai.x:play-json-extensions_$scalaVersion:0.10.+"
     compile "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_$scalaVersion:0.46.2"
     compileOnly "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-macros_$scalaVersion:0.46.2"
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
@@ -36,13 +34,6 @@ mainClassName = 'fr.gstraymond.task.DEALTask'
 task priceScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.PriceScrapTask'
     description "Scrap prices"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
-
-task priceProcess(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.PriceProcessTask'
-    description "Process prices"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
@@ -81,13 +72,6 @@ task cardIndex(type: JavaExec, dependsOn: classes) {
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
     maxHeapSize = '512m'
-}
-
-task cardExists(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.CardExistsTask'
-    description "Check card exists"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
 }
 
 task deleteAutocompleteIndex(type: JavaExec, dependsOn: classes) {
@@ -175,13 +159,6 @@ task DEAL(type: JavaExec, dependsOn: classes) {
 task gif2png(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.Gif2PngConvertTask'
     description "convert gif 2 png"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
-
-task parseLogs(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.ParseLogTask'
-    description "parse logs"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }

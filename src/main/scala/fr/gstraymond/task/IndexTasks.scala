@@ -14,10 +14,6 @@ object CardIndexTask extends Task[Unit]{
   override def process = EsCardIndexer.index(loadMTGCards)
 }
 
-object CardExistsTask extends Task[Seq[String]]{
-  override def process = EsCardIndexer.exists(loadMTGCards)
-}
-
 object DeleteAutocompleteIndexTask extends Task[Unit]{
   override def process = EsAutocompleteIndexer.delete()
 }

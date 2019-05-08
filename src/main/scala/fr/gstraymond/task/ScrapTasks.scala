@@ -17,14 +17,6 @@ object PriceScrapTask extends Task[Seq[ScrapedPrice]] {
   }
 }
 
-object PriceProcessTask extends Task[Seq[ScrapedCard]] {
-  override def process: Future[Seq[ScrapedCard]] = {
-    Future.successful {
-      PriceScraper.process(loadScrapedCards, loadPrices)
-    }
-  }
-}
-
 object FormatScrapTask extends Task[Seq[ScrapedFormat]] {
   override def process: Future[Seq[ScrapedFormat]] = FormatScraper.scrap.map(storeFormats)
 }

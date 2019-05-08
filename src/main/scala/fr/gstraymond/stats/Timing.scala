@@ -3,9 +3,11 @@ package fr.gstraymond.stats
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import play.api.libs.json.Json
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 
 import scala.concurrent.duration.Duration
+import com.github.plokhotnyuk.jsoniter_scala.core._
 
 object Timing {
 
@@ -40,7 +42,7 @@ class Timing[A] {
 
   def get: A = result.get
 
-  // FIXME: hoxto pass name ?
+  // FIXME: howto pass name ?
   def map[B](f: A => B): Timing[B] = {
     flatten(Timing[B](stats.last.name)(f(get)))
   }
@@ -54,8 +56,9 @@ class Timing[A] {
     other
   }
 
-  implicit val f1 = Json.format[ProcessStats]
-  def json = {
-    Json.obj( "stats" -> stats)
+  implicit val StatsCode: JsonValueCodec[Stats] = JsonCodecMaker.make[Stats](CodecMakerConfig())
+  case class Stats(stats: Seq[ProcessStats])
+  def json: String = {
+    writeToString(Stats(stats), WriterConfig(indentionStep = 2))
   }
 }
