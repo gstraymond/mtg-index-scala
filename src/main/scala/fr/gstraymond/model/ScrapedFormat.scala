@@ -1,8 +1,7 @@
 package fr.gstraymond.model
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
-import fr.gstraymond.constant.JsonConf
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 
 case class ScrapedFormat(
   name: String,
@@ -12,6 +11,6 @@ case class ScrapedFormat(
 )
 
 object ScrapedFormatFormat {
-  implicit val ScrapedFormatCodec: JsonValueCodec[Seq[ScrapedFormat]] = JsonCodecMaker.make[Seq[ScrapedFormat]](JsonConf.codecMakerConfig)
+  implicit val ScrapedFormatCodec: JsonValueCodec[Seq[ScrapedFormat]] = JsonCodecMaker.make[Seq[ScrapedFormat]](CodecMakerConfig(transientEmpty = false))
 }
 

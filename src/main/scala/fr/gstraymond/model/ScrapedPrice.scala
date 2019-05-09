@@ -1,8 +1,7 @@
 package fr.gstraymond.model
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
-import fr.gstraymond.constant.JsonConf
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 
 case class ScrapedPrice(card: String,
                         editionCode: String,
@@ -11,5 +10,5 @@ case class ScrapedPrice(card: String,
                         foilPrice: Option[Double])
 
 object ScrapedPriceFormat {
-  implicit val ScrapedPriceCodec: JsonValueCodec[Seq[ScrapedPrice]] = JsonCodecMaker.make[Seq[ScrapedPrice]](JsonConf.codecMakerConfig)
+  implicit val ScrapedPriceCodec: JsonValueCodec[Seq[ScrapedPrice]] = JsonCodecMaker.make[Seq[ScrapedPrice]](CodecMakerConfig(transientEmpty = false))
 }

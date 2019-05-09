@@ -1,10 +1,9 @@
 package fr.gstraymond.indexer
 
 import com.github.plokhotnyuk.jsoniter_scala.core._
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import dispatch.Defaults._
 import dispatch._
-import fr.gstraymond.constant.JsonConf
 import fr.gstraymond.model.MTGCard
 
 import scala.concurrent.Future
@@ -39,7 +38,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
                      land: Option[Seq[String]] = None,
                      stdEditionCode: Option[String] = None)
 
-  implicit val AutocompleteCodec: JsonValueCodec[Autocomplete] = JsonCodecMaker.make[Autocomplete](JsonConf.codecMakerConfig)
+  implicit val AutocompleteCodec: JsonValueCodec[Autocomplete] = JsonCodecMaker.make[Autocomplete](CodecMakerConfig(transientEmpty = false))
 
   private def extractTokens(cards: Seq[MTGCard]): Seq[Suggest] = {
     val tokenOccurrences =

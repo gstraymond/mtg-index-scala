@@ -1,8 +1,7 @@
 package fr.gstraymond.model
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
-import fr.gstraymond.constant.JsonConf
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 
 case class MTGJsonEdition(name: String,
                           code: String,
@@ -45,5 +44,5 @@ case class MTGJsonRuling(date: String,
                          text: String)
 
 object MTGJsonFormats {
-  implicit val mtgJsonEditionFormat: JsonValueCodec[Map[String, MTGJsonEdition]] = JsonCodecMaker.make[Map[String, MTGJsonEdition]](JsonConf.codecMakerConfig)
+  implicit val mtgJsonEditionFormat: JsonValueCodec[Map[String, MTGJsonEdition]] = JsonCodecMaker.make[Map[String, MTGJsonEdition]](CodecMakerConfig(transientEmpty = false))
 }

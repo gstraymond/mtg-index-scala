@@ -1,8 +1,7 @@
 package fr.gstraymond.rules.model
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
-import fr.gstraymond.constant.JsonConf
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 
 case class Rule(id: Option[String],
                 text: String,
@@ -17,5 +16,5 @@ case class Rules(filename: String,
                  rules: Seq[Rule])
 
 object RuleFormats {
-  implicit val RulesCodec: JsonValueCodec[Rules] = JsonCodecMaker.make[Rules](JsonConf.codecMakerConfig)
+  implicit val RulesCodec: JsonValueCodec[Rules] = JsonCodecMaker.make[Rules](CodecMakerConfig(transientEmpty = false))
 }
