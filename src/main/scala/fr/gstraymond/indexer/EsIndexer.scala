@@ -4,6 +4,7 @@ import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import dispatch.Defaults._
 import dispatch._
+import fr.gstraymond.constant.JsonConf
 import fr.gstraymond.model.MTGCard
 import fr.gstraymond.utils.{Log, StringUtils}
 
@@ -78,5 +79,5 @@ trait EsIndexer[A] extends Log {
   case class Index(index: IndexId)
   case class IndexId(_id: String)
 
-  implicit val IndexCodec: JsonValueCodec[Index] = JsonCodecMaker.make[Index](CodecMakerConfig())
+  implicit val IndexCodec: JsonValueCodec[Index] = JsonCodecMaker.make[Index](JsonConf.codecMakerConfig)
 }

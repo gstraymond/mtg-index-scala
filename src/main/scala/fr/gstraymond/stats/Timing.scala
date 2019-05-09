@@ -3,11 +3,11 @@ package fr.gstraymond.stats
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
+import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, _}
+import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
+import fr.gstraymond.constant.JsonConf
 
 import scala.concurrent.duration.Duration
-import com.github.plokhotnyuk.jsoniter_scala.core._
 
 object Timing {
 
@@ -56,7 +56,7 @@ class Timing[A] {
     other
   }
 
-  implicit val StatsCode: JsonValueCodec[Stats] = JsonCodecMaker.make[Stats](CodecMakerConfig())
+  implicit val StatsCode: JsonValueCodec[Stats] = JsonCodecMaker.make[Stats](JsonConf.codecMakerConfig)
   case class Stats(stats: Seq[ProcessStats])
   def json: String = {
     writeToString(Stats(stats), WriterConfig(indentionStep = 2))
