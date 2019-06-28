@@ -7,5 +7,5 @@ object PauperFormatScrap extends FormatScrap {
   override val path = "/Pauper"
 
   override def bannedCards(doc: Document): Seq[String] =
-    doc.getTexts(".mw-parser-output > ul:nth-child(9) > li")
+    doc.getTexts(".mw-parser-output > ul:nth-child(24) > li")
 }
