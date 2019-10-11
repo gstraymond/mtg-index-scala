@@ -14,7 +14,7 @@ trait FormatsField extends Log {
   )
 
   private val excludedFormats = Set(
-    "1v1", "brawl", "duel", "frontier", "penny", "future"
+    "brawl", "duel", "frontier", "penny", "future", "historic"
   )
 
   private val newFormats = Set(
@@ -46,7 +46,7 @@ trait FormatsField extends Log {
         //.filter(l => oldFormats(l.format))
         .filterNot(l => excludedFormats(l.format))
         .filterNot(_.legality == "Banned")
-        .filterNot(_.legality == "Future")
+        .filterNot(_.legality == "Not Legal")
 
     val restricted = oldLegalities.find(_.legality == "Restricted")
 
