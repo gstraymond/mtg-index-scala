@@ -11,12 +11,6 @@ import fr.gstraymond.scraper._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object PriceScrapTask extends Task[Seq[ScrapedPrice]] {
-  override def process: Future[Seq[ScrapedPrice]] = {
-    PriceScraper.scrap.map(storePrices)
-  }
-}
-
 object FormatScrapTask extends Task[Seq[ScrapedFormat]] {
   override def process: Future[Seq[ScrapedFormat]] = FormatScraper.scrap.map(storeFormats)
 }
@@ -45,7 +39,7 @@ object AllSetConvertTask extends Task[Seq[MTGCard]] {
     for {
       abilities <- AbilityScraper.scrap
       formats <- FormatScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, formats, loadPrices, abilities)
+      mtgCards <- AllSetConverter.convert(loadAllSet, formats, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
@@ -68,8 +62,7 @@ object DEALTask extends Task[Seq[MTGCard]] {
       rules = (RulesParser.parse _).tupled(rawRules)
       abilities <- AbilityScraper.scrap
       formats <- FormatScraper.scrap
-      prices <- if (pricesUpToDate) Future.successful(loadPrices) else PriceScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, formats, prices, abilities)
+      mtgCards <- AllSetConverter.convert(loadAllSet, formats, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
@@ -84,7 +77,6 @@ object DEALTask extends Task[Seq[MTGCard]] {
     } yield {
       storeRules(rules)
       storeFormats(formats)
-      storePrices(prices)
       storeMTGCards(mtgCards)
     }
   }

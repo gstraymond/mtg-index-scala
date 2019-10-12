@@ -64,6 +64,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
         }
         .filter(_.length > 3)
         .groupBy(a => a)
+        .view
         .mapValues(_.size)
 
     tokenOccurrences
@@ -75,10 +76,11 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
         }
       }
       .groupBy(_._1)
+      .view
       .mapValues(_.map(_._2).sum)
       .filter(_._2 > 5)
-      .map { case (input, weight) => Suggest(input, Some(weight), None)}
       .toSeq
+      .map { case (input, weight) => Suggest(input, Some(weight), None)}
   }
 
   private def extractEditions(cards: Seq[MTGCard]): Seq[Suggest] = {
@@ -96,9 +98,9 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
   }
 
   private def extractSpecials(cards: Seq[MTGCard]): Seq[Suggest] = {
-    cards.flatMap(_.special).groupBy(_.toLowerCase).mapValues(_.size).map { case (input, weight) =>
+    cards.flatMap(_.special).groupBy(_.toLowerCase).view.mapValues(_.size).toSeq.map { case (input, weight) =>
         Suggest(input, Some(weight), None)
-    }.toSeq
+    }
   }
 
   private def indexSuggest(`type`: String, suggests: Seq[Suggest]): Future[Unit] = {

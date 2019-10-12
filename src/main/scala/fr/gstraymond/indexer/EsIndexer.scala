@@ -42,7 +42,7 @@ trait EsIndexer[A] extends Log {
   }
 
   def index(elems: Seq[A]): Future[Unit] = {
-    val grouped = elems.grouped(bulk).toStream
+    val grouped = elems.grouped(bulk).to(LazyList)
     val groupedSize = grouped.size
     val cardSize = elems.size
 
@@ -70,7 +70,7 @@ trait EsIndexer[A] extends Log {
 
   protected def getId(card: MTGCard): String = {
     val id = card.publications.flatMap(_.multiverseId).headOption.getOrElse("na")
-    norm(id + "-" + card.title)
+    norm(s"$id-${card.title}")
   }
 
   protected def norm(string: String): String = StringUtils.normalize(string)

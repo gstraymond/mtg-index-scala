@@ -4,7 +4,7 @@ import java.net.URLDecoder
 
 import fr.gstraymond.utils.Log
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source

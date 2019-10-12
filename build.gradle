@@ -11,7 +11,7 @@ repositories {
     maven { url 'http://repo.typesafe.com/typesafe/releases' }
 }
 
-def scalaVersion = "2.12"
+def scalaVersion = "2.13"
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.+'
@@ -20,23 +20,16 @@ dependencies {
     compile "org.scala-lang:scala-compiler:$scalaVersion.+"
     runtime "org.codehaus.groovy:groovy:2.4.+"
     compile 'org.jsoup:jsoup:1.11.+'
-    compile "org.dispatchhttp:dispatch-core_$scalaVersion:1.0.0"
+    compile "org.dispatchhttp:dispatch-core_$scalaVersion:1.1.1"
     compile "eu.bitwalker:UserAgentUtils:1.+"
-    compile "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_$scalaVersion:0.46.2"
-    compileOnly "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-macros_$scalaVersion:0.46.2"
+    compile "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_$scalaVersion:0.55.4"
+    compileOnly "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-macros_$scalaVersion:0.55.4"
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"
 }
 
 mainClassName = 'fr.gstraymond.task.DEALTask'
-
-task priceScrap(type: JavaExec, dependsOn: classes) {
-    main = 'fr.gstraymond.task.PriceScrapTask'
-    description "Scrap prices"
-    classpath sourceSets.main.runtimeClasspath
-    classpath configurations.runtime
-}
 
 task formatScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.FormatScrapTask'
@@ -177,8 +170,9 @@ test {
 
 // START SNIPPET adjust-memory
 tasks.withType(ScalaCompile) {
-    configure(scalaCompileOptions.forkOptions) {
+    scalaCompileOptions.forkOptions.with {
         memoryMaximumSize = '1g'
     }
+    scalaCompileOptions.additionalParameters = ["-Xfatal-warnings"]
 }
 // END SNIPPET adjust-memory

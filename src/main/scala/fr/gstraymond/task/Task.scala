@@ -1,8 +1,6 @@
 package fr.gstraymond.task
 
 import java.io.{File, FileInputStream}
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 import com.github.plokhotnyuk.jsoniter_scala.core.{ReaderConfig, readFromStream}
 import fr.gstraymond.model._
@@ -38,7 +36,6 @@ trait Task[A] extends Log {
   import fr.gstraymond.model.MTGCardFormat._
   import fr.gstraymond.model.MTGJsonFormats._
   import fr.gstraymond.model.ScrapedFormatFormat._
-  import fr.gstraymond.model.ScrapedPriceFormat._
   import fr.gstraymond.rules.model.RuleFormats._
 
   protected def storeMTGCards(cards: Seq[MTGCard]) = {
@@ -46,13 +43,6 @@ trait Task[A] extends Log {
     val file = new File(s"${FileUtils.outputPath}/cards.json")
     FileUtils.storeJson(file, cards.sortBy(_.title))
     cards
-  }
-
-  protected def storePrices(prices: Seq[ScrapedPrice]) = {
-    mkDir(FileUtils.scrapPath)
-    val file = new File(s"${FileUtils.scrapPath}/prices.json")
-    FileUtils.storeJson(file, prices)
-    prices
   }
 
   protected def storeFormats(formats: Seq[ScrapedFormat]) = {
@@ -74,19 +64,6 @@ trait Task[A] extends Log {
       new FileInputStream(s"${FileUtils.scrapPath}/AllSets.json"),
       ReaderConfig(preferredBufSize = 30 * 1024 * 1024)
     )
-
-
-  protected def pricesUpToDate: Boolean = {
-    val prices = new File(s"${FileUtils.scrapPath}/prices.json")
-    val lastModified = Instant.ofEpochMilli(prices.lastModified())
-    log.info(s"pricesUpToDate: lastModified $lastModified")
-    prices.exists() && lastModified.isAfter(Instant.now.minus(1, ChronoUnit.DAYS))
-  }
-
-  protected def loadPrices: Seq[ScrapedPrice] = {
-    val json = new FileInputStream(s"${FileUtils.scrapPath}/prices.json")
-    readFromStream[Seq[ScrapedPrice]](json)
-  }
 
   protected def loadFormats: Seq[ScrapedFormat] = {
     val json = new FileInputStream(s"${FileUtils.scrapPath}/formats.json")

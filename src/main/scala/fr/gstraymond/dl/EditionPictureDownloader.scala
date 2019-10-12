@@ -23,7 +23,7 @@ object EditionPictureDownloader extends GathererScraper {
       }
     }.distinct
 
-    val editionToRarities = tuples.groupBy(_._1).mapValues(_.map(_._2))
+    val editionToRarities = tuples.groupBy(_._1).view.mapValues(_.map(_._2)).toSeq
 
     editionToRarities.flatMap { case (edition, rarities) =>
       rarities.map { rarity =>

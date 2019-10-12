@@ -2,7 +2,7 @@ package fr.gstraymond.scraper
 
 import fr.gstraymond.utils.Log
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -16,6 +16,6 @@ object AbilityScraper extends WikipediaScraper with Log {
       val abilities = doc.select(cssPath).asScala.map(_.text)
       log.info(abilities.mkString(", "))
       assert(abilities.nonEmpty, s"no result for ${getClass.getSimpleName} [$cssPath]")
-      abilities
+      abilities.toSeq
     }
 }

@@ -13,7 +13,7 @@ object FileUtils {
 
   def storeJson[A](file: java.io.File,
                    a: A)
-                  (implicit codec: JsonValueCodec[A]){
+                  (implicit codec: JsonValueCodec[A]): Unit = {
     val writer = new java.io.PrintWriter(file)
     try {
       writer.println(writeToString(a, WriterConfig(indentionStep = 2)))

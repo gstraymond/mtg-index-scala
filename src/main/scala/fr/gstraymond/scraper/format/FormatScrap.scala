@@ -2,7 +2,7 @@ package fr.gstraymond.scraper.format
 
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 trait FormatScrap {
 
@@ -20,7 +20,7 @@ trait FormatScrap {
     def getTexts(cssPath: String): Seq[String] = {
       val result = doc.select(cssPath).asScala.map(_.text())
       assert(result.nonEmpty, s"no result for $name [$cssPath]")
-      result
+      result.toSeq
     }
   }
 

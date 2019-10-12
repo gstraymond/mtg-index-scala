@@ -32,7 +32,8 @@ case class MTGJsonCard(//uuid: String,
                        multiverseId: Option[Long],
                        foreignData: Option[Seq[MTGJsonForeignData]],
                        legalities: Option[Map[String, String]],
-                       rulings: Option[Seq[MTGJsonRuling]])
+                       rulings: Option[Seq[MTGJsonRuling]],
+                       prices: Map[String, Map[String, Option[Double]]])
 
 case class MTGJsonForeignData(language: String,
                               name: Option[String])
