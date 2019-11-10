@@ -38,8 +38,7 @@ object AllSetConvertTask extends Task[Seq[MTGCard]] {
   override def process: Future[Seq[MTGCard]] = {
     for {
       abilities <- AbilityScraper.scrap
-      formats <- FormatScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, formats, abilities)
+      mtgCards <- AllSetConverter.convert(loadAllSet, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
@@ -61,8 +60,7 @@ object DEALTask extends Task[Seq[MTGCard]] {
       rawRules <- RulesScraper.scrap
       rules = (RulesParser.parse _).tupled(rawRules)
       abilities <- AbilityScraper.scrap
-      formats <- FormatScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, formats, abilities)
+      mtgCards <- AllSetConverter.convert(loadAllSet, abilities)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
@@ -76,7 +74,6 @@ object DEALTask extends Task[Seq[MTGCard]] {
       _ <- EsRulesIndexer.index(Seq(rules))
     } yield {
       storeRules(rules)
-      storeFormats(formats)
       storeMTGCards(mtgCards)
     }
   }

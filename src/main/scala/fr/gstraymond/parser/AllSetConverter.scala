@@ -112,7 +112,6 @@ object AllSetConverter extends Log
   )
 
   def convert(loadAllSet: Map[String, MTGJsonEdition],
-              formats: Seq[ScrapedFormat],
               abilities: Seq[String]): Future[Seq[MTGCard]] = Future.successful {
 
     val nextWeek = LocalDate.now().plusWeeks(1)
@@ -191,7 +190,7 @@ object AllSetConverter extends Log
           )
         },
         abilities = _abilities(firstCard.name, description, abilities),
-        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions, formats, firstCard.name, rarities),
+        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions, firstCard.name, rarities),
         artists = cards.flatMap(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,

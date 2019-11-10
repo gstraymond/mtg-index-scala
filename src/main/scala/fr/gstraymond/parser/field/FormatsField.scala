@@ -2,59 +2,27 @@ package fr.gstraymond.parser.field
 
 import java.time.LocalDate
 
-import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality, ScrapedFormat}
+import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality}
 import fr.gstraymond.utils.Log
 
 trait FormatsField extends Log {
 
-  private val oldFormats = Set(
-    "Vintage",
-    "Commander",
-    "Legacy",
-  )
-
-  private val excludedFormats = Set(
-    "brawl", "duel", "frontier", "penny", "future", "historic", "oldschool"
-  )
-
-  private val newFormats = Set(
-    "modern",
-    "standard",
-  )
-
-  private val pauperRarities = Set(
-    "common"
+  private val includedFormats = Set(
+    "vintage", "commander", "legacy", "modern", "pauper", "standard"
   )
 
   def _formats(formats: Seq[MTGJsonLegality],
                editions: Seq[MTGJsonEdition],
-               scrapedFormats: Seq[ScrapedFormat],
                title: String,
                rarities: Seq[String]): Seq[String] = {
 
-    //    val editionNames = editions.map(_.name.replace(" Core Set", "")).toSet
-
-    //    val newLegalities =
-    //        scrapedFormats
-    //          .filter(f => newFormats(f.name.toLowerCase))
-    //          .filter(format => format.availableSets.isEmpty || format.availableSets.exists(editionNames))
-    //          .filterNot(_.bannedCards(title))
-    //          .map(_.name.capitalize)
-
     val oldLegalities =
       formats
-        //.filter(l => oldFormats(l.format))
-        .filterNot(l => excludedFormats(l.format))
+        .filter(l => includedFormats(l.format))
         .filterNot(_.legality == "Banned")
         .filterNot(_.legality == "Not Legal")
 
     val restricted = oldLegalities.find(_.legality == "Restricted")
-
-    val pauper = scrapedFormats
-      .filter(f => f.name.toLowerCase == "pauper")
-      .filter(_ => rarities.exists(pauperRarities))
-      .filterNot(_.bannedCards(title))
-      .map(_.name.capitalize)
 
     val future = if (formats.contains(MTGJsonLegality("future", "Legal")) &&
       editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))) {
@@ -67,6 +35,6 @@ trait FormatsField extends Log {
     //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
     //    }.map(_.name)
 
-    (oldLegalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) /*++ newLegalities*/ ++ pauper ++ future).distinct
+    (oldLegalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).distinct
   }
 }
