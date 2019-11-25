@@ -8,7 +8,7 @@ import fr.gstraymond.utils.Log
 trait FormatsField extends Log {
 
   private val includedFormats = Set(
-    "vintage", "commander", "legacy", "modern", "pauper", "standard"
+    "vintage", "commander", "legacy", "modern", "pauper", "pioneer", "standard"
   )
 
   def _formats(formats: Seq[MTGJsonLegality],
@@ -16,17 +16,17 @@ trait FormatsField extends Log {
                title: String,
                rarities: Seq[String]): Seq[String] = {
 
-    val oldLegalities =
+    val legalities =
       formats
         .filter(l => includedFormats(l.format))
         .filterNot(_.legality == "Banned")
         .filterNot(_.legality == "Not Legal")
 
-    val restricted = oldLegalities.find(_.legality == "Restricted")
+    val restricted = legalities.find(_.legality == "Restricted")
 
     val future = if (formats.contains(MTGJsonLegality("future", "Legal")) &&
       editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))) {
-      if (formats.length == 1) Seq("Vintage", "Commander", "Legacy", "Modern", "Standard")
+      if (formats.length == 1) Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
       else Seq("Standard")
     } else Nil
 
@@ -35,6 +35,6 @@ trait FormatsField extends Log {
     //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
     //    }.map(_.name)
 
-    (oldLegalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).distinct
+    (legalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).distinct
   }
 }
