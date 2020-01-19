@@ -1,9 +1,9 @@
 package fr.gstraymond.utils
 
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 
 trait Log {
 
-  protected val log = LoggerFactory.getLogger(getClass.getName.replace("$", ""))
+  protected val log: Logger = LoggerFactory.getLogger(getClass.getName.replace("$", ""))
 
 }

@@ -3,9 +3,8 @@ package fr.gstraymond.parser.field
 import java.time.LocalDate
 
 import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality}
-import fr.gstraymond.utils.Log
 
-trait FormatsField extends Log {
+trait FormatsField {
 
   private val includedFormats = Set(
     "vintage", "commander", "legacy", "modern", "pauper", "pioneer", "standard"
