@@ -62,7 +62,7 @@ trait Task[A] extends Log {
   protected def loadAllSet: Map[String, MTGJsonEdition] =
     readFromStream[Map[String, MTGJsonEdition]](
       new FileInputStream(s"${FileUtils.scrapPath}/AllPrintings.json"),
-      ReaderConfig(preferredBufSize = 30 * 1024 * 1024)
+      ReaderConfig(preferredBufSize = 50 * 1024 * 1024)
     )
 
   protected def loadFormats: Seq[ScrapedFormat] = {
