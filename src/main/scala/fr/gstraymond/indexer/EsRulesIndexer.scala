@@ -26,5 +26,5 @@ object EsRulesIndexer extends EsIndexer[Rules] {
   }
 
   case class RuleVersion(filename: String)
-  implicit val RuleVersionCodec: JsonValueCodec[RuleVersion] = JsonCodecMaker.make[RuleVersion](CodecMakerConfig(transientEmpty = false))
+  implicit val RuleVersionCodec: JsonValueCodec[RuleVersion] = JsonCodecMaker.make[RuleVersion](CodecMakerConfig.withTransientEmpty(false))
 }

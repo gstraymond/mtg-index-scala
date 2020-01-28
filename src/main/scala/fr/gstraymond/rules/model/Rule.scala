@@ -16,5 +16,5 @@ case class Rules(filename: String,
                  rules: Seq[Rule])
 
 object RuleFormats {
-  implicit val RulesCodec: JsonValueCodec[Rules] = JsonCodecMaker.make[Rules](CodecMakerConfig(transientEmpty = false))
+  implicit val RulesCodec: JsonValueCodec[Rules] = JsonCodecMaker.make[Rules](CodecMakerConfig.withTransientEmpty(false))
 }

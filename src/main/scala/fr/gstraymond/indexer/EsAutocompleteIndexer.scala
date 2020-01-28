@@ -38,7 +38,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
                      land: Option[Seq[String]] = None,
                      stdEditionCode: Option[String] = None)
 
-  implicit val AutocompleteCodec: JsonValueCodec[Autocomplete] = JsonCodecMaker.make[Autocomplete](CodecMakerConfig(transientEmpty = false))
+  implicit val AutocompleteCodec: JsonValueCodec[Autocomplete] = JsonCodecMaker.make[Autocomplete](CodecMakerConfig.withTransientEmpty(false))
 
   private def extractTokens(cards: Seq[MTGCard]): Seq[Suggest] = {
     val tokenOccurrences =

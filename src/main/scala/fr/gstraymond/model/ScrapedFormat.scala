@@ -11,6 +11,6 @@ case class ScrapedFormat(
 )
 
 object ScrapedFormatFormat {
-  implicit val ScrapedFormatCodec: JsonValueCodec[Seq[ScrapedFormat]] = JsonCodecMaker.make[Seq[ScrapedFormat]](CodecMakerConfig(transientEmpty = false))
+  implicit val ScrapedFormatCodec: JsonValueCodec[Seq[ScrapedFormat]] = JsonCodecMaker.make[Seq[ScrapedFormat]](CodecMakerConfig.withTransientEmpty(false))
 }
 

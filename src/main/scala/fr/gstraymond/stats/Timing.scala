@@ -55,9 +55,9 @@ class Timing[A] {
     other
   }
 
-  implicit val StatsCode: JsonValueCodec[Stats] = JsonCodecMaker.make[Stats](CodecMakerConfig(transientEmpty = false))
+  implicit val StatsCode: JsonValueCodec[Stats] = JsonCodecMaker.make[Stats](CodecMakerConfig.withTransientEmpty(false))
   case class Stats(stats: Seq[ProcessStats])
   def json: String = {
-    writeToString(Stats(stats), WriterConfig(indentionStep = 2))
+    writeToString(Stats(stats), WriterConfig.withIndentionStep(2))
   }
 }

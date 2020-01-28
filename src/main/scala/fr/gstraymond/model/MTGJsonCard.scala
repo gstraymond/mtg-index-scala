@@ -33,7 +33,7 @@ case class MTGJsonCard(//uuid: String,
                        foreignData: Option[Seq[MTGJsonForeignData]],
                        legalities: Option[Map[String, String]],
                        rulings: Option[Seq[MTGJsonRuling]],
-                       prices: Map[String, Map[String, Option[Double]]])
+                       prices: Option[MTGPrices])
 
 case class MTGJsonForeignData(language: String,
                               name: Option[String])
@@ -44,6 +44,8 @@ case class MTGJsonLegality(format: String,
 case class MTGJsonRuling(date: String,
                          text: String)
 
+case class MTGPrices(paper: Map[String, Option[Double]], paperFoil: Map[String, Option[Double]])
+
 object MTGJsonFormats {
-  implicit val mtgJsonEditionFormat: JsonValueCodec[Map[String, MTGJsonEdition]] = JsonCodecMaker.make[Map[String, MTGJsonEdition]](CodecMakerConfig(transientEmpty = false))
+  implicit val mtgJsonEditionFormat: JsonValueCodec[Map[String, MTGJsonEdition]] = JsonCodecMaker.make[Map[String, MTGJsonEdition]](CodecMakerConfig.withTransientEmpty(false))
 }

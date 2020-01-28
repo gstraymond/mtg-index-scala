@@ -16,7 +16,7 @@ object FileUtils {
                   (implicit codec: JsonValueCodec[A]): Unit = {
     val writer = new java.io.PrintWriter(file)
     try {
-      writer.println(writeToString(a, WriterConfig(indentionStep = 2)))
+      writer.println(writeToString(a, WriterConfig.withIndentionStep(2)))
     } finally {
       writer.close()
     }

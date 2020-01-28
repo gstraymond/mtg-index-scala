@@ -36,6 +36,6 @@ case class Ruling(date: String,
                   text: String)
 
 object MTGCardFormat {
-  implicit val MTGCardCodec: JsonValueCodec[MTGCard] = JsonCodecMaker.make[MTGCard](CodecMakerConfig(transientEmpty = false))
-  implicit val MTGCardsCodec: JsonValueCodec[Seq[MTGCard]] = JsonCodecMaker.make[Seq[MTGCard]](CodecMakerConfig(transientEmpty = false))
+  implicit val MTGCardCodec: JsonValueCodec[MTGCard] = JsonCodecMaker.make[MTGCard](CodecMakerConfig.withTransientEmpty(false))
+  implicit val MTGCardsCodec: JsonValueCodec[Seq[MTGCard]] = JsonCodecMaker.make[Seq[MTGCard]](CodecMakerConfig.withTransientEmpty(false))
 }

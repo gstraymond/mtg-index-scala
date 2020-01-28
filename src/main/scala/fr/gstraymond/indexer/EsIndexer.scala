@@ -78,5 +78,5 @@ trait EsIndexer[A] extends Log {
   case class Index(index: IndexId)
   case class IndexId(_id: String)
 
-  implicit val IndexCodec: JsonValueCodec[Index] = JsonCodecMaker.make[Index](CodecMakerConfig(transientEmpty = false))
+  implicit val IndexCodec: JsonValueCodec[Index] = JsonCodecMaker.make[Index](CodecMakerConfig.withTransientEmpty(false))
 }

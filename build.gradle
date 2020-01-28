@@ -22,8 +22,8 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.+'
     compile "org.dispatchhttp:dispatch-core_$scalaVersion:1.1.1"
     compile "eu.bitwalker:UserAgentUtils:1.+"
-    compile "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_$scalaVersion:0.55.4"
-    compileOnly "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-macros_$scalaVersion:0.55.4"
+    compile "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_$scalaVersion:2.1.6"
+    compileOnly "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-macros_$scalaVersion:2.1.6"
     testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
     testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
     testCompile "junit:junit:4.+"

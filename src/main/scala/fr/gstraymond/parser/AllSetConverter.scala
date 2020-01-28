@@ -210,9 +210,10 @@ object AllSetConverter extends Log
   implicit val ord: Ordering[LocalDate] = _ compareTo _
 
   private def computePrices(card: MTGJsonCard, foil: Boolean = false) = {
-    card.prices.get(if (foil) "paperFoil" else "paper").flatMap { ppp =>
-      ppp.maxByOption { case (date, _) => LocalDate.parse(date) }.map(_._2)
-    }.flatten
+    val prices = card.prices
+    (if (foil) prices.map(_.paperFoil) else prices.map(_.paper)).flatMap {
+      _.maxByOption { case (date, _) => LocalDate.parse(date) }.flatMap(_._2)
+    }
   }
 
   private def processLegalities(data: Map[String, String]): Seq[MTGJsonLegality] =
