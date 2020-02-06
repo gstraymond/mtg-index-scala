@@ -7,7 +7,6 @@ import fr.gstraymond.model.MTGCardFormat._
 object EsCardIndexer extends EsIndexer[MTGCard] {
 
   override val index = "mtg"
-  override val `type` = "card"
 
   override def buildBody(group: Seq[MTGCard]): String =
     group.flatMap { card =>

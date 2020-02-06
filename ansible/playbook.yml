@@ -1,0 +1,13 @@
+---
+- hosts: all
+  roles:
+    - role: elastic.elasticsearch
+  vars:
+    es_version: 7.5.2
+    es_enable_xpack: false
+    es_heap_size: 512m
+    es_config:
+      network.host: 0.0.0.0 # only for local vagrant 
+      discovery.type: single-node
+      http.cors.enabled: true
+      http.cors.allow-origin: "*"

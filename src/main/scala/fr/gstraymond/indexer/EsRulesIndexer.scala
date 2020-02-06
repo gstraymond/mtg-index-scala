@@ -8,7 +8,6 @@ import fr.gstraymond.rules.model.Rules
 object EsRulesIndexer extends EsIndexer[Rules] {
 
   override val index = "mtg-rules"
-  override val `type` = "all"
 
   override def buildBody(group: Seq[Rules]): String = {
     group.flatMap { rules =>

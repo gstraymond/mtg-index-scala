@@ -1,260 +1,130 @@
 {
-  "settings": {
-    "analysis": {
-      "analyzer": {
-        "englishAnalyzer": {
-          "tokenizer": "standard",
-          "filter": [
-            "standard",
-            "lowercase",
-            "asciifolding",
-            "englishStemmer",
-            "frenchElision"
-          ]
-        },
-        "default": {
-          "tokenizer": "standard",
-          "filter": [
-            "standard",
-            "lowercase",
-            "asciifolding",
-            "frenchStemmer",
-            "frenchElision"
-          ]
-        },
-        "tagAnalyzer": {
-          "tokenizer": "standard",
-          "filter": [
-            "lowercase"
-          ]
+  "mappings": {
+    "properties": {
+      "frenchTitle": {
+        "type": "text",
+        "analyzer": "french"
+      },
+
+      "title": {
+        "type": "text",
+        "analyzer": "english"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "english"
+      },
+
+      "abilities": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
         }
       },
-      "filter": {
-        "englishStemmer": {
-          "type": "stemmer",
-          "name": "english"
-        },
-        "frenchStemmer": {
-          "type": "stemmer",
-          "name": "light_french"
-        },
-        "frenchElision": {
-          "type": "elision",
-          "articles": [
-            "l",
-            "m",
-            "t",
-            "qu",
-            "n",
-            "s",
-            "j",
-            "d"
-          ]
-        }
-      }
-    }
-  },
-  "mappings": {
-    "card": {
-      "dynamic_templates": [
-        {
-          "titleTemplate": {
-            "match": "title",
-            "match_mapping_type": "string",
-            "mapping": {
-              "analyzer": "englishAnalyzer",
-              "include_in_all": true
-            }
-          }
-        },
-        {
-          "descriptionTemplate": {
-            "match": "description",
-            "match_mapping_type": "string",
-            "mapping": {
-              "analyzer": "englishAnalyzer",
-              "include_in_all": true
-            }
-          }
-        },
-        {
-          "typeTags": {
-            "match": "type",
-            "match_mapping_type": "string",
-            "mapping": {
-              "analyzer": "tagAnalyzer",
-              "include_in_all": true
-            }
-          }
-        },
-        {
-          "raritiesTags": {
-            "match": "rarities",
-            "match_mapping_type": "string",
-            "mapping": {
-              "analyzer": "tagAnalyzer",
-              "include_in_all": true
-            }
+      "artists": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
           }
         }
-      ],
-      "properties": {
-        "abilities": {
-          "type": "multi_field",
-          "fields": {
-            "abilities": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "artists": {
-          "type": "multi_field",
-          "fields": {
-            "artists": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "colors": {
-          "type": "multi_field",
-          "fields": {
-            "colors": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "dualColors": {
-          "type": "multi_field",
-          "fields": {
-            "dualColors": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "tripleColors": {
-          "type": "multi_field",
-          "fields": {
-            "tripleColors": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "editions": {
-          "type": "multi_field",
-          "fields": {
-            "editions": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "formats": {
-          "type": "multi_field",
-          "fields": {
-            "formats": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "priceRanges": {
-          "type": "multi_field",
-          "fields": {
-            "priceRanges": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "blocks": {
-          "type": "multi_field",
-          "fields": {
-            "blocks": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "layout": {
-          "type": "multi_field",
-          "fields": {
-            "layout": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "special": {
-          "type": "multi_field",
-          "fields": {
-            "special": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        },
-        "land": {
-          "type": "multi_field",
-          "fields": {
-            "land": {
-              "type": "string",
-              "index": "analyzed"
-            },
-            "exact": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
+      },
+      "colors": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
           }
         }
+      },
+      "dualColors": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "tripleColors": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "editions": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "formats": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "priceRanges": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "blocks": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "layout": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "special": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "land": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "type": {
+        "type": "text",
+        "fielddata": true
+      },
+      "rarities": {
+        "type": "text",
+        "fielddata": true
+      },
+
+      "power": {
+        "type": "keyword"
+      },
+      "toughness": {
+        "type": "keyword"
       }
     }
   }

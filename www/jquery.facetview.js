@@ -736,11 +736,11 @@ search box - the end user will not know they are happening.
                 }
             }
             resultobj["start"] = "";
-            resultobj["found"] = dataobj.hits.total;
-            for (var item in dataobj.facets) {
+            resultobj["found"] = dataobj.hits.total.value;
+            for (var item in dataobj.aggregations) {
                 var facetsobj = new Object();
-                for (var thing in dataobj.facets[item]["terms"]) {
-                    facetsobj[ dataobj.facets[item]["terms"][thing]["term"] ] = dataobj.facets[item]["terms"][thing]["count"];
+                for (var thing in dataobj.aggregations[item]["buckets"]) {
+                    facetsobj[ dataobj.aggregations[item]["buckets"][thing]["key"] ] = dataobj.aggregations[item]["buckets"][thing]["doc_count"];
                 }
                 resultobj["facets"][item] = facetsobj;
             }
@@ -1056,14 +1056,14 @@ search box - the end user will not know they are happening.
             options.fields ? qs['fields'] = options.fields : "";
             options.partial_fields ? qs['partial_fields'] = options.partial_fields : "";
             // set any facets
-            qs['facets'] = {};
+            qs['aggregations'] = {};
             for ( var item = 0; item < options.facets.length; item++ ) {
                 var fobj = jQuery.extend(true, {}, options.facets[item] );
                 delete fobj['display'];
                 var parts = fobj['field'].split('.');
-                qs['facets'][fobj['field']] = {"terms":fobj};
+                qs['aggregations'][fobj['field']] = {"terms":fobj};
                 if ( options.nested.indexOf(parts[0]) != -1 ) {
-                    nested ? qs['facets'][fobj['field']]["scope"] = parts[0] : qs['facets'][fobj['field']]["nested"] = parts[0];
+                    nested ? qs['aggregations'][fobj['field']]["scope"] = parts[0] : qs['aggregations'][fobj['field']]["nested"] = parts[0];
                 }
             }
             jQuery.extend(true, qs['facets'], options.extra_facets );
