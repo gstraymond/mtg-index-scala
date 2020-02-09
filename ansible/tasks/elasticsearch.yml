@@ -7,7 +7,7 @@
     es_enable_xpack: false
     es_heap_size: 256m
     es_config:
-      network.host: 0.0.0.0 # only for local vagrant
+      #network.host: 0.0.0.0 # only for local vagrant
       discovery.type: single-node
       http.cors.enabled: true
       http.cors.allow-origin: "*"
