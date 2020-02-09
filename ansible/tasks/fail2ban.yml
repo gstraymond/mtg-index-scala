@@ -1,0 +1,5 @@
+---
+- hosts: all
+  become: true
+  tasks: 
+  - package: name=fail2ban state=present

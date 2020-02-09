@@ -1,13 +1,8 @@
 ---
-- hosts: all
-  roles:
-    - role: elastic.elasticsearch
-  vars:
-    es_version: 7.5.2
-    es_enable_xpack: false
-    es_heap_size: 512m
-    es_config:
-      network.host: 0.0.0.0 # only for local vagrant 
-      discovery.type: single-node
-      http.cors.enabled: true
-      http.cors.allow-origin: "*"
+- import_playbook: tasks/elasticsearch.yml
+- import_playbook: tasks/logrotate.yml
+- import_playbook: tasks/nginx.yml
+- import_playbook: tasks/letsencrypt.yml
+- import_playbook: tasks/goaccess.yml
+- import_playbook: tasks/fail2ban.yml
+- import_playbook: tasks/doZeMagic.yml

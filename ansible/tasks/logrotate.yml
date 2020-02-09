@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: ansible-logrotate
+  vars:
+    logrotate_scripts:
+      - name: elasticsearch-app
+        path: /var/log/elasticsearch/*.log
+        options:
+          - rotate 3
+          - daily
+          - size 10M
+          - missingok
+          - compress
+      - name: elasticsearch-nginx
+        path: /usr/share/nginx/elasticsearch*.log
+        options:
+          - rotate 3
+          - monthly
+          - size 200M
+          - missingok
+          - compress
