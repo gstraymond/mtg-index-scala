@@ -37,7 +37,7 @@ jQuery(document).ready(function($) {
 	    paging: { size: 10 },
 	    pager_on_top: true,
 	    default_operator: "AND",
-	    sort: ['_uid'],
+	    sort: ['_id'],
 	    result_display: [
 			[
 		 	    {

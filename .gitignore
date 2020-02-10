@@ -12,3 +12,8 @@ gradle
 build
 target/
 out/
+.vagrant
+.htpasswd
+*.swp
+.ssh
+gmail_password

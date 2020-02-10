@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: true
+  tasks: 
+  - package: name=goaccess state=present
+
+- hosts: all
+  become: true
+  tasks:
+  - copy: src=../templates/goaccess.conf dest=/etc/goaccess.conf
+  - copy: src=../templates/urldecode.sed dest=/root/urldecode.sed
+  - copy: src=../templates/report.sh     dest=/root/report.sh mode=u+rx
+  - file: path=/www/report/imports       state=directory      mode=+rx
+
+- hosts: all
+  become: true
+  tasks:
+  - cron: name="goaccess-monthly" hour=23 minute=59 user="root" job="/root/report.sh all"
+  - cron: name="goaccess-daily"   hour=23 minute=59 user="root" job="/root/report.sh daily"

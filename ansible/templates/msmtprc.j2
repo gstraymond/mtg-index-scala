@@ -1,0 +1,12 @@
+defaults
+port 587
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+account gmail
+host smtp.gmail.com
+from magic.card.search@gmail.com
+auth on
+user magic.card.search
+password {{ lookup('file', '../templates/gmail_password') }}
+account default : gmail

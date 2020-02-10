@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  roles:
+  - role: geerlingguy.certbot
+    certbot_create_if_missing: yes
+    certbot_admin_email: tcherno@gmail.com
+    certbot_certs:
+    - domains:
+      - search.mtg-search.com
+      - report.mtg-search.com
+    certbot_create_standalone_stop_services:
+    - nginx

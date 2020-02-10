@@ -1,5 +1,7 @@
 package fr.gstraymond.indexer
 
+import java.nio.charset.Charset
+
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import dispatch.Defaults._
@@ -15,11 +17,10 @@ trait EsIndexer[A] extends Log {
   val host = "localhost:9200"
 
   def index: String
-  def `type`: String
 
   def indexPath = s"http://$host/$index"
 
-  def bulkPath = s"$indexPath/${`type`}/_bulk"
+  def bulkPath = s"$indexPath/_bulk"
 
   val bulk = 500
 
@@ -35,7 +36,12 @@ trait EsIndexer[A] extends Log {
   def configure(): Future[Unit] = {
     val body = Source.fromInputStream(getClass.getResourceAsStream(s"/indexer/$index.config.json")).mkString
     Http.default {
-      url(indexPath).PUT << body OK as.String
+      url(indexPath)
+        .PUT
+        .setContentType(
+          "application/json",
+          Charset.forName("utf-8")
+        ) << body OK as.String
     }.map { result =>
       log.info(s"configure: $result")
     }
@@ -53,7 +59,12 @@ trait EsIndexer[A] extends Log {
           count <- acc
           _ <- {
             Http.default {
-              url(bulkPath).POST << buildBody(group) OK as.String
+              url(bulkPath)
+                .POST
+                .setContentType(
+                  "application/json",
+                  Charset.forName("utf-8")
+                ) << buildBody(group) OK as.String
             }.map { _ =>
               log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
             }
@@ -76,6 +87,7 @@ trait EsIndexer[A] extends Log {
   protected def norm(string: String): String = StringUtils.normalize(string)
 
   case class Index(index: IndexId)
+
   case class IndexId(_id: String)
 
   implicit val IndexCodec: JsonValueCodec[Index] = JsonCodecMaker.make[Index](CodecMakerConfig.withTransientEmpty(false))

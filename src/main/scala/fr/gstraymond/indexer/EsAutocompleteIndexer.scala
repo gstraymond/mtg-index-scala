@@ -1,5 +1,7 @@
 package fr.gstraymond.indexer
 
+import java.nio.charset.Charset
+
 import com.github.plokhotnyuk.jsoniter_scala.core._
 import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import dispatch.Defaults._
@@ -11,7 +13,6 @@ import scala.concurrent.Future
 object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
 
   override val index = "autocomplete"
-  override val `type` = "card"
 
   override def index(cards: Seq[MTGCard]): Future[Unit] = for {
     _ <- super.index(cards)
@@ -22,25 +23,24 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
 
   override def buildBody(group: Seq[MTGCard]): String = {
     group.flatMap { card =>
-      val payload = Payload(colors = Some(card.colors), `type` = Some(card.`type`), land = Some(card.land))
       val indexJson = Index(IndexId(getId(card)))
-      val cardJson = Autocomplete(Suggest(card.title, None, Some(payload)))
+      val cardJson = Autocomplete(Suggest(card.title), colors = Some(card.colors), `type` = Some(card.`type`), land = Some(card.land))
       Seq(writeToString(indexJson), writeToString(cardJson))
     }.mkString("\n") + "\n"
   }
 
-  case class Autocomplete(suggest: Suggest)
+  case class Autocomplete(suggest: Suggest,
+                          colors: Option[Seq[String]] = None,
+                          `type`: Option[String] = None,
+                          land: Option[Seq[String]] = None,
+                          stdEditionCode: Option[String] = None)
 
-  case class Suggest(input: String, weight: Option[Int], payload: Option[Payload])
-
-  case class Payload(colors: Option[Seq[String]] = None,
-                     `type`: Option[String] = None,
-                     land: Option[Seq[String]] = None,
-                     stdEditionCode: Option[String] = None)
+  case class Suggest(input: String,
+                     weight: Option[Int] = None)
 
   implicit val AutocompleteCodec: JsonValueCodec[Autocomplete] = JsonCodecMaker.make[Autocomplete](CodecMakerConfig.withTransientEmpty(false))
 
-  private def extractTokens(cards: Seq[MTGCard]): Seq[Suggest] = {
+  private def extractTokens(cards: Seq[MTGCard]): Seq[Autocomplete] = {
     val tokenOccurrences =
       cards
         .flatMap(c => c.description.toLowerCase.split(" ") ++ c.`type`.toLowerCase.split(" "))
@@ -80,10 +80,10 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
       .mapValues(_.map(_._2).sum)
       .filter(_._2 > 5)
       .toSeq
-      .map { case (input, weight) => Suggest(input, Some(weight), None)}
+      .map { case (input, weight) => Autocomplete(Suggest(input, Some(weight))) }
   }
 
-  private def extractEditions(cards: Seq[MTGCard]): Seq[Suggest] = {
+  private def extractEditions(cards: Seq[MTGCard]): Seq[Autocomplete] = {
     (for {
       card <- cards
       pub <- card.publications
@@ -92,28 +92,33 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
     })
       .distinct
       .map {
-        case (edition, Some(stdCode)) => Suggest(edition, Some(2), Some(Payload(stdEditionCode = Some(stdCode))))
-        case (edition, _) => Suggest(edition, Some(2), None)
+        case (edition, Some(stdCode)) => Autocomplete(Suggest(edition, Some(2)), stdEditionCode = Some(stdCode))
+        case (edition, _) => Autocomplete(Suggest(edition, Some(2)))
       }
   }
 
-  private def extractSpecials(cards: Seq[MTGCard]): Seq[Suggest] = {
+  private def extractSpecials(cards: Seq[MTGCard]): Seq[Autocomplete] = {
     cards.flatMap(_.special).groupBy(_.toLowerCase).view.mapValues(_.size).toSeq.map { case (input, weight) =>
-        Suggest(input, Some(weight), None)
+      Autocomplete(Suggest(input, Some(weight)))
     }
   }
 
-  private def indexSuggest(`type`: String, suggests: Seq[Suggest]): Future[Unit] = {
-    val body = suggests.flatMap { suggest =>
-      val indexJson = Index(IndexId(s"${`type`}-${suggest.input}-${suggest.weight.getOrElse(0)}"))
-      val cardJson = Autocomplete(suggest)
+  private def indexSuggest(`type`: String, autocompletes: Seq[Autocomplete]): Future[Unit] = {
+    val body = autocompletes.flatMap { autocomplete =>
+      val indexJson = Index(IndexId(s"${`type`}-${autocomplete.suggest.input}-${autocomplete.suggest.weight.getOrElse(0)}"))
+      val cardJson = autocomplete
       Seq(writeToString(indexJson), writeToString(cardJson))
     }.mkString("\n") + "\n"
 
     Http.default {
-      url(bulkPath).POST << body OK as.String
+      url(bulkPath)
+        .POST
+        .setContentType(
+          "application/json",
+          Charset.forName("utf-8")
+        ) << body OK as.String
     }.map { _ =>
-      log.info(s"processed: ${suggests.size} ${`type`}")
+      log.info(s"processed: ${autocompletes.size} ${`type`}")
     }
   }
 }
