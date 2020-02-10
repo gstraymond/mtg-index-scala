@@ -1,6 +1,16 @@
 ---
 - hosts: all
   become: true
+  tasks:
+  - file: path=/etc/apache2 state=directory
+  - copy: src=../templates/.htpasswd dest=/etc/apache2/.htpasswd
+  - copy: src=../templates/options-ssl-nginx.conf dest=/etc/letsencrypt/options-ssl-nginx.conf
+  - shell: openssl dhparam -out /etc/letsencrypt/dhparams.pem 2048
+    args:
+      creates: /etc/nginx/dhparams.pem
+
+- hosts: all
+  become: true
   roles:
     - role: jdauphant.nginx
       nginx_sites:
@@ -40,6 +50,11 @@
               add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
               add_header 'Access-Control-Allow-Headers' 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
             }
+          - listen 443 ssl
+          - ssl_certificate /etc/letsencrypt/live/search.mtg-search.com/fullchain.pem
+          - ssl_certificate_key /etc/letsencrypt/live/search.mtg-search.com/privkey.pem
+          - include /etc/letsencrypt/options-ssl-nginx.conf
+          - ssl_dhparam /etc/letsencrypt/dhparams.pem
         report:
           - listen 8080
           - server_name report.mtg-search.com
@@ -49,9 +64,3 @@
           - access_log web.log
           - root /www
           - location /report { autoindex on; }
-
-- hosts: all
-  become: true
-  tasks:
-  - file: path=/etc/apache2 state=directory
-  - copy: src=../templates/.htpasswd dest=/etc/apache2/.htpasswd

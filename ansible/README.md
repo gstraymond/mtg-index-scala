@@ -11,3 +11,7 @@ Files to provide in folder templates:
  - .ssh/id_rsa
  - .ssh/id_rsa.pub
  - .htpasswd
+
+```bash
+ansible-playbook playbook.yml -i hosts.ini
+```
