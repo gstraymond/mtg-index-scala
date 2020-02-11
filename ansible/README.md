@@ -1,17 +1,19 @@
+# Install
 ```bash
 . ~/.pyenv/versions/venv/bin/activate
-ansible-galaxy install elastic.elasticsearch,7.5.2
-ansible-galaxy install jdauphant.nginx
-ansible-galaxy install geerlingguy.certbot
-ansible-galaxy install git+https://github.com/nickhammond/ansible-logrotate
+ansible-galaxy install -r requirements.yml
 vagrant up
 ```
 
-Files to provide in folder templates: 
- - .ssh/id_rsa
- - .ssh/id_rsa.pub
- - .htpasswd
+# Files to provide in folder templates:
+ - `.ssh/id_rsa`
+ - `.ssh/id_rsa.pub`
+ - `.htpasswd`
 
+# Fix to apply
+https://github.com/nickjj/ansible-iptables/pull/2/files
+
+# Provision
 ```bash
 ansible-playbook playbook.yml -i hosts.ini
 ```
