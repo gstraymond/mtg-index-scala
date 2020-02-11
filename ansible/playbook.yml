@@ -6,3 +6,4 @@
 - import_playbook: tasks/goaccess.yml
 - import_playbook: tasks/fail2ban.yml
 - import_playbook: tasks/doZeMagic.yml
+- import_playbook: tasks/iptables.yml
