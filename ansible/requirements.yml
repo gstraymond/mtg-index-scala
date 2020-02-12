@@ -2,5 +2,5 @@
 - src: elastic.elasticsearch
   version: 7.5.2
 - src: jdauphant.nginx
-- src: geerlingguy.certbot
+#- src: geerlingguy.certbot
 - src: git+https://github.com/nickhammond/ansible-logrotate

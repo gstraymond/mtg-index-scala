@@ -4,10 +4,6 @@
   tasks:
   - file: path=/etc/apache2 state=directory
   - copy: src=../templates/.htpasswd dest=/etc/apache2/.htpasswd
-  - copy: src=../templates/options-ssl-nginx.conf dest=/etc/letsencrypt/options-ssl-nginx.conf
-  - shell: openssl dhparam -out /etc/letsencrypt/dhparams.pem 2048
-    args:
-      creates: /etc/nginx/dhparams.pem
 
 - hosts: all
   become: true
@@ -42,7 +38,7 @@
           - include /etc/letsencrypt/options-ssl-nginx.conf
           - ssl_dhparam /etc/letsencrypt/dhparams.pem
         report:
-          - listen 8080
+          - listen 80
           - server_name report.mtg-search.com
           - auth_basic "Administrator's area"
           - auth_basic_user_file /etc/apache2/.htpasswd
@@ -50,3 +46,8 @@
           - access_log web.log
           - root /www
           - location /report { autoindex on; }
+          - listen 443 ssl
+          - ssl_certificate /etc/letsencrypt/live/search.mtg-search.com/fullchain.pem
+          - ssl_certificate_key /etc/letsencrypt/live/search.mtg-search.com/privkey.pem
+          - include /etc/letsencrypt/options-ssl-nginx.conf
+          - ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem

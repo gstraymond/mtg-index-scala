@@ -17,3 +17,9 @@ https://github.com/nickjj/ansible-iptables/pull/2/files
 ```bash
 ansible-playbook playbook.yml -i hosts.ini
 ```
+
+# Certbox
+
+```bash
+sudo certbox --nginx
+```
