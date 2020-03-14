@@ -6,7 +6,7 @@ rm /tmp/import_${today}.html
 cd /root/git/mtg-index-scala
 git pull
 git submodule update --init --remote
-./gradlew clean installDist
+./gradlew --no-daemon clean installDist
 JAVA_OPTS="-Xmx512m" build/install/mtg-index-scala/bin/mtg-index-scala >> /tmp/import_${today}.html
 cd pics
 git add .
