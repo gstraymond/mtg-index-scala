@@ -18,8 +18,10 @@ trait Scraper extends Log {
 
   val protocol = "https"
 
+  def buildFullUrl(path: String): String = s"$protocol://$host$path"
+
   def oldScrap(path: String): Future[Document] = {
-    val fullUrl = s"$protocol://$host$path"
+    val fullUrl = buildFullUrl(path)
     Future {
       val now = new Date().getTime
       now -> Jsoup.connect(fullUrl).timeout(TIMEOUT).get()
@@ -30,7 +32,7 @@ trait Scraper extends Log {
   }
 
   def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
-    val fullUrl = s"$protocol://$host$path"
+    val fullUrl = buildFullUrl(path)
     val http = followRedirect match {
       case true =>
         val h = Http.withConfiguration(_ setFollowRedirect true)
@@ -46,7 +48,7 @@ trait Scraper extends Log {
     }
   }
 
-  def get(path: String): Future[Array[Byte]] = download(s"$protocol://$host$path")
+  def get(path: String): Future[Array[Byte]] = download(buildFullUrl(path))
 
   def download(fullUrl: String): Future[Array[Byte]] = {
     Http.default {

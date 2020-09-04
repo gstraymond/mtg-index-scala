@@ -4,6 +4,7 @@
   tasks:
   - package: name=gradle state=present
   - package: name=msmtp  state=present
+  - package: name=jq     state=present
 
 - hosts: all
   become: true

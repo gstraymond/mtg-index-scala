@@ -37,6 +37,8 @@ trait Task[A] extends Log {
   import fr.gstraymond.model.MTGJsonFormats._
   import fr.gstraymond.model.ScrapedFormatFormat._
   import fr.gstraymond.rules.model.RuleFormats._
+  import fr.gstraymond.parser.CardPrice
+  import fr.gstraymond.parser.PriceFormats._
 
   protected def storeMTGCards(cards: Seq[MTGCard]) = {
     mkDir(FileUtils.outputPath)
@@ -59,10 +61,23 @@ trait Task[A] extends Log {
     rules
   }
 
+  protected def storePrices(prices: Seq[CardPrice]) = {
+    mkDir(FileUtils.outputPath)
+    val file = new File(s"${FileUtils.outputPath}/prices.json")
+    FileUtils.storeJson(file, prices)
+    prices
+  }
+
   protected def loadAllSet: Map[String, MTGJsonEdition] =
-    readFromStream[Map[String, MTGJsonEdition]](
+    readFromStream[MTGJsonAllPrintings](
       new FileInputStream(s"${FileUtils.scrapPath}/AllPrintings.json"),
       ReaderConfig.withPreferredBufSize(30 * 1024 * 1024)
+    ).data
+
+  protected def loadAllPrices: MTGJsonAllPrices =
+    readFromStream[MTGJsonAllPrices](
+      new FileInputStream(s"${FileUtils.scrapPath}/AllPrices.json"),
+      ReaderConfig.withPreferredBufSize(1 * 1024 * 1024)
     )
 
   protected def loadFormats: Seq[ScrapedFormat] = {

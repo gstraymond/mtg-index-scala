@@ -112,7 +112,9 @@ object AllSetConverter extends Log
   )
 
   def convert(loadAllSet: Map[String, MTGJsonEdition],
-              abilities: Seq[String]): Future[Seq[MTGCard]] = Future.successful {
+              abilities: Seq[String],
+              prices: Seq[CardPrice]): Future[Seq[MTGCard]] = Future.successful {
+    val groupedPrices = prices.groupBy(_.uuid).view.mapValues(_.head).toMap
 
     val nextWeek = LocalDate.now().plusWeeks(1)
 
@@ -120,7 +122,7 @@ object AllSetConverter extends Log
       .filter(_.releaseDate.exists(LocalDate.parse(_).isBefore(nextWeek)))
       .filterNot(_.isOnlineOnly.getOrElse(false))
       .flatMap(edition => edition.cards.map(_ -> edition.copy(cards = Nil)))
-      .groupBy { case (card, _) => (card.name, card.manaCost, card.`type`) }
+      .groupBy { case (card, _) => (card.faceName.getOrElse(card.name), card.manaCost, card.`type`) }
       .values
 
     val result = allCards.map { groupedCards =>
@@ -129,8 +131,8 @@ object AllSetConverter extends Log
       }
       val cards = groupedCardsSorted.map(_._1)
       val editions = groupedCardsSorted.map(_._2)
-      val prices = cards.flatMap(card => computePrices(card) ++ computePrices(card, foil = true))
       val firstCard = cards.head
+      val cardPrices = cards.map(_.uuid).flatMap(groupedPrices.get(_))
       val castingCost = firstCard.manaCost.map {
         _.replace("}{", " ")
           .replace("{", "")
@@ -141,11 +143,13 @@ object AllSetConverter extends Log
       }
       val description = firstCard.text.map(_.split("\n").toSeq).getOrElse(Seq.empty)
       val hints = _hiddenHints(description)
-      val urlTitle = StringUtils.normalize(firstCard.name)
+      val title = firstCard.faceName.getOrElse(firstCard.name)
+      val urlTitle = StringUtils.normalize(title)
       val rarities = cards.map(_.rarity.replace("timeshifted ", "")).distinct
+
       MTGCard(
-        title = firstCard.name,
-        altTitles = firstCard.names.map(_.filterNot(_ == firstCard.name)).getOrElse(Seq.empty),
+        title = title,
+        altTitles = firstCard.names.map(_.filterNot(_ == title)).getOrElse(Seq.empty),
         frenchTitle = cards.flatMap(_.foreignData).flatten.find(_.language == "French").flatMap(_.name),
         castingCost = castingCost,
         colors = _colors(castingCost, hints, firstCard.colors),
@@ -158,7 +162,7 @@ object AllSetConverter extends Log
         toughness = firstCard.toughness,
         editions = editions.map(_.name).distinct,
         rarities = rarities,
-        priceRanges = _priceRanges(prices),
+        priceRanges = _priceRanges(cardPrices),
         publications = groupedCardsSorted.map { case (card, edition) =>
           val rarity = card.rarity.replace("timeshifted ", "")
           val rarityCode = rarity.head.toString.toUpperCase
@@ -177,26 +181,28 @@ object AllSetConverter extends Log
             stdEditionCode = stdEditionCode,
             rarity = rarity,
             rarityCode = Some(rarityCode),
-            image = card.multiverseId.map { multiverseId =>
+            image = card.identifiers.multiverseId.map { multiverseId =>
               s"${URIs.pictureHost}/pics/$editionCode/$multiverseId-$urlTitle.jpg"
             },
             editionImage = stdEditionCode.map { code =>
               s"${URIs.pictureHost}/sets/$code/$rarityCode.gif"
             },
-            price = computePrices(card),
-            foilPrice = computePrices(card, foil = true),
+            price = computePrices(groupedPrices.get(card.uuid)),
+            foilPrice = computePrices(groupedPrices.get(card.uuid), foil = true),
+            mtgoPrice = computePrices(groupedPrices.get(card.uuid), online = true),
+            mtgoFoilPrice = computePrices(groupedPrices.get(card.uuid), foil = true, online = true),
             block = edition.block,
-            multiverseId = card.multiverseId
+            multiverseId = card.identifiers.multiverseId.flatMap(_.toLongOption)
           )
         },
-        abilities = _abilities(firstCard.name, description, abilities),
-        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions, firstCard.name, rarities),
+        abilities = _abilities(title, description, abilities),
+        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions, title, rarities),
         artists = cards.flatMap(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
         layout = firstCard.layout,
         loyalty = firstCard.loyalty,
-        special = _special(firstCard.name, firstCard.`type`, description),
+        special = _special(title, firstCard.`type`, description),
         land = _land(firstCard.`type`, description),
         ruling = firstCard.rulings.getOrElse(Nil).map(r => Ruling(r.date, r.text))
       )
@@ -209,11 +215,10 @@ object AllSetConverter extends Log
 
   implicit val ord: Ordering[LocalDate] = _ compareTo _
 
-  private def computePrices(card: MTGJsonCard, foil: Boolean = false) = {
-    val prices = card.prices
-    (if (foil) prices.map(_.paperFoil) else prices.map(_.paper)).flatMap {
-      _.maxByOption { case (date, _) => LocalDate.parse(date) }.flatMap(_._2)
-    }
+  private def computePrices(price: Option[CardPrice], foil: Boolean = false, online: Boolean = false) = {
+    val cardPrice = if (online) price.flatMap(_.online) else price.flatMap(_.paper)
+    if (foil) cardPrice.flatMap(_.foil)
+    else cardPrice.flatMap(_.normal)
   }
 
   private def processLegalities(data: Map[String, String]): Seq[MTGJsonLegality] =

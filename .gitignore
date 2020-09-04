@@ -17,3 +17,6 @@ out/
 *.swp
 .ssh
 gmail_password
+.bloop/
+.metals/
+.vscode/

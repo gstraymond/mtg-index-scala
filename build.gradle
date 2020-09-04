@@ -24,8 +24,8 @@ dependencies {
     compile "eu.bitwalker:UserAgentUtils:1.+"
     compile "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_$scalaVersion:2.1.6"
     compileOnly "com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-macros_$scalaVersion:2.1.6"
-    testCompile "org.specs2:specs2-core_$scalaVersion:3.+"
-    testCompile "org.specs2:specs2-junit_$scalaVersion:3.+"
+    testCompile "org.specs2:specs2-core_$scalaVersion:4.+"
+    testCompile "org.specs2:specs2-junit_$scalaVersion:4.+"
     testCompile "junit:junit:4.+"
 }
 
@@ -128,6 +128,13 @@ task editionPictureDL(type: JavaExec, dependsOn: classes) {
 task allSetScrap(type: JavaExec, dependsOn: classes) {
     main = 'fr.gstraymond.task.AllSetScrapTask'
     description "MTG Json all sets parse"
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+}
+
+task allPricesScrap(type: JavaExec, dependsOn: classes) {
+    main = 'fr.gstraymond.task.AllPricesScrapTask'
+    description "MTG Json all prices scrap"
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }

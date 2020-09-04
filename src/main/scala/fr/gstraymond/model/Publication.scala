@@ -12,6 +12,8 @@ case class Publication(
   editionImage: Option[String],
   price: Option[Double],
   foilPrice: Option[Double],
+  mtgoPrice: Option[Double],
+  mtgoFoilPrice: Option[Double],
   block: Option[String],
   multiverseId: Option[Long]
 )

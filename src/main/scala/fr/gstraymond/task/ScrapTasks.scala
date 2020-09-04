@@ -4,6 +4,7 @@ import fr.gstraymond.dl.{CardPictureDownloader, EditionPictureDownloader}
 import fr.gstraymond.indexer.{EsAutocompleteIndexer, EsCardIndexer, EsRulesIndexer}
 import fr.gstraymond.model._
 import fr.gstraymond.parser.AllSetConverter
+import fr.gstraymond.parser.AllPricesConverter
 import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.rules.parser.RulesParser
 import fr.gstraymond.scraper._
@@ -34,11 +35,21 @@ object AllSetScrapTask extends Task[Unit] {
   override def process: Future[Unit] = AllSetScraper.scrap
 }
 
+object AllPricesScrapTask extends Task[Unit] {
+  override def process: Future[Unit] = 
+  for {
+      _ <- AllPricesScraper.scrap
+      prices = AllPricesConverter.convert(loadAllPrices)
+  } yield storePrices(prices)
+}
+
 object AllSetConvertTask extends Task[Seq[MTGCard]] {
   override def process: Future[Seq[MTGCard]] = {
     for {
+      _ <- AllPricesScraper.scrap
+      prices = AllPricesConverter.convert(loadAllPrices)
       abilities <- AbilityScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, abilities)
+      mtgCards <- AllSetConverter.convert(loadAllSet, abilities, prices)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
@@ -56,11 +67,13 @@ object AllSetConvertTask extends Task[Seq[MTGCard]] {
 object DEALTask extends Task[Seq[MTGCard]] {
   override def process: Future[Seq[MTGCard]] = {
     for {
+      _ <- AllPricesScraper.scrap
+      prices = AllPricesConverter.convert(loadAllPrices)
       _ <- AllSetScraper.scrap
       rawRules <- RulesScraper.scrap
       rules = (RulesParser.parse _).tupled(rawRules)
       abilities <- AbilityScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, abilities)
+      mtgCards <- AllSetConverter.convert(loadAllSet, abilities, prices)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
