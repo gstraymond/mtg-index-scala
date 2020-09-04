@@ -11,12 +11,18 @@ object AllPricesScraper extends MtgJsonScraper {
   val path = "/api/v5/AllPrices.json"
 
   def scrap: Future[Unit] = Future {
-    val command = s"curl '${buildFullUrl(path)}'" #| 
+    val command = s"curl '${buildFullUrl(path)}'" #> 
+      new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
+      
+    println(s"""command: $command""")
+    command.!
+      
+    val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| 
       "jq ." #| 
       "egrep -v '              .*,'" #> 
       new File(s"${FileUtils.scrapPath}/AllPrices.json")
       
-    println(s"""command: $command""")
-    command.!
+    println(s"""command2: $command2""")
+    command2.!
   }
 }
