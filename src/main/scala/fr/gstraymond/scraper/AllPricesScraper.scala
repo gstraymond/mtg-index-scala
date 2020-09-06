@@ -17,12 +17,12 @@ object AllPricesScraper extends MtgJsonScraper {
     val command = s"curl '${buildFullUrl(path)}'" #> new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
       
     println(s"""command: $command""")
-    //command.!
+    command.!
       
     val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| "jq -c --stream" #> new File(s"${FileUtils.scrapPath}/AllPrices.stream.json") 
       
     println(s"""command2: $command2""")
-    //command2.!
+    command2.!
     
     var currentCardPrice: Option[CardPrice] = None
     val cardPrices = scala.collection.mutable.ListBuffer.empty[CardPrice]
