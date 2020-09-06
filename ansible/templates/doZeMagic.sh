@@ -8,6 +8,9 @@ git pull
 git submodule update --init --remote
 ./gradlew --no-daemon clean installDist
 JAVA_OPTS="-Xmx512m" build/install/mtg-index-scala/bin/mtg-index-scala >> /tmp/import_${today}.html
+./gradlew --no-daemon clean
+rm -rf src/main/resources/output/
+rm -rf src/main/resources/scrap/
 cd pics
 git add .
 git commit -m "Import ${today}"
