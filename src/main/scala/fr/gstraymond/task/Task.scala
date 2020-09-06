@@ -74,11 +74,11 @@ trait Task[A] extends Log {
       ReaderConfig.withPreferredBufSize(30 * 1024 * 1024)
     ).data
 
-  protected def loadAllPrices: MTGJsonAllPrices =
+  /*protected def loadAllPrices: MTGJsonAllPrices =
     readFromStream[MTGJsonAllPrices](
       new FileInputStream(s"${FileUtils.scrapPath}/AllPrices.json"),
       ReaderConfig.withPreferredBufSize(1 * 1024 * 1024)
-    )
+    )*/
 
   protected def loadFormats: Seq[ScrapedFormat] = {
     val json = new FileInputStream(s"${FileUtils.scrapPath}/formats.json")

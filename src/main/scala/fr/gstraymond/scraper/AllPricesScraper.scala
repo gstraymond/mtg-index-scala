@@ -4,25 +4,77 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import sys.process._
 import fr.gstraymond.utils.FileUtils
+import fr.gstraymond.parser.CardPrice
+import fr.gstraymond.parser.Price
 import java.io.File
+import scala.io.Source
 
 object AllPricesScraper extends MtgJsonScraper {
 
   val path = "/api/v5/AllPrices.json"
 
-  def scrap: Future[Unit] = Future {
-    val command = s"curl '${buildFullUrl(path)}'" #> 
-      new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
+  def scrap: Future[Seq[CardPrice]] = Future {
+    val command = s"curl '${buildFullUrl(path)}'" #> new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
       
     println(s"""command: $command""")
-    command.!
+    //command.!
       
-    val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| 
-      "jq ." #| 
-      "egrep -v '              .*,'" #> 
-      new File(s"${FileUtils.scrapPath}/AllPrices.json")
+    val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| "jq -c --stream" #> new File(s"${FileUtils.scrapPath}/AllPrices.stream.json") 
       
     println(s"""command2: $command2""")
-    command2.!
+    //command2.!
+    
+    var currentCardPrice: Option[CardPrice] = None
+    val cardPrices = scala.collection.mutable.ListBuffer.empty[CardPrice]
+
+    Source.fromFile(new File(s"${FileUtils.scrapPath}/AllPrices.stream.json")).getLines()
+      .filter(_.contains("retail"))
+      .filterNot(_.contains("cardmarket"))
+      .zipWithIndex
+      .foreach { case (line, i) =>
+        if (i % 100000 == 0) println(s"i: $i - ${cardPrices.lastOption}")
+
+        val elements = line.split('[').toVector.flatMap(_.split(']')).flatMap(_.split(',')).filterNot(_.isEmpty).map(_.replace("\"", ""))
+        elements.lastOption.flatMap(_.toDoubleOption).foreach { priceAsDouble =>
+          val uuid = elements(1)
+          val isPaper = elements(2) == "paper"
+          val isNormal = elements(5) == "normal" 
+          val cp = {
+            val price = if (isNormal) Price(Some(priceAsDouble), None)
+            else Price(None, Some(priceAsDouble))
+
+            if (isPaper) CardPrice(uuid, Some(price), None)
+            else CardPrice(uuid, None, Some(price))
+          }
+
+          if (Some(uuid) != currentCardPrice.map(_.uuid)) {
+              currentCardPrice.foreach(cardPrices.addOne)
+              currentCardPrice = Some(cp)
+          } else {
+              currentCardPrice = Some(mergeCP(currentCardPrice.get, cp))
+          }
+        }
+      }
+
+      currentCardPrice.foreach(cardPrices.addOne)
+
+      cardPrices.toSeq
   }
+
+  private def mergeCP(cp1: CardPrice, cp2: CardPrice): CardPrice = {
+    val paper = mergeP(cp1.paper, cp2.paper)
+    val online = mergeP(cp1.online, cp2.online)
+    CardPrice(cp1.uuid, paper, online)
+  }
+
+  private def mergeP(p1: Option[Price], p2: Option[Price]): Option[Price] = {
+    val normal = mergeD(p1.flatMap(_.normal), p2.flatMap(_.normal))
+    val foil = mergeD(p1.flatMap(_.foil), p2.flatMap(_.foil))
+
+    if (normal.isEmpty && foil.isEmpty) None
+    else Some(Price(normal, foil))
+  }
+
+  private def mergeD(p1: Option[Double], p2: Option[Double]): Option[Double] = 
+    p2.orElse(p1)
 }

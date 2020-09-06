@@ -38,16 +38,14 @@ object AllSetScrapTask extends Task[Unit] {
 object AllPricesScrapTask extends Task[Unit] {
   override def process: Future[Unit] = 
   for {
-      _ <- AllPricesScraper.scrap
-      prices = AllPricesConverter.convert(loadAllPrices)
+      prices <- AllPricesScraper.scrap
   } yield storePrices(prices)
 }
 
 object AllSetConvertTask extends Task[Seq[MTGCard]] {
   override def process: Future[Seq[MTGCard]] = {
     for {
-      _ <- AllPricesScraper.scrap
-      prices = AllPricesConverter.convert(loadAllPrices)
+      prices <- AllPricesScraper.scrap
       abilities <- AbilityScraper.scrap
       mtgCards <- AllSetConverter.convert(loadAllSet, abilities, prices)
       _ <- EditionPictureDownloader.download(mtgCards)
@@ -67,13 +65,12 @@ object AllSetConvertTask extends Task[Seq[MTGCard]] {
 object DEALTask extends Task[Seq[MTGCard]] {
   override def process: Future[Seq[MTGCard]] = {
     for {
-      _ <- AllPricesScraper.scrap
-      prices = AllPricesConverter.convert(loadAllPrices)
+      allPrices <- AllPricesScraper.scrap
       _ <- AllSetScraper.scrap
       rawRules <- RulesScraper.scrap
       rules = (RulesParser.parse _).tupled(rawRules)
       abilities <- AbilityScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, abilities, prices)
+      mtgCards <- AllSetConverter.convert(loadAllSet, abilities, allPrices)
       _ <- EditionPictureDownloader.download(mtgCards)
       _ <- CardPictureDownloader.download(mtgCards)
       _ <- EsCardIndexer.delete()
