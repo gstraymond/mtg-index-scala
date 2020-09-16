@@ -14,6 +14,8 @@ object AllPricesScraper extends MtgJsonScraper {
   val path = "/api/v5/AllPrices.json"
 
   def scrap: Future[Seq[CardPrice]] = Future {
+    new File(FileUtils.scrapPath).mkdirs()
+
     val command = s"curl '${buildFullUrl(path)}'" #> new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
       
     println(s"""command: $command""")
