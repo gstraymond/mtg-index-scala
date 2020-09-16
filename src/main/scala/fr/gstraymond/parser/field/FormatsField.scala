@@ -7,7 +7,7 @@ import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality}
 trait FormatsField {
 
   private val includedFormats = Set(
-    "vintage", "commander", "legacy", "modern", "pauper", "pioneer", "standard"
+    "vintage", "commander", "legacy", "modern", "pauper", "pioneer", "standard", "penny"
   )
 
   def _formats(formats: Seq[MTGJsonLegality],
