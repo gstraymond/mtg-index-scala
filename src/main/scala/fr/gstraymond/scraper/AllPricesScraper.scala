@@ -21,7 +21,7 @@ object AllPricesScraper extends MtgJsonScraper {
     println(s"""command: $command""")
     command.!
       
-    val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| "jq -c --stream" #> new File(s"${FileUtils.scrapPath}/AllPrices.stream.json") 
+    val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| "jq -c --stream ." #> new File(s"${FileUtils.scrapPath}/AllPrices.stream.json") 
       
     println(s"""command2: $command2""")
     command2.!
