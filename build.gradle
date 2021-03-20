@@ -163,10 +163,6 @@ task gif2png(type: JavaExec, dependsOn: classes) {
     classpath configurations.runtime
 }
 
-wrapper {
-    version = '4.10.2'
-}
-
 test {
     testLogging {
         exceptionFormat = 'full'
