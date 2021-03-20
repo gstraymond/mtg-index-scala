@@ -1,24 +1,21 @@
 package fr.gstraymond.utils
 
+import java.io.File
+import java.io.PrintWriter
+
+import scala.util.Using
+
 import com.github.plokhotnyuk.jsoniter_scala.core._
 
 object FileUtils {
 
-  val langs = Seq("en", "fr")
+  private val mainPath = "/tmp/mtg-search"
 
-  val mainPath = "src/main/resources"
-
-  val scrapPath = s"$mainPath/scrap"
+  val scrapPath  = s"$mainPath/scrap"
   val outputPath = s"$mainPath/output"
 
-  def storeJson[A](file: java.io.File,
-                   a: A)
-                  (implicit codec: JsonValueCodec[A]): Unit = {
-    val writer = new java.io.PrintWriter(file)
-    try {
-      writer.println(writeToString(a, WriterConfig.withIndentionStep(2)))
-    } finally {
-      writer.close()
+  def storeJson[A](file: File, a: A)(implicit codec: JsonValueCodec[A]): Unit =
+    Using.resource(new PrintWriter(file)) {
+      _.println(writeToString(a, WriterConfig.withIndentionStep(2)))
     }
-  }
 }
