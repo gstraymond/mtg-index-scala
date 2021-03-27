@@ -4,6 +4,11 @@
   tasks:
   - file: path=/etc/apache2 state=directory
   - copy: src=../templates/.htpasswd dest=/etc/apache2/.htpasswd
+- hosts: all
+  become: true
+  tasks:
+  - file: path=/etc/apache2 state=directory
+  - copy: src=../templates/options-ssl-nginx.conf dest=/etc/letsencrypt/options-ssl-nginx.conf
 
 - hosts: all
   become: true
@@ -36,7 +41,7 @@
           - ssl_certificate /etc/letsencrypt/live/search.mtg-search.com/fullchain.pem
           - ssl_certificate_key /etc/letsencrypt/live/search.mtg-search.com/privkey.pem
           - include /etc/letsencrypt/options-ssl-nginx.conf
-          - ssl_dhparam /etc/letsencrypt/dhparams.pem
+          - ssl_dhparam /usr/lib/python3/dist-packages/certbot/ssl-dhparams.pem
         report:
           - listen 80
           - server_name report.mtg-search.com
@@ -50,4 +55,4 @@
           - ssl_certificate /etc/letsencrypt/live/search.mtg-search.com/fullchain.pem
           - ssl_certificate_key /etc/letsencrypt/live/search.mtg-search.com/privkey.pem
           - include /etc/letsencrypt/options-ssl-nginx.conf
-          - ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem
+          - ssl_dhparam /usr/lib/python3/dist-packages/certbot/ssl-dhparams.pem

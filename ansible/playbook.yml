@@ -1,9 +1,16 @@
 ---
+# Step 1
 - import_playbook: tasks/elasticsearch.yml
 - import_playbook: tasks/logrotate.yml
-- import_playbook: tasks/nginx.yml
-- import_playbook: tasks/letsencrypt.yml
 - import_playbook: tasks/goaccess.yml
 - import_playbook: tasks/fail2ban.yml
 - import_playbook: tasks/doZeMagic.yml
 - import_playbook: tasks/iptables.yml
+
+# Manual steps:  
+# - launch doZeMagic
+# - change search.mtg-search.com / report.mtg-search.com DNS entry
+
+# Step 2 : 
+#- import_playbook: tasks/letsencrypt.yml
+#- import_playbook: tasks/nginx.yml

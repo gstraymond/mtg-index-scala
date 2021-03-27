@@ -2,28 +2,27 @@
 - hosts: all
   become: true
   tasks:
-  - package: name=gradle state=present
-  - package: name=msmtp  state=present
-  - package: name=jq     state=present
+  - package: name=jq                   state=present
+  - package: name=git                  state=present
+  - package: name=default-jre-headless state=present
+  - package: name=unzip                state=present
 
 - hosts: all
   become: true
   tasks:
+  - file: path=/root/.ssh                  state=directory            mode=+rx
+  - file: path=/www/report/imports         state=directory            mode=+rx
   - copy: src=../templates/.ssh/id_rsa     dest=/root/.ssh/id_rsa     mode=600
   - copy: src=../templates/.ssh/id_rsa.pub dest=/root/.ssh/id_rsa.pub mode=644
-  - template: src=../templates/msmtprc.j2 dest=/etc/msmtprc
-  - copy: src=../templates/doZeMagic.sh dest=/root/doZeMagic.sh mode=+rx
+  - copy: src=../templates/doZeMagic.sh    dest=/root/doZeMagic.sh    mode=+rx
 
 - hosts: all
   become: true
   tasks:
   - git:
-      repo: git@github.com:gstraymond/mtg-index-scala.git
-      dest: /root/git/mtg-index-scala
+      repo: git@github.com:mtg-search/pics.git
+      dest: /root/git/pics
       accept_hostkey: true
-  - shell: gradle wrapper --gradle-version=6.1.1
-    args:
-      chdir: /root/git/mtg-index-scala
 
 - hosts: all
   become: true
