@@ -31,7 +31,7 @@ class Timing[A] {
     }
     val processStats2 = ProcessStats(
       name,
-      Duration(end - start, TimeUnit.MILLISECONDS).formatted("%s"),
+      f"${Duration(end - start, TimeUnit.MILLISECONDS)}",
       resultAsString
     )
     stats = stats :+ processStats2
