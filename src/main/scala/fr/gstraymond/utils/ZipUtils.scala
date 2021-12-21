@@ -2,7 +2,6 @@ package fr.gstraymond.utils
 
 import java.io._
 import java.util.zip.ZipInputStream
-
 import scala.util.Using
 
 object ZipUtils {

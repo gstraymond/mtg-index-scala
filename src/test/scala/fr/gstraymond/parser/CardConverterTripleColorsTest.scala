@@ -15,12 +15,26 @@ class CardConverterTripleColorsTest extends Specification with ColorField {
 
     "Zuran Spellcaster" in {
       _tripleColors("2 U").sorted ===
-        Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White", "Blue OR Green OR Red", "Blue OR Green OR White", "Blue OR Red OR White").sorted
+        Seq(
+          "Black OR Blue OR Green",
+          "Black OR Blue OR Red",
+          "Black OR Blue OR White",
+          "Blue OR Green OR Red",
+          "Blue OR Green OR White",
+          "Blue OR Red OR White"
+        ).sorted
     }
 
     "Zhou Yu, Chief Commander" in {
       _tripleColors("5 U U").sorted ===
-        Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White", "Blue OR Green OR Red", "Blue OR Green OR White", "Blue OR Red OR White").sorted
+        Seq(
+          "Black OR Blue OR Green",
+          "Black OR Blue OR Red",
+          "Black OR Blue OR White",
+          "Blue OR Green OR Red",
+          "Blue OR Green OR White",
+          "Blue OR Red OR White"
+        ).sorted
     }
 
     "Yore-Tiller Nephilim" in {
@@ -33,7 +47,14 @@ class CardConverterTripleColorsTest extends Specification with ColorField {
 
     "Fireball" in {
       _tripleColors("X R") ===
-        Seq("Black OR Blue OR Red", "Black OR Green OR Red", "Black OR Red OR White", "Blue OR Green OR Red", "Blue OR Red OR White", "Green OR Red OR White").sorted
+        Seq(
+          "Black OR Blue OR Red",
+          "Black OR Green OR Red",
+          "Black OR Red OR White",
+          "Blue OR Green OR Red",
+          "Blue OR Red OR White",
+          "Green OR Red OR White"
+        ).sorted
     }
 
     "Reaper King" in {
@@ -42,12 +63,26 @@ class CardConverterTripleColorsTest extends Specification with ColorField {
 
     "Act of Aggression" in {
       _tripleColors("3 RP RP") ===
-        Seq("Black OR Blue OR Red", "Black OR Green OR Red", "Black OR Red OR White", "Blue OR Green OR Red", "Blue OR Red OR White", "Green OR Red OR White").sorted
+        Seq(
+          "Black OR Blue OR Red",
+          "Black OR Green OR Red",
+          "Black OR Red OR White",
+          "Blue OR Green OR Red",
+          "Blue OR Red OR White",
+          "Green OR Red OR White"
+        ).sorted
     }
 
     "Decree of Justice" in {
       _tripleColors("X X 2 W W") ===
-        Seq("Black OR Blue OR White", "Black OR Green OR White", "Black OR Red OR White", "Blue OR Green OR White", "Blue OR Red OR White", "Green OR Red OR White").sorted
+        Seq(
+          "Black OR Blue OR White",
+          "Black OR Green OR White",
+          "Black OR Red OR White",
+          "Blue OR Green OR White",
+          "Blue OR Red OR White",
+          "Green OR Red OR White"
+        ).sorted
     }
 
     "Emrakul, the Aeons Torn" in {
@@ -73,12 +108,26 @@ class CardConverterTripleColorsTest extends Specification with ColorField {
 
     "Abstruse Interference" in {
       _tripleColors(Some("2 U"), None).sorted ===
-        Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White", "Blue OR Green OR Red", "Blue OR Green OR White", "Blue OR Red OR White").sorted
+        Seq(
+          "Black OR Blue OR Green",
+          "Black OR Blue OR Red",
+          "Black OR Blue OR White",
+          "Blue OR Green OR Red",
+          "Blue OR Green OR White",
+          "Blue OR Red OR White"
+        ).sorted
     }
 
     "Ludevic's Abomination" in {
       _tripleColors(None, Some(Seq("Blue"))).sorted ===
-        Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White", "Blue OR Green OR Red", "Blue OR Green OR White", "Blue OR Red OR White").sorted
+        Seq(
+          "Black OR Blue OR Green",
+          "Black OR Blue OR Red",
+          "Black OR Blue OR White",
+          "Blue OR Green OR Red",
+          "Blue OR Green OR White",
+          "Blue OR Red OR White"
+        ).sorted
     }
 
     "Dralnu, seigneur liche" in {

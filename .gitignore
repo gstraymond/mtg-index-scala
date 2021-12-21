@@ -20,3 +20,6 @@ gmail_password
 .bloop/
 .metals/
 .vscode/
+.bsp
+project/metals.sbt
+project/project

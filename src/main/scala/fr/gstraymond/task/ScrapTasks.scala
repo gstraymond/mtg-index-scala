@@ -1,10 +1,12 @@
 package fr.gstraymond.task
 
-import fr.gstraymond.dl.{CardPictureDownloader, EditionPictureDownloader}
-import fr.gstraymond.indexer.{EsAutocompleteIndexer, EsCardIndexer, EsRulesIndexer}
+import fr.gstraymond.dl.CardPictureDownloader
+import fr.gstraymond.dl.EditionPictureDownloader
+import fr.gstraymond.indexer.EsAutocompleteIndexer
+import fr.gstraymond.indexer.EsCardIndexer
+import fr.gstraymond.indexer.EsRulesIndexer
 import fr.gstraymond.model._
 import fr.gstraymond.parser.AllSetConverter
-import fr.gstraymond.parser.AllPricesConverter
 import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.rules.parser.RulesParser
 import fr.gstraymond.scraper._
@@ -36,26 +38,27 @@ object AllSetScrapTask extends Task[Unit] {
 }
 
 object AllPricesScrapTask extends Task[Unit] {
-  override def process: Future[Unit] = 
-  for {
+  override def process: Future[Unit] =
+    for {
       prices <- AllPricesScraper.scrap
-  } yield storePrices(prices)
+      _ = storePrices(prices)
+    } yield ()
 }
 
 object AllSetConvertTask extends Task[Seq[MTGCard]] {
   override def process: Future[Seq[MTGCard]] = {
     for {
-      prices <- AllPricesScraper.scrap
+      prices    <- AllPricesScraper.scrap
       abilities <- AbilityScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, abilities, prices)
-      _ <- EditionPictureDownloader.download(mtgCards)
-      _ <- CardPictureDownloader.download(mtgCards)
-      _ <- EsCardIndexer.delete()
-      _ <- EsCardIndexer.configure()
-      _ <- EsCardIndexer.index(mtgCards)
-      _ <- EsAutocompleteIndexer.delete()
-      _ <- EsAutocompleteIndexer.configure()
-      _ <- EsAutocompleteIndexer.index(mtgCards)
+      mtgCards  <- AllSetConverter.convert(loadAllSet, abilities, prices)
+      _         <- EditionPictureDownloader.download(mtgCards)
+      _         <- CardPictureDownloader.download(mtgCards)
+      _         <- EsCardIndexer.delete()
+      _         <- EsCardIndexer.configure()
+      _         <- EsCardIndexer.index(mtgCards)
+      _         <- EsAutocompleteIndexer.delete()
+      _         <- EsAutocompleteIndexer.configure()
+      _         <- EsAutocompleteIndexer.index(mtgCards)
     } yield {
       storeMTGCards(mtgCards)
     }
@@ -66,18 +69,18 @@ object DEALTask extends Task[Unit] {
   override def process: Future[Unit] = {
     for {
       allPrices <- AllPricesScraper.scrap
-      _ <- AllSetScraper.scrap
+      _         <- AllSetScraper.scrap
       abilities <- AbilityScraper.scrap
-      mtgCards <- AllSetConverter.convert(loadAllSet, abilities, allPrices)
-      _ <- EditionPictureDownloader.download(mtgCards)
-      _ <- CardPictureDownloader.download(mtgCards)
-      _ <- EsCardIndexer.delete()
-      _ <- EsCardIndexer.configure()
-      _ <- EsCardIndexer.index(mtgCards)
-      _ <- EsAutocompleteIndexer.delete()
-      _ <- EsAutocompleteIndexer.configure()
-      _ <- EsAutocompleteIndexer.index(mtgCards)
-      rawRules <- RulesScraper.scrap
+      mtgCards  <- AllSetConverter.convert(loadAllSet, abilities, allPrices)
+      _         <- EditionPictureDownloader.download(mtgCards)
+      _         <- CardPictureDownloader.download(mtgCards)
+      _         <- EsCardIndexer.delete()
+      _         <- EsCardIndexer.configure()
+      _         <- EsCardIndexer.index(mtgCards)
+      _         <- EsAutocompleteIndexer.delete()
+      _         <- EsAutocompleteIndexer.configure()
+      _         <- EsAutocompleteIndexer.index(mtgCards)
+      rawRules  <- RulesScraper.scrap
       rules = (RulesParser.parse _).tupled(rawRules)
       _ <- EsRulesIndexer.delete()
       _ <- EsRulesIndexer.configure()

@@ -1,19 +1,24 @@
 package fr.gstraymond.parser.field
 
-import java.time.LocalDate
+import fr.gstraymond.model.MTGJsonEdition
+import fr.gstraymond.model.MTGJsonLegality
 
-import fr.gstraymond.model.{MTGJsonEdition, MTGJsonLegality}
+import java.time.LocalDate
 
 trait FormatsField {
 
   private val includedFormats = Set(
-    "vintage", "commander", "legacy", "modern", "pauper", "pioneer", "standard", "penny"
+    "vintage",
+    "commander",
+    "legacy",
+    "modern",
+    "pauper",
+    "pioneer",
+    "standard",
+    "penny"
   )
 
-  def _formats(formats: Seq[MTGJsonLegality],
-               editions: Seq[MTGJsonEdition],
-               title: String,
-               rarities: Seq[String]): Seq[String] = {
+  def _formats(formats: Seq[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] = {
 
     val legalities =
       formats
@@ -23,11 +28,14 @@ trait FormatsField {
 
     val restricted = legalities.find(_.legality == "Restricted")
 
-    val future = if (formats.contains(MTGJsonLegality("future", "Legal")) &&
-      editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))) {
-      if (formats.length == 1) Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
-      else Seq("Standard")
-    } else Nil
+    val future =
+      if (
+        formats.contains(MTGJsonLegality("future", "Legal")) &&
+        editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))
+      ) {
+        if (formats.length == 1) Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
+        else Seq("Standard")
+      } else Nil
 
     // Bug: when scraping mtg salvation Modern: MTG 2015 doesn't contains core set
     //    val standardModern = scrapedFormats.filter { format =>

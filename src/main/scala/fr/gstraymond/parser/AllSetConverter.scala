@@ -1,24 +1,25 @@
 package fr.gstraymond.parser
 
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-
 import fr.gstraymond.constant.URIs
 import fr.gstraymond.model._
 import fr.gstraymond.parser.field._
-import fr.gstraymond.utils.{Log, StringUtils}
+import fr.gstraymond.utils.Log
+import fr.gstraymond.utils.StringUtils
 
+import java.text.SimpleDateFormat
+import java.time.LocalDate
 import scala.concurrent.Future
 
-object AllSetConverter extends Log
-  with AbilitiesField
-  with ColorField
-  with DevotionsField
-  with FormatsField
-  with HiddenHintsField
-  with LandField
-  with PriceRangesField
-  with SpecialField {
+object AllSetConverter
+    extends Log
+    with AbilitiesField
+    with ColorField
+    with DevotionsField
+    with FormatsField
+    with HiddenHintsField
+    with LandField
+    with PriceRangesField
+    with SpecialField {
 
   private val dateParser = new SimpleDateFormat("yyyy-MM-dd")
 
@@ -98,7 +99,6 @@ object AllSetConverter extends Log
     "RIN",
     "SUM",
     "TD0",
-
     "CEI",
     "CED",
     "ATH",
@@ -111,9 +111,11 @@ object AllSetConverter extends Log
     "CPK"
   )
 
-  def convert(loadAllSet: Map[String, MTGJsonEdition],
-              abilities: Seq[String],
-              prices: Seq[CardPrice]): Future[Seq[MTGCard]] = Future.successful {
+  def convert(
+      loadAllSet: Map[String, MTGJsonEdition],
+      abilities: Seq[String],
+      prices: Seq[CardPrice]
+  ): Future[Seq[MTGCard]] = Future.successful {
     val groupedPrices = prices.groupBy(_.uuid).view.mapValues(_.head).toMap
 
     val nextWeek = LocalDate.now().plusWeeks(1)
@@ -129,9 +131,9 @@ object AllSetConverter extends Log
       val groupedCardsSorted = groupedCards.toSeq.sortBy { case (_, edition) =>
         dateParser.parse(edition.releaseDate.getOrElse("1970-01-01"))
       }
-      val cards = groupedCardsSorted.map(_._1)
-      val editions = groupedCardsSorted.map(_._2)
-      val firstCard = cards.head
+      val cards      = groupedCardsSorted.map(_._1)
+      val editions   = groupedCardsSorted.map(_._2)
+      val firstCard  = cards.head
       val cardPrices = cards.map(_.uuid).flatMap(groupedPrices.get(_))
       val castingCost = firstCard.manaCost.map {
         _.replace("}{", " ")
@@ -142,10 +144,10 @@ object AllSetConverter extends Log
           .replace("2#", "2/")
       }
       val description = firstCard.text.map(_.split("\n").toSeq).getOrElse(Seq.empty)
-      val hints = _hiddenHints(description)
-      val title = firstCard.faceName.getOrElse(firstCard.name)
-      val urlTitle = StringUtils.normalize(title)
-      val rarities = cards.map(_.rarity.replace("timeshifted ", "")).distinct
+      val hints       = _hiddenHints(description)
+      val title       = firstCard.faceName.getOrElse(firstCard.name)
+      val urlTitle    = StringUtils.normalize(title)
+      val rarities    = cards.map(_.rarity.replace("timeshifted ", "")).distinct
 
       MTGCard(
         title = title,
@@ -164,8 +166,8 @@ object AllSetConverter extends Log
         rarities = rarities,
         priceRanges = _priceRanges(cardPrices),
         publications = groupedCardsSorted.map { case (card, edition) =>
-          val rarity = card.rarity.replace("timeshifted ", "")
-          val rarityCode = rarity.head.toString.toUpperCase
+          val rarity      = card.rarity.replace("timeshifted ", "")
+          val rarityCode  = rarity.head.toString.toUpperCase
           val editionCode = edition.code.toUpperCase
           val stdEditionCode = Some(gathererMap.getOrElse(editionCode, editionCode)).filter { code =>
             code.length < 4 && !editionsCodeWithoutImage(code)
@@ -174,7 +176,7 @@ object AllSetConverter extends Log
             collectorNumber = card.number,
             edition = edition.name match {
               case name if name.contains(",") => name.replace(",", ":")
-              case name => name
+              case name                       => name
             },
             editionCode = editionCode,
             editionReleaseDate = Some(dateParser.parse(edition.releaseDate.getOrElse("1970-01-01")).getTime),
@@ -196,7 +198,7 @@ object AllSetConverter extends Log
           )
         },
         abilities = _abilities(title, description, abilities),
-        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions, title, rarities),
+        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions),
         artists = cards.flatMap(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
@@ -222,8 +224,7 @@ object AllSetConverter extends Log
   }
 
   private def processLegalities(data: Map[String, String]): Seq[MTGJsonLegality] =
-    data
-      .toSeq
+    data.toSeq
       .map { case (format, legality) => MTGJsonLegality(format, legality) }
 
   val gathererMap: Map[String, String] = Map(
@@ -269,12 +270,10 @@ object AllSetConverter extends Log
     "USG" -> "UZ",
     "VIS" -> "VI",
     "WTH" -> "WL",
-
     "DD1" -> "EVG",
     "DVD" -> "DD3_DVD",
-
     "GVL" -> "DD3_GVL",
     "JVC" -> "DD3_JVC",
-    "ME1" -> "MED",
+    "ME1" -> "MED"
   )
 }

@@ -1,13 +1,12 @@
 package fr.gstraymond.scraper
 
-import java.util.Date
-
 import dispatch.Defaults._
 import dispatch._
 import fr.gstraymond.utils.Log
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
+import java.util.Date
 import scala.collection.mutable
 import scala.concurrent.Future
 
@@ -51,21 +50,23 @@ trait Scraper extends Log {
   def get(path: String): Future[Array[Byte]] = download(buildFullUrl(path))
 
   def download(fullUrl: String): Future[Array[Byte]] = {
-    Http.default {
-      url(fullUrl) OK as.Bytes
-    }.map { bytes =>
-      log.info(s"scraping url $fullUrl done")
-      bytes
-    }.recover {
-      case e: Exception =>
+    Http
+      .default {
+        url(fullUrl) OK as.Bytes
+      }
+      .map { bytes =>
+        log.info(s"scraping url $fullUrl done")
+        bytes
+      }
+      .recover { case e: Exception =>
         log.warn(s"not found: [${e.getMessage}], $fullUrl")
         Array()
-    }
+      }
   }
 }
 
 trait MTGSalvationScraper extends Scraper {
-  override val host = "mtgsalvation.gamepedia.com"
+  override val host     = "mtgsalvation.gamepedia.com"
   override val protocol = "http"
 }
 

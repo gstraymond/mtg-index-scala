@@ -9,25 +9,25 @@ trait SpecialField {
   // http://mtgsalvation.gamepedia.com/Mill
 
   private val specialFilters: Seq[(SpecialCard => Boolean, Seq[String])] = Seq(
-    isVanilla _ -> Seq("Vanilla"),
-    isPower9 _ -> Seq("Power 9"),
-    isTuck _ -> Seq("Tuck"),
-    isTutor _ -> Seq("Tutor"),
-    isUncounterable _ -> Seq("Uncounterable"),
-    isVenom _ -> Seq("Venom"),
+    isVanilla _         -> Seq("Vanilla"),
+    isPower9 _          -> Seq("Power 9"),
+    isTuck _            -> Seq("Tuck"),
+    isTutor _           -> Seq("Tutor"),
+    isUncounterable _   -> Seq("Uncounterable"),
+    isVenom _           -> Seq("Venom"),
     isLandDestruction _ -> Seq("Land Destruction"),
-    isLord _ -> Seq("Lord"),
-    isWrathEffect _ -> Seq("Wrath Effect"),
-    isMill _ -> Seq("Mill"),
-    isManaDork _ -> Seq("Mana Dork"),
-    isManaRock _ -> Seq("Mana Rock")
+    isLord _            -> Seq("Lord"),
+    isWrathEffect _     -> Seq("Wrath Effect"),
+    isMill _            -> Seq("Mill"),
+    isManaDork _        -> Seq("Mana Dork"),
+    isManaRock _        -> Seq("Mana Rock")
   )
 
   def _special(title: String, `type`: String, description: Seq[String]): Seq[String] = {
     val card = SpecialCard(title, `type`, description)
     specialFilters.flatMap {
       case (filter, specials) if filter(card) => specials
-      case _ => Seq.empty
+      case _                                  => Seq.empty
     }.distinct
   }
 
@@ -89,8 +89,8 @@ trait SpecialField {
   private def isLandDestruction(card: SpecialCard) =
     card.description.exists { line =>
       line.contains(landDestructionKeywords) &&
-        (Land.ALL.keys.exists(line.contains) ||
-          line.contains(" land"))
+      (Land.ALL.keys.exists(line.contains) ||
+        line.contains(" land"))
     }
 
   private val lordKeywords = Seq(
@@ -112,8 +112,8 @@ trait SpecialField {
       val subTypes = card.`type`.toLowerCase.split(" — ")(1).split(" ")
       card.description.map(_.toLowerCase).exists { line =>
         subTypes.exists(line.contains) &&
-          lordNonKeywords.forall(!line.contains(_)) &&
-          lordKeywords.exists(_.forall(line.contains))
+        lordNonKeywords.forall(!line.contains(_)) &&
+        lordKeywords.exists(_.forall(line.contains))
       }
     }
 
@@ -129,9 +129,9 @@ trait SpecialField {
     !card.`type`.startsWith("Enchantment") &&
       card.description.exists { line =>
         wrathEffectKeywords.exists(_.forall(line.contains)) &&
-          !line.contains(" blocked ") &&
-          !line.contains("0") &&
-          !line.contains("1")
+        !line.contains(" blocked ") &&
+        !line.contains("0") &&
+        !line.contains("1")
       }
 
   private val millKeywords = Seq(

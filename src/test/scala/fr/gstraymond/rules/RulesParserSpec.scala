@@ -5,7 +5,6 @@ import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
-import scala.io.Codec.ISO8859
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])

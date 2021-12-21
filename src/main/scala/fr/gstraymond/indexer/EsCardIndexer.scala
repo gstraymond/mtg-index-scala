@@ -9,10 +9,12 @@ object EsCardIndexer extends EsIndexer[MTGCard] {
   override val index = "mtg"
 
   override def buildBody(group: Seq[MTGCard]): String =
-    group.flatMap { card =>
-      Seq(
-        writeToString(Index(IndexId(getId(card)))),
-        writeToString(card)
-      )
-    }.mkString("\n") + "\n"
+    group
+      .flatMap { card =>
+        Seq(
+          writeToString(Index(IndexId(getId(card)))),
+          writeToString(card)
+        )
+      }
+      .mkString("\n") + "\n"
 }

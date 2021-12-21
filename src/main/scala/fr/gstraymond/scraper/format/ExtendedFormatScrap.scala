@@ -10,16 +10,23 @@ object ExtendedFormatScrap extends FormatScrap {
 
   override def bannedCards(doc: Document): Seq[String] = {
     doc
-      .select("ul").asScala
-      .filter(_.select("li a.autocardhref").asScala.nonEmpty).head
-      .select("li a.autocardhref").asScala.map(_.text())
+      .select("ul")
+      .asScala
+      .filter(_.select("li a.autocardhref").asScala.nonEmpty)
+      .head
+      .select("li a.autocardhref")
+      .asScala
+      .map(_.text())
       .toSeq
   }
 
   override def currentRotation(doc: Document): Seq[String] = {
     doc
-      .select("table.wikitable").asScala.head
-      .select("tr").asScala
+      .select("table.wikitable")
+      .asScala
+      .head
+      .select("tr")
+      .asScala
       .filter(_.select("td").asScala.nonEmpty)
       .map(_.select("td").asScala.head.text())
       .toSeq

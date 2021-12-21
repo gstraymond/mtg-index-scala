@@ -47,7 +47,14 @@ class CardConverterLandTest extends Specification with LandField {
         "Land",
         "{T}: Add {C}.",
         "{5}, {T}: Add {W}{U}{B}{R}{G}."
-      ) === Seq("Produce Black Mana", "Produce Blue Mana", "Produce Red Mana", "Produce Green Mana", "Produce White Mana", "Produce Colorless Mana")
+      ) === Seq(
+        "Produce Black Mana",
+        "Produce Blue Mana",
+        "Produce Red Mana",
+        "Produce Green Mana",
+        "Produce White Mana",
+        "Produce Colorless Mana"
+      )
     }
 
     "Misty Rainforest" in {

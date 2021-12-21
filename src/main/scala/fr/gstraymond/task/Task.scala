@@ -1,17 +1,20 @@
 package fr.gstraymond.task
 
-import java.io.{File, FileInputStream}
-
-import com.github.plokhotnyuk.jsoniter_scala.core.{ReaderConfig, readFromStream}
+import com.github.plokhotnyuk.jsoniter_scala.core.ReaderConfig
+import com.github.plokhotnyuk.jsoniter_scala.core.readFromStream
 import fr.gstraymond.model._
 import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.scraper.HttpClients
 import fr.gstraymond.stats.Timing
-import fr.gstraymond.utils.{FileUtils, Log}
+import fr.gstraymond.utils.FileUtils
+import fr.gstraymond.utils.Log
 
+import java.io.File
+import java.io.FileInputStream
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
 import scala.util.control.NonFatal
 
 trait Task[A] extends Log {
@@ -21,8 +24,8 @@ trait Task[A] extends Log {
   def main(args: Array[String]): Unit = {
 
     val timing = Timing(name) {
-      val eventualProcess = process.recover {
-        case NonFatal(e) => log.error(s"error during $name", e)
+      val eventualProcess = process.recover[Any] { case NonFatal(e) =>
+        log.error(s"error during $name", e)
       }
       Await.result(eventualProcess, Duration.Inf)
     }

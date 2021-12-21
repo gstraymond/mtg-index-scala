@@ -1,11 +1,10 @@
 package fr.gstraymond.utils
 
+import com.github.plokhotnyuk.jsoniter_scala.core._
+
 import java.io.File
 import java.io.PrintWriter
-
 import scala.util.Using
-
-import com.github.plokhotnyuk.jsoniter_scala.core._
 
 object FileUtils {
 

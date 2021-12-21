@@ -1,9 +1,9 @@
 package fr.gstraymond.scraper
 
+import fr.gstraymond.utils.FileUtils
+import fr.gstraymond.utils.ZipUtils
+
 import java.io.File
-
-import fr.gstraymond.utils.{FileUtils, ZipUtils}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

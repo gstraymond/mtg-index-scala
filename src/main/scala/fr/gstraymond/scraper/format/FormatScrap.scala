@@ -10,11 +10,11 @@ trait FormatScrap {
 
   def path: String
 
-  def currentRotation(doc: Document): Seq[String] = Seq.empty
+  def currentRotation(doc: Document): Seq[String] = { val _ = doc; Nil }
 
-  def bannedCards(doc: Document): Seq[String] = Seq.empty
+  def bannedCards(doc: Document): Seq[String] = { val _ = doc; Nil }
 
-  def restrictedCards(doc: Document): Seq[String] = Seq.empty
+  def restrictedCards(doc: Document): Seq[String] = { val _ = doc; Nil }
 
   implicit class DocScrap(doc: Document) {
     def getTexts(cssPath: String): Seq[String] = {

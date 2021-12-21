@@ -1,11 +1,12 @@
 package fr.gstraymond.stats
 
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import com.github.plokhotnyuk.jsoniter_scala.core._
+import com.github.plokhotnyuk.jsoniter_scala.macros.CodecMakerConfig
+import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
+
 import java.util.Date
 import java.util.concurrent.TimeUnit
-
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, _}
-import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
-
 import scala.concurrent.duration.Duration
 
 object Timing {
@@ -27,7 +28,7 @@ class Timing[A] {
     val end = new Date().getTime
     val resultAsString = get match {
       case seq: Seq[_] => s"${seq.size} elements"
-      case _ => s"${get.getClass} result"
+      case _           => s"${get.getClass} result"
     }
     val processStats2 = ProcessStats(
       name,
