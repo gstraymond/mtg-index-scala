@@ -1,6 +1,7 @@
 package fr.gstraymond.indexer
 
 import com.github.plokhotnyuk.jsoniter_scala.core._
+import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.model.MTGCard
 import fr.gstraymond.model.MTGCardFormat._
 

@@ -40,8 +40,7 @@ trait Task[A] extends Log {
   import fr.gstraymond.model.MTGJsonFormats._
   import fr.gstraymond.model.ScrapedFormatFormat._
   import fr.gstraymond.rules.model.RuleFormats._
-  import fr.gstraymond.parser.CardPrice
-  import fr.gstraymond.parser.PriceFormats._
+  import fr.gstraymond.parser.PriceModels._
 
   protected def storeMTGCards(cards: Seq[MTGCard]) = {
     mkDir(FileUtils.outputPath)
@@ -100,6 +99,6 @@ trait Task[A] extends Log {
 
   private def mkDir(path: String) = {
     val dir = new File(path)
-    if (!dir.exists()) dir.mkdirs()
+    if !dir.exists() then dir.mkdirs()
   }
 }

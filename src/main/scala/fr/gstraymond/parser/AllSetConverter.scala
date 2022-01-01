@@ -2,6 +2,7 @@ package fr.gstraymond.parser
 
 import fr.gstraymond.constant.URIs
 import fr.gstraymond.model._
+import fr.gstraymond.parser.PriceModels._
 import fr.gstraymond.parser.field._
 import fr.gstraymond.utils.Log
 import fr.gstraymond.utils.StringUtils
@@ -218,8 +219,8 @@ object AllSetConverter
   implicit val ord: Ordering[LocalDate] = _ compareTo _
 
   private def computePrices(price: Option[CardPrice], foil: Boolean = false, online: Boolean = false) = {
-    val cardPrice = if (online) price.flatMap(_.online) else price.flatMap(_.paper)
-    if (foil) cardPrice.flatMap(_.foil)
+    val cardPrice = if online then price.flatMap(_.online) else price.flatMap(_.paper)
+    if foil then cardPrice.flatMap(_.foil)
     else cardPrice.flatMap(_.normal)
   }
 

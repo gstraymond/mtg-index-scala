@@ -24,7 +24,7 @@ trait ColorField {
           case s => Seq(MULTICOLORED(s), GOLD)
         }
 
-        val guild = if (GUILDS.exists(castingCost.contains)) Seq(GUILD) else Seq.empty
+        val guild = if GUILDS.exists(castingCost.contains) then Seq(GUILD) else Seq.empty
 
         val symbols = find(castingCost)(ALL_COLORS_SYMBOLS).map(_.lbl)
 

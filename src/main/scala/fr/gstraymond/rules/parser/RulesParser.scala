@@ -54,12 +54,12 @@ object RulesParser extends Log {
           case i                  => i
         }
         val level = parseLevel(Some(id), index)
-        if (index <= creditsMenuIndex)
+        if index <= creditsMenuIndex then
           Rule(id = None, text = split(1), links = Seq(RuleLink(id, 0, split(1).length - 1)), level + 1)
         else Rule(id = Some(id), text = split(1), links = Nil, level)
       case (line, index) =>
-        if (glossaryRange.contains(index)) {
-          val level = if (emptyMap(index)) 2 else 4
+        if glossaryRange.contains(index) then {
+          val level = if emptyMap(index) then 2 else 4
           Rule(id = None, text = line, links = Nil, level)
         } else Rule(id = None, text = line, links = Nil, parseLevel(None, index))
     }
@@ -68,7 +68,7 @@ object RulesParser extends Log {
 
     val range = introductionIndex to creditsIndex
     val rules1 = rules.zipWithIndex.map { case (rule, i) =>
-      if (range.contains(i) && rule.text.exists(_.isDigit)) {
+      if range.contains(i) && rule.text.exists(_.isDigit) then {
         ids.filter(r => rule.text.contains(r.pattern.toString)).foldLeft(rule) { (acc, id) =>
           val links = id
             .findAllMatchIn(rule.text)

@@ -16,10 +16,10 @@ object CardPictureDownloader extends GathererScraper with Log {
   def download(cards: Seq[MTGCard]): Future[Unit] = {
     val init = Future.successful(())
     cards.flatMap(download).foldLeft(init) { (acc, f) =>
-      for {
+      for
         _ <- acc
         _ <- f
-      } yield {
+      yield {
         ()
       }
     }
@@ -32,9 +32,9 @@ object CardPictureDownloader extends GathererScraper with Log {
           val file =
             new File(s"${URIs.pictureLocation}/pics/${publication.editionCode}/$multiverseId-${formatTitle(card)}")
 
-          if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
+          if !file.getParentFile.exists() then file.getParentFile.mkdirs()
 
-          if (!file.exists()) {
+          if !file.exists() then {
             log.warn(s"picture not found: [${file.getAbsoluteFile}] ${card.title} - ${publication.edition}")
             Thread.sleep(100)
             val path = s"/Handlers/Image.ashx?multiverseid=$multiverseId&type=card"

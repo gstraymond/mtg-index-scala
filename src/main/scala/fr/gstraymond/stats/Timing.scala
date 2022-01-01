@@ -1,10 +1,5 @@
 package fr.gstraymond.stats
 
-import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.core._
-import com.github.plokhotnyuk.jsoniter_scala.macros.CodecMakerConfig
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
-
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
@@ -56,9 +51,7 @@ class Timing[A] {
     other
   }
 
-  implicit val StatsCode: JsonValueCodec[Stats] = JsonCodecMaker.make[Stats](CodecMakerConfig.withTransientEmpty(false))
   case class Stats(stats: Seq[ProcessStats])
-  def json: String = {
-    writeToString(Stats(stats), WriterConfig.withIndentionStep(2))
-  }
+
+  def json: String = Stats(stats).toString
 }

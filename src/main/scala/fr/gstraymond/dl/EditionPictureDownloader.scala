@@ -30,12 +30,12 @@ object EditionPictureDownloader extends GathererScraper {
         rarities.map { rarity =>
           val file = new File(s"${URIs.pictureLocation}/sets/$edition/$rarity.gif")
 
-          if (!file.exists()) {
+          if !file.exists() then {
             getBytes(edition, rarity).map {
               case Array() => ()
               case bytes =>
                 log.info(s"picture DLed: $edition-$rarity")
-                if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
+                if !file.getParentFile.exists() then file.getParentFile.mkdirs()
                 val fos = new FileOutputStream(file)
                 fos.write(bytes)
                 fos.close()

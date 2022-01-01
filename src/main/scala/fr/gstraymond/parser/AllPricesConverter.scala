@@ -1,9 +1,7 @@
 package fr.gstraymond.parser
 
-import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.CodecMakerConfig
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import fr.gstraymond.model.MTGJsonAllPrices
+import fr.gstraymond.parser.PriceModels._
 
 object AllPricesConverter {
 
@@ -23,13 +21,4 @@ object AllPricesConverter {
       }
       CardPrice(uuid, paper, online)
     }.toSeq
-}
-
-case class CardPrice(uuid: String, paper: Option[Price], online: Option[Price])
-
-case class Price(normal: Option[Double], foil: Option[Double])
-
-object PriceFormats {
-  implicit val cardPriceFormat: JsonValueCodec[Seq[CardPrice]] =
-    JsonCodecMaker.make(CodecMakerConfig.withTransientEmpty(false))
 }

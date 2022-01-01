@@ -22,10 +22,10 @@ trait LandField {
 
   def _land(`type`: String, description: Seq[String]) = {
     val card = LandCard(`type`, description)
-    if (isLand(card)) {
+    if isLand(card) then {
       landFilters
         .foldLeft(Seq.empty[String]) { case (acc, (filter, specials)) =>
-          acc ++ (if (filter(card)) specials else Seq.empty)
+          acc ++ (if filter(card) then specials else Seq.empty)
         }
         .distinct
     } else Seq.empty
@@ -40,7 +40,7 @@ trait LandField {
     }.sum == count
 
   private def landProduce(line: String, c: String): Boolean = {
-    if (line.contains("{T}:")) line.split("\\{T\\}:")(1).contains(s"{$c}")
+    if line.contains("{T}:") then line.split("\\{T\\}:")(1).contains(s"{$c}")
     else false
   }
 

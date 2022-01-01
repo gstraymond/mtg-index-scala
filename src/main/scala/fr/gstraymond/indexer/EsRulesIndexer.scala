@@ -1,8 +1,7 @@
 package fr.gstraymond.indexer
 
 import com.github.plokhotnyuk.jsoniter_scala.core._
-import com.github.plokhotnyuk.jsoniter_scala.macros.CodecMakerConfig
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
+import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.rules.model.RuleFormats._
 import fr.gstraymond.rules.model.Rules
 
@@ -28,10 +27,4 @@ object EsRulesIndexer extends EsIndexer[Rules] {
       }
       .mkString("\n") + "\n"
   }
-
-  case class RuleVersion(filename: String)
-
-  @nowarn
-  implicit val RuleVersionCodec: JsonValueCodec[RuleVersion] =
-    JsonCodecMaker.make[RuleVersion](CodecMakerConfig.withTransientEmpty(false))
 }

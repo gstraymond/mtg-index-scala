@@ -1,7 +1,6 @@
 package fr.gstraymond.scraper
 
-import fr.gstraymond.parser.CardPrice
-import fr.gstraymond.parser.Price
+import fr.gstraymond.parser.PriceModels._
 import fr.gstraymond.utils.FileUtils
 
 import java.io.File
@@ -40,7 +39,7 @@ object AllPricesScraper extends MtgJsonScraper {
       .filterNot(_.contains("cardmarket"))
       .zipWithIndex
       .foreach { case (line, i) =>
-        if (i % 100000 == 0) println(s"i: $i - ${cardPrices.lastOption}")
+        if i % 100000 == 0 then println(s"i: $i - ${cardPrices.lastOption}")
 
         val elements = line
           .split('[')
@@ -55,14 +54,14 @@ object AllPricesScraper extends MtgJsonScraper {
           val isNormal = elements(5) == "normal"
           val cp = {
             val price =
-              if (isNormal) Price(Some(priceAsDouble), None)
+              if isNormal then Price(Some(priceAsDouble), None)
               else Price(None, Some(priceAsDouble))
 
-            if (isPaper) CardPrice(uuid, Some(price), None)
+            if isPaper then CardPrice(uuid, Some(price), None)
             else CardPrice(uuid, None, Some(price))
           }
 
-          if (Some(uuid) != currentCardPrice.map(_.uuid)) {
+          if Some(uuid) != currentCardPrice.map(_.uuid) then {
             currentCardPrice.foreach(cardPrices.addOne)
             currentCardPrice = Some(cp)
           } else {
@@ -86,7 +85,7 @@ object AllPricesScraper extends MtgJsonScraper {
     val normal = mergeD(p1.flatMap(_.normal), p2.flatMap(_.normal))
     val foil   = mergeD(p1.flatMap(_.foil), p2.flatMap(_.foil))
 
-    if (normal.isEmpty && foil.isEmpty) None
+    if normal.isEmpty && foil.isEmpty then None
     else Some(Price(normal, foil))
   }
 

@@ -1,10 +1,9 @@
 package fr.gstraymond.indexer
 
 import com.github.plokhotnyuk.jsoniter_scala.core._
-import com.github.plokhotnyuk.jsoniter_scala.macros.CodecMakerConfig
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import dispatch.Defaults._
 import dispatch._
+import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.model.MTGCard
 
 import java.nio.charset.Charset
@@ -14,14 +13,14 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
 
   override val index = "autocomplete"
 
-  override def index(cards: Seq[MTGCard]): Future[Unit] = for {
+  override def index(cards: Seq[MTGCard]): Future[Unit] = for
     _ <- super.index(cards)
     _ <- indexSuggest("token", extractTokens(cards))
     _ <- indexSuggest("edition", extractEditions(cards))
     _ <- indexSuggest("special", extractSpecials(cards))
-  } yield ()
+  yield ()
 
-  override def buildBody(group: Seq[MTGCard]): String = {
+  override def buildBody(group: Seq[MTGCard]): String =
     group
       .flatMap { card =>
         val indexJson = Index(IndexId(getId(card)))
@@ -34,20 +33,6 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
         Seq(writeToString(indexJson), writeToString(cardJson))
       }
       .mkString("\n") + "\n"
-  }
-
-  case class Autocomplete(
-      suggest: Suggest,
-      colors: Option[Seq[String]] = None,
-      `type`: Option[String] = None,
-      land: Option[Seq[String]] = None,
-      stdEditionCode: Option[String] = None
-  )
-
-  case class Suggest(input: String, weight: Option[Int] = None)
-
-  implicit val AutocompleteCodec: JsonValueCodec[Autocomplete] =
-    JsonCodecMaker.make[Autocomplete](CodecMakerConfig.withTransientEmpty(false))
 
   private def extractTokens(cards: Seq[MTGCard]): Seq[Autocomplete] = {
     val tokenOccurrences =
@@ -78,8 +63,8 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
     tokenOccurrences.toSeq
       .foldLeft(Seq[(String, Int)]()) { case (acc, (k, v)) =>
         acc ++ {
-          if (k.endsWith("s") && tokenOccurrences.contains(k.dropRight(1))) Seq(k.dropRight(1) -> v)
-          else Seq(k                                                                           -> v)
+          if k.endsWith("s") && tokenOccurrences.contains(k.dropRight(1)) then Seq(k.dropRight(1) -> v)
+          else Seq(k                                                                              -> v)
         }
       }
       .groupBy(_._1)
@@ -91,10 +76,10 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
   }
 
   private def extractEditions(cards: Seq[MTGCard]): Seq[Autocomplete] = {
-    (for {
+    (for
       card <- cards
       pub  <- card.publications
-    } yield {
+    yield {
       pub.edition -> pub.stdEditionCode
     }).distinct
       .map {

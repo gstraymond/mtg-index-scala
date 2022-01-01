@@ -1,10 +1,8 @@
 package fr.gstraymond.indexer
 
-import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.CodecMakerConfig
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import dispatch.Defaults._
 import dispatch._
+import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.model.MTGCard
 import fr.gstraymond.utils.Log
 import fr.gstraymond.utils.StringUtils
@@ -59,7 +57,7 @@ trait EsIndexer[A] extends Log {
 
     grouped.zipWithIndex
       .foldLeft(Future.successful(0)) { case (acc, (group, i)) =>
-        for {
+        for
           count <- acc
           _ <- {
             Http
@@ -74,7 +72,7 @@ trait EsIndexer[A] extends Log {
                 log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
               }
           }
-        } yield {
+        yield {
           count + group.size
         }
       }
@@ -89,12 +87,4 @@ trait EsIndexer[A] extends Log {
   }
 
   protected def norm(string: String): String = StringUtils.normalize(string)
-
-  case class Index(index: IndexId)
-
-  case class IndexId(_id: String)
-
-  @nowarn
-  implicit val IndexCodec: JsonValueCodec[Index] =
-    JsonCodecMaker.make[Index](CodecMakerConfig.withTransientEmpty(false))
 }

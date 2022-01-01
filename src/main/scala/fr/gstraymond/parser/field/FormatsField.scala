@@ -29,11 +29,11 @@ trait FormatsField {
     val restricted = legalities.find(_.legality == "Restricted")
 
     val future =
-      if (
+      if
         formats.contains(MTGJsonLegality("future", "Legal")) &&
         editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))
-      ) {
-        if (formats.length == 1) Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
+      then {
+        if formats.length == 1 then Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
         else Seq("Standard")
       } else Nil
 
