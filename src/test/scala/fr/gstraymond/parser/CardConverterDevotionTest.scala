@@ -6,7 +6,7 @@ import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterDevotionTest extends Specification with DevotionsField {
+class CardConverterDevotionTest extends Specification with DevotionsField:
 
   "card converter" should {
     "Nope" in {
@@ -64,4 +64,3 @@ class CardConverterDevotionTest extends Specification with DevotionsField {
 
   private def _devotion(cc: String) =
     _devotions(Some("Creature"), Some(cc)).sorted
-}

@@ -3,7 +3,7 @@ package fr.gstraymond.parser
 import fr.gstraymond.model.MTGJsonAllPrices
 import fr.gstraymond.parser.PriceModels._
 
-object AllPricesConverter {
+object AllPricesConverter:
 
   def convert(prices: MTGJsonAllPrices): Seq[CardPrice] =
     prices.data.map { case (uuid, price) =>
@@ -21,4 +21,3 @@ object AllPricesConverter {
       }
       CardPrice(uuid, paper, online)
     }.toSeq
-}

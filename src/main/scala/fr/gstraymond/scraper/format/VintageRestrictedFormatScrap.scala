@@ -4,11 +4,11 @@ import org.jsoup.nodes.Document
 
 import scala.jdk.CollectionConverters._
 
-object VintageRestrictedFormatScrap extends FormatScrap {
+object VintageRestrictedFormatScrap extends FormatScrap:
   override val name = "restricted"
   override val path = "/Vintage"
 
-  override def restrictedCards(doc: Document): Seq[String] = {
+  override def restrictedCards(doc: Document): Seq[String] =
     doc
       .select("#mw-content-text ul")
       .asScala
@@ -17,5 +17,3 @@ object VintageRestrictedFormatScrap extends FormatScrap {
       .asScala
       .map(_.text())
       .toSeq
-  }
-}

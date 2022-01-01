@@ -2,7 +2,7 @@ package fr.gstraymond.scraper.format
 
 import org.jsoup.nodes.Document
 
-object CommanderFormatScrap extends FormatScrap {
+object CommanderFormatScrap extends FormatScrap:
   override val name = "commander"
   override val path = "/Vintage"
 
@@ -14,4 +14,3 @@ object CommanderFormatScrap extends FormatScrap {
         "description->playing for ante",
         "type->conspiracy"
       )
-}

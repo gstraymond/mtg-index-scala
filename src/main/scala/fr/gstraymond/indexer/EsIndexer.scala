@@ -12,7 +12,7 @@ import scala.annotation.nowarn
 import scala.concurrent.Future
 import scala.io.Source
 
-trait EsIndexer[A] extends Log {
+trait EsIndexer[A] extends Log:
 
   val host = "localhost:9200"
 
@@ -24,7 +24,7 @@ trait EsIndexer[A] extends Log {
 
   val bulk = 500
 
-  def delete(): Future[Unit] = {
+  def delete(): Future[Unit] =
     Http
       .default {
         url(indexPath).DELETE > as.String
@@ -33,9 +33,8 @@ trait EsIndexer[A] extends Log {
         log.info(s"delete: $result")
         ()
       }
-  }
 
-  def configure(): Future[Unit] = {
+  def configure(): Future[Unit] =
     val body = Source.fromInputStream(getClass.getResourceAsStream(s"/indexer/$index.config.json")).mkString
     Http
       .default {
@@ -48,9 +47,8 @@ trait EsIndexer[A] extends Log {
       .map { result =>
         log.info(s"configure: $result")
       }
-  }
 
-  def index(elems: Seq[A]): Future[Unit] = {
+  def index(elems: Seq[A]): Future[Unit] =
     val grouped     = elems.grouped(bulk).to(LazyList)
     val groupedSize = grouped.size
     val cardSize    = elems.size
@@ -59,7 +57,7 @@ trait EsIndexer[A] extends Log {
       .foldLeft(Future.successful(0)) { case (acc, (group, i)) =>
         for
           count <- acc
-          _ <- {
+          _ <-
             Http
               .default {
                 url(bulkPath).POST
@@ -71,20 +69,15 @@ trait EsIndexer[A] extends Log {
               .map { _ =>
                 log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
               }
-          }
-        yield {
+        yield
           count + group.size
-        }
       }
       .map { _ => log.info(s"bulk finished !") }
-  }
 
   def buildBody(group: Seq[A]): String
 
-  protected def getId(card: MTGCard): String = {
+  protected def getId(card: MTGCard): String =
     val id = card.publications.flatMap(_.multiverseId).headOption.getOrElse(-1L)
     norm(s"$id-${card.title}")
-  }
 
   protected def norm(string: String): String = StringUtils.normalize(string)
-}

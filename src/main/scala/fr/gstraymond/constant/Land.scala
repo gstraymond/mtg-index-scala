@@ -1,6 +1,6 @@
 package fr.gstraymond.constant
 
-object Land {
+object Land:
 
   val ALL = Map(
     "Forest"   -> "G",
@@ -11,4 +11,3 @@ object Land {
   )
 
   val REV = ALL.map(_.swap)
-}

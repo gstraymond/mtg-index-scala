@@ -2,7 +2,7 @@ package fr.gstraymond.parser.field
 
 import fr.gstraymond.parser.PriceModels._
 
-trait PriceRangesField {
+trait PriceRangesField:
 
   def _priceRanges(prices: Seq[CardPrice]): Seq[String] = getPrices(prices).map {
     case p if p < 0.20              => "< 0.20$"
@@ -19,4 +19,3 @@ trait PriceRangesField {
       .flatMap { price => price.online ++ price.paper }
       .flatMap { price => price.normal ++ price.foil }
       .toSet
-}

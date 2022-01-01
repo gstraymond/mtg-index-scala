@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.io.Source
 import scala.jdk.CollectionConverters._
 
-object RulesScraper extends WizardsScraper with Log {
+object RulesScraper extends WizardsScraper with Log:
 
   val path = "/en/game-info/gameplay/rules-and-formats/rules"
 
@@ -17,8 +17,6 @@ object RulesScraper extends WizardsScraper with Log {
     rulesTxt = doc.select("div#comprehensive-rules span.txt a").asScala.head.attr("href")
     _        = log.info(s"scrap: $path -> $rulesTxt")
     bytes <- download(rulesTxt)
-  yield {
+  yield
     val url = URLDecoder.decode(rulesTxt, "utf-8")
     url.split("/").last.split("\\.").head -> Source.fromBytes(bytes)("utf-8").getLines().toSeq
-  }
-}

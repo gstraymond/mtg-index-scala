@@ -6,13 +6,13 @@ import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterLandTest extends Specification with LandField {
+class CardConverterLandTest extends Specification with LandField:
 
   "card converter" should {
 
     "Tundra" in {
       land(
-        "Land — Plains Island",
+        "Land ? Plains Island",
         "({T}: Add {W} or {U}.)"
       ) === Seq("Dual Land", "Dual Basic Land", "Produce Blue Mana", "Produce White Mana")
     }
@@ -90,4 +90,3 @@ class CardConverterLandTest extends Specification with LandField {
 
   private def land(`type`: String, description: String*): Seq[String] =
     _land(`type`, description)
-}

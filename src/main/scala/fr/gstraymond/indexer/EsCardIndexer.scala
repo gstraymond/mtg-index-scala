@@ -5,7 +5,7 @@ import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.model.MTGCard
 import fr.gstraymond.model.MTGCardFormat._
 
-object EsCardIndexer extends EsIndexer[MTGCard] {
+object EsCardIndexer extends EsIndexer[MTGCard]:
 
   override val index = "mtg"
 
@@ -18,4 +18,3 @@ object EsCardIndexer extends EsIndexer[MTGCard] {
         )
       }
       .mkString("\n") + "\n"
-}

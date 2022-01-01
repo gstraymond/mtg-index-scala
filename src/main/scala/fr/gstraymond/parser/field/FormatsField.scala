@@ -5,7 +5,7 @@ import fr.gstraymond.model.MTGJsonLegality
 
 import java.time.LocalDate
 
-trait FormatsField {
+trait FormatsField:
 
   private val includedFormats = Set(
     "vintage",
@@ -18,7 +18,7 @@ trait FormatsField {
     "penny"
   )
 
-  def _formats(formats: Seq[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] = {
+  def _formats(formats: Seq[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] =
 
     val legalities =
       formats
@@ -32,10 +32,10 @@ trait FormatsField {
       if
         formats.contains(MTGJsonLegality("future", "Legal")) &&
         editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))
-      then {
+      then
         if formats.length == 1 then Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
         else Seq("Standard")
-      } else Nil
+      else Nil
 
     // Bug: when scraping mtg salvation Modern: MTG 2015 doesn't contains core set
     //    val standardModern = scrapedFormats.filter { format =>
@@ -43,5 +43,3 @@ trait FormatsField {
     //    }.map(_.name)
 
     (legalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).distinct
-  }
-}

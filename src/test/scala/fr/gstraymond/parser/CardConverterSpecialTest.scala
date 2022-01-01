@@ -6,7 +6,7 @@ import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterSpecialTest extends Specification {
+class CardConverterSpecialTest extends Specification:
 
   "card converter" should {
 
@@ -183,4 +183,3 @@ class CardConverterSpecialTest extends Specification {
 
   private def _special(title: String, `type`: String, description: String*) =
     new SpecialField {}._special(title, `type`, description)
-}

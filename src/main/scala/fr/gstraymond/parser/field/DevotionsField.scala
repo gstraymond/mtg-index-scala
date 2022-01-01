@@ -2,15 +2,15 @@ package fr.gstraymond.parser.field
 
 import fr.gstraymond.constant.Color._
 
-trait DevotionsField {
+trait DevotionsField:
 
-  def _devotions(`type`: Option[String], maybeCastingCost: Option[String]) = {
+  def _devotions(`type`: Option[String], maybeCastingCost: Option[String]) =
     val isPermanent = Seq("Instant", "Sorcery").forall { t =>
       `type`.exists {
         !_.contains(t)
       }
     }
-    isPermanent -> maybeCastingCost match {
+    isPermanent -> maybeCastingCost match
       case (true, Some(castingCost)) =>
         ONLY_COLORED_SYMBOLS
           .map { color =>
@@ -25,6 +25,3 @@ trait DevotionsField {
           .distinct
           .filter(_ > 0)
       case _ => Seq.empty
-    }
-  }
-}

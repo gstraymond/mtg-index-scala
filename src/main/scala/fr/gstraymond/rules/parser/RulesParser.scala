@@ -5,9 +5,9 @@ import fr.gstraymond.rules.model.RuleLink
 import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.utils.Log
 
-object RulesParser extends Log {
+object RulesParser extends Log:
 
-  def parse(filename: String, lines: Seq[String]): Rules = {
+  def parse(filename: String, lines: Seq[String]): Rules =
     val emptyMap = ((lines.head -> false) +: lines.tail
       .zip(lines)
       .map { case (line, prev) => line -> prev.isEmpty }
@@ -38,37 +38,35 @@ object RulesParser extends Log {
           case _                                               => 1
         }
         .getOrElse {
-          position match {
+          position match
             case `titleIndex`        => 1
             case `introductionIndex` => 1
             case `contentsIndex`     => 1
             case _                   => 4
-          }
         }
 
     val rules = nonEmptyLines.zipWithIndex.map {
       case (line, index) if line.head.isDigit && !glossaryRange.contains(index) =>
         val split = line.split(" ", 2)
-        val id = split.head match {
+        val id = split.head match
           case i if i.last == '.' => i.dropRight(1)
           case i                  => i
-        }
         val level = parseLevel(Some(id), index)
         if index <= creditsMenuIndex then
           Rule(id = None, text = split(1), links = Seq(RuleLink(id, 0, split(1).length - 1)), level + 1)
         else Rule(id = Some(id), text = split(1), links = Nil, level)
       case (line, index) =>
-        if glossaryRange.contains(index) then {
+        if glossaryRange.contains(index) then
           val level = if emptyMap(index) then 2 else 4
           Rule(id = None, text = line, links = Nil, level)
-        } else Rule(id = None, text = line, links = Nil, parseLevel(None, index))
+        else Rule(id = None, text = line, links = Nil, parseLevel(None, index))
     }
 
     val ids = rules.flatMap(_.id).filter(_.length > 2).sortBy(-_.length).map(_.r)
 
     val range = introductionIndex to creditsIndex
     val rules1 = rules.zipWithIndex.map { case (rule, i) =>
-      if range.contains(i) && rule.text.exists(_.isDigit) then {
+      if range.contains(i) && rule.text.exists(_.isDigit) then
         ids.filter(r => rule.text.contains(r.pattern.toString)).foldLeft(rule) { (acc, id) =>
           val links = id
             .findAllMatchIn(rule.text)
@@ -79,11 +77,8 @@ object RulesParser extends Log {
             }
           acc.copy(links = acc.links ++ links)
         }
-      } else {
+      else
         rule
-      }
     }
 
     Rules(filename, rules1)
-  }
-}

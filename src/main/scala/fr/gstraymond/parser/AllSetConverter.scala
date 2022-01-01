@@ -20,7 +20,7 @@ object AllSetConverter
     with HiddenHintsField
     with LandField
     with PriceRangesField
-    with SpecialField {
+    with SpecialField:
 
   private val dateParser = new SimpleDateFormat("yyyy-MM-dd")
 
@@ -218,11 +218,10 @@ object AllSetConverter
 
   implicit val ord: Ordering[LocalDate] = _ compareTo _
 
-  private def computePrices(price: Option[CardPrice], foil: Boolean = false, online: Boolean = false) = {
+  private def computePrices(price: Option[CardPrice], foil: Boolean = false, online: Boolean = false) =
     val cardPrice = if online then price.flatMap(_.online) else price.flatMap(_.paper)
     if foil then cardPrice.flatMap(_.foil)
     else cardPrice.flatMap(_.normal)
-  }
 
   private def processLegalities(data: Map[String, String]): Seq[MTGJsonLegality] =
     data.toSeq
@@ -277,4 +276,3 @@ object AllSetConverter
     "JVC" -> "DD3_JVC",
     "ME1" -> "MED"
   )
-}

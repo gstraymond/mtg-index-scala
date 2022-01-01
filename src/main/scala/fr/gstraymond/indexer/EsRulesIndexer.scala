@@ -7,11 +7,11 @@ import fr.gstraymond.rules.model.Rules
 
 import scala.annotation.nowarn
 
-object EsRulesIndexer extends EsIndexer[Rules] {
+object EsRulesIndexer extends EsIndexer[Rules]:
 
   override val index = "mtg-rules"
 
-  override def buildBody(group: Seq[Rules]): String = {
+  override def buildBody(group: Seq[Rules]): String =
     group
       .flatMap { rules =>
         val indexJson        = Index(IndexId("rules"))
@@ -26,5 +26,3 @@ object EsRulesIndexer extends EsIndexer[Rules] {
         )
       }
       .mkString("\n") + "\n"
-  }
-}

@@ -8,7 +8,7 @@ import org.specs2.runner.JUnitRunner
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
-class RulesParserSpec extends Specification {
+class RulesParserSpec extends Specification:
 
   "Rules parser" should {
     "parse rules" in {
@@ -18,4 +18,3 @@ class RulesParserSpec extends Specification {
       rules.rules.take(10).mkString("\n") === ""
     }
   }
-}

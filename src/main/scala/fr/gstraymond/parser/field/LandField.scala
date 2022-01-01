@@ -2,7 +2,7 @@ package fr.gstraymond.parser.field
 
 import fr.gstraymond.constant.Land
 
-trait LandField {
+trait LandField:
 
   case class LandCard(`type`: String, description: Seq[String])
 
@@ -20,16 +20,15 @@ trait LandField {
     canLandProduce("C") _ -> Seq("Produce Colorless Mana")
   )
 
-  def _land(`type`: String, description: Seq[String]) = {
+  def _land(`type`: String, description: Seq[String]) =
     val card = LandCard(`type`, description)
-    if isLand(card) then {
+    if isLand(card) then
       landFilters
         .foldLeft(Seq.empty[String]) { case (acc, (filter, specials)) =>
           acc ++ (if filter(card) then specials else Seq.empty)
         }
         .distinct
-    } else Seq.empty
-  }
+    else Seq.empty
 
   private def countLandTypes(count: Int)(card: LandCard) =
     Land.ALL.keys.count(card.`type`.contains) == count
@@ -39,10 +38,9 @@ trait LandField {
       Land.ALL.values.count(landProduce(line, _))
     }.sum == count
 
-  private def landProduce(line: String, c: String): Boolean = {
+  private def landProduce(line: String, c: String): Boolean =
     if line.contains("{T}:") then line.split("\\{T\\}:")(1).contains(s"{$c}")
     else false
-  }
 
   private val fetchLandKeywords = Seq("Sacrifice", "Search your library", "put it onto the battlefield")
 
@@ -64,4 +62,3 @@ trait LandField {
       }
 
   private def isLand(card: LandCard) = card.`type`.contains("Land")
-}

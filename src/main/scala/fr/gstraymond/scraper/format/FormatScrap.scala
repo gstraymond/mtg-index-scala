@@ -4,7 +4,7 @@ import org.jsoup.nodes.Document
 
 import scala.jdk.CollectionConverters._
 
-trait FormatScrap {
+trait FormatScrap:
 
   def name: String
 
@@ -16,12 +16,9 @@ trait FormatScrap {
 
   def restrictedCards(doc: Document): Seq[String] = { val _ = doc; Nil }
 
-  implicit class DocScrap(doc: Document) {
-    def getTexts(cssPath: String): Seq[String] = {
+  implicit class DocScrap(doc: Document):
+    def getTexts(cssPath: String): Seq[String] =
       val result = doc.select(cssPath).asScala.map(_.text())
       assert(result.nonEmpty, s"no result for $name [$cssPath]")
       result.toSeq
-    }
-  }
 
-}

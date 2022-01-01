@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
-object AbilityScraper extends WikipediaScraper with Log {
+object AbilityScraper extends WikipediaScraper with Log:
 
   private val path = "/wiki/List_of_Magic:_The_Gathering_keywords"
 
@@ -18,4 +18,3 @@ object AbilityScraper extends WikipediaScraper with Log {
       assert(abilities.nonEmpty, s"no result for ${getClass.getSimpleName} [$cssPath]")
       abilities.toSeq
     }
-}

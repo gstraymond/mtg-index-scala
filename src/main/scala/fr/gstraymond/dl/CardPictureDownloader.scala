@@ -11,21 +11,19 @@ import java.io.FileOutputStream
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object CardPictureDownloader extends GathererScraper with Log {
+object CardPictureDownloader extends GathererScraper with Log:
 
-  def download(cards: Seq[MTGCard]): Future[Unit] = {
+  def download(cards: Seq[MTGCard]): Future[Unit] =
     val init = Future.successful(())
     cards.flatMap(download).foldLeft(init) { (acc, f) =>
       for
         _ <- acc
         _ <- f
-      yield {
+      yield
         ()
-      }
     }
-  }
 
-  def download(card: MTGCard): Seq[Future[Unit]] = {
+  def download(card: MTGCard): Seq[Future[Unit]] =
     card.publications.map { publication =>
       publication.multiverseId
         .map { multiverseId =>
@@ -34,7 +32,7 @@ object CardPictureDownloader extends GathererScraper with Log {
 
           if !file.getParentFile.exists() then file.getParentFile.mkdirs()
 
-          if !file.exists() then {
+          if !file.exists() then
             log.warn(s"picture not found: [${file.getAbsoluteFile}] ${card.title} - ${publication.edition}")
             Thread.sleep(100)
             val path = s"/Handlers/Image.ashx?multiverseid=$multiverseId&type=card"
@@ -45,18 +43,14 @@ object CardPictureDownloader extends GathererScraper with Log {
                 fos.write(bytes)
                 fos.close()
             }
-          } else {
+          else
             Future.successful(())
-          }
         }
         .getOrElse {
           Future.successful(())
         }
     }
-  }
 
-  def formatTitle(card: MTGCard): String = {
+  def formatTitle(card: MTGCard): String =
     def name = StringUtils.normalize(card.title)
     s"$name.jpg"
-  }
-}

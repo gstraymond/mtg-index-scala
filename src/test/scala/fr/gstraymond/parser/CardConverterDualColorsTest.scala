@@ -6,7 +6,7 @@ import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CardConverterDualColorsTest extends Specification with ColorField {
+class CardConverterDualColorsTest extends Specification with ColorField:
 
   "card converter" should {
     "Nope" in {
@@ -87,4 +87,3 @@ class CardConverterDualColorsTest extends Specification with ColorField {
   }
 
   private def _dualColors(cc: String): Seq[String] = _dualColors(Some(cc), None).sorted
-}

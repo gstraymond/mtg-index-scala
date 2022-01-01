@@ -10,7 +10,7 @@ import java.util.Date
 import scala.collection.mutable
 import scala.concurrent.Future
 
-trait Scraper extends Log {
+trait Scraper extends Log:
   def host: String
 
   val TIMEOUT: Int = 60 * 1000
@@ -19,7 +19,7 @@ trait Scraper extends Log {
 
   def buildFullUrl(path: String): String = s"$protocol://$host$path"
 
-  def oldScrap(path: String): Future[Document] = {
+  def oldScrap(path: String): Future[Document] =
     val fullUrl = buildFullUrl(path)
     Future {
       val now = new Date().getTime
@@ -28,16 +28,14 @@ trait Scraper extends Log {
       log.info(s"scraping url $fullUrl done in ${new Date().getTime - now}ms !")
       doc
     }
-  }
 
-  def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
+  def scrap(path: String, followRedirect: Boolean = false): Future[Document] =
     val fullUrl = buildFullUrl(path)
-    val http = followRedirect match {
+    val http = followRedirect match
       case true =>
         val h = Http.withConfiguration(_ setFollowRedirect true)
         HttpClients.addClient(h)
       case _ => Http.default
-    }
 
     http {
       url(fullUrl) OK as.String
@@ -45,11 +43,10 @@ trait Scraper extends Log {
       log.info(s"scraping url $fullUrl done")
       Jsoup.parse
     }
-  }
 
   def get(path: String): Future[Array[Byte]] = download(buildFullUrl(path))
 
-  def download(fullUrl: String): Future[Array[Byte]] = {
+  def download(fullUrl: String): Future[Array[Byte]] =
     Http
       .default {
         url(fullUrl) OK as.Bytes
@@ -62,40 +59,30 @@ trait Scraper extends Log {
         log.warn(s"not found: [${e.getMessage}], $fullUrl")
         Array()
       }
-  }
-}
 
-trait MTGSalvationScraper extends Scraper {
+trait MTGSalvationScraper extends Scraper:
   override val host     = "mtgsalvation.gamepedia.com"
   override val protocol = "http"
-}
 
-trait GathererScraper extends Scraper {
+trait GathererScraper extends Scraper:
   override val host = "gatherer.wizards.com"
-}
 
-trait MtgJsonScraper extends Scraper {
+trait MtgJsonScraper extends Scraper:
   override val host = "mtgjson.com"
-}
 
-trait WikipediaScraper extends Scraper {
+trait WikipediaScraper extends Scraper:
   override val host = "en.wikipedia.org"
-}
 
-trait WizardsScraper extends Scraper {
+trait WizardsScraper extends Scraper:
   override val host = "magic.wizards.com"
-}
 
-object HttpClients {
+object HttpClients:
   private val list = mutable.Buffer[Http]()
 
-  def addClient(http: Http) = {
+  def addClient(http: Http) =
     list.append(http)
     http
-  }
 
-  def shutdown() = {
+  def shutdown() =
     list.foreach(_.shutdown())
     Http.default.shutdown()
-  }
-}

@@ -21,7 +21,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= List(specs2_core, specs2_junit).map(_ % Test),
     Compile / run / mainClass        := Some("fr.gstraymond.task.DEALTask"),
     Compile / packageBin / mainClass := Some("fr.gstraymond.task.DEALTask"),
-    scalacOptions ++= Seq("-new-syntax", "-rewrite")
+    scalacOptions ++= Seq("-indent", "-rewrite")
   )
   .dependsOn(macros)
 

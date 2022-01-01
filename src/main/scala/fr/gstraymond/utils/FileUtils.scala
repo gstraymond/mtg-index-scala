@@ -6,7 +6,7 @@ import java.io.File
 import java.io.PrintWriter
 import scala.util.Using
 
-object FileUtils {
+object FileUtils:
 
   private val mainPath = "/tmp/mtg-search"
 
@@ -17,4 +17,3 @@ object FileUtils {
     Using.resource(new PrintWriter(file)) {
       _.println(writeToString(a, WriterConfig.withIndentionStep(2)))
     }
-}

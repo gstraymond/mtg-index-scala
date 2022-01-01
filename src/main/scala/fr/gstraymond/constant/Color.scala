@@ -6,7 +6,7 @@ case class Color(
     colored: Boolean
 )
 
-object Color {
+object Color:
   val BLACK     = Color("B", "Black", colored = true)
   val BLUE      = Color("U", "Blue", colored = true)
   val GREEN     = Color("G", "Green", colored = true)
@@ -84,4 +84,3 @@ object Color {
     BG
   )
 
-}

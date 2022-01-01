@@ -2,7 +2,7 @@ package fr.gstraymond.parser.field
 
 import fr.gstraymond.constant.Land
 
-trait SpecialField {
+trait SpecialField:
 
   case class SpecialCard(title: String, `type`: String, description: Seq[String])
 
@@ -23,13 +23,12 @@ trait SpecialField {
     isManaRock _        -> Seq("Mana Rock")
   )
 
-  def _special(title: String, `type`: String, description: Seq[String]): Seq[String] = {
+  def _special(title: String, `type`: String, description: Seq[String]): Seq[String] =
     val card = SpecialCard(title, `type`, description)
     specialFilters.flatMap {
       case (filter, specials) if filter(card) => specials
       case _                                  => Seq.empty
     }.distinct
-  }
 
   private def isVanilla(card: SpecialCard) =
     card.`type`.contains("Creature") &&
@@ -108,8 +107,8 @@ trait SpecialField {
   )
 
   private def isLord(card: SpecialCard) =
-    card.`type`.contains("Creature — ") && {
-      val subTypes = card.`type`.toLowerCase.split(" — ")(1).split(" ")
+    card.`type`.contains("Creature ? ") && {
+      val subTypes = card.`type`.toLowerCase.split(" ? ")(1).split(" ")
       card.description.map(_.toLowerCase).exists { line =>
         subTypes.exists(line.contains) &&
         lordNonKeywords.forall(!line.contains(_)) &&
@@ -168,4 +167,3 @@ trait SpecialField {
       card.description.exists { line =>
         manaDork.exists(_.forall(line.contains))
       }
-}

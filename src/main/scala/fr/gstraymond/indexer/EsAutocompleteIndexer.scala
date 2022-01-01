@@ -9,7 +9,7 @@ import fr.gstraymond.model.MTGCard
 import java.nio.charset.Charset
 import scala.concurrent.Future
 
-object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
+object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
 
   override val index = "autocomplete"
 
@@ -34,7 +34,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
       }
       .mkString("\n") + "\n"
 
-  private def extractTokens(cards: Seq[MTGCard]): Seq[Autocomplete] = {
+  private def extractTokens(cards: Seq[MTGCard]): Seq[Autocomplete] =
     val tokenOccurrences =
       cards
         .flatMap(c => c.description.toLowerCase.split(" ") ++ c.`type`.toLowerCase.split(" "))
@@ -73,9 +73,8 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
       .filter(_._2 > 5)
       .toSeq
       .map { case (input, weight) => Autocomplete(Suggest(input, Some(weight))) }
-  }
 
-  private def extractEditions(cards: Seq[MTGCard]): Seq[Autocomplete] = {
+  private def extractEditions(cards: Seq[MTGCard]): Seq[Autocomplete] =
     (for
       card <- cards
       pub  <- card.publications
@@ -86,15 +85,13 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
         case (edition, Some(stdCode)) => Autocomplete(Suggest(edition, Some(2)), stdEditionCode = Some(stdCode))
         case (edition, _)             => Autocomplete(Suggest(edition, Some(2)))
       }
-  }
 
-  private def extractSpecials(cards: Seq[MTGCard]): Seq[Autocomplete] = {
+  private def extractSpecials(cards: Seq[MTGCard]): Seq[Autocomplete] =
     cards.flatMap(_.special).groupBy(_.toLowerCase).view.mapValues(_.size).toSeq.map { case (input, weight) =>
       Autocomplete(Suggest(input, Some(weight)))
     }
-  }
 
-  private def indexSuggest(`type`: String, autocompletes: Seq[Autocomplete]): Future[Unit] = {
+  private def indexSuggest(`type`: String, autocompletes: Seq[Autocomplete]): Future[Unit] =
     val body = autocompletes
       .flatMap { autocomplete =>
         val indexJson =
@@ -115,5 +112,3 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
       .map { _ =>
         log.info(s"processed: ${autocompletes.size} ${`type`}")
       }
-  }
-}

@@ -4,11 +4,11 @@ import org.jsoup.nodes.Document
 
 import scala.jdk.CollectionConverters._
 
-object ExtendedFormatScrap extends FormatScrap {
+object ExtendedFormatScrap extends FormatScrap:
   override val name = "extended"
   override val path = "/Extended"
 
-  override def bannedCards(doc: Document): Seq[String] = {
+  override def bannedCards(doc: Document): Seq[String] =
     doc
       .select("ul")
       .asScala
@@ -18,9 +18,8 @@ object ExtendedFormatScrap extends FormatScrap {
       .asScala
       .map(_.text())
       .toSeq
-  }
 
-  override def currentRotation(doc: Document): Seq[String] = {
+  override def currentRotation(doc: Document): Seq[String] =
     doc
       .select("table.wikitable")
       .asScala
@@ -30,5 +29,3 @@ object ExtendedFormatScrap extends FormatScrap {
       .filter(_.select("td").asScala.nonEmpty)
       .map(_.select("td").asScala.head.text())
       .toSeq
-  }
-}
