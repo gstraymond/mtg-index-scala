@@ -29,4 +29,4 @@ ansible-playbook playbook.yml -i hosts.ini
 
 # Release
 
-Bump version, `./gradlew distZip` and create release on github 
+Bump version, `sbt dist` and create release on github 

@@ -42,9 +42,8 @@ object AllPricesScrapTask extends Task[Unit]:
 object AllSetConvertTask extends Task[Seq[MTGCard]]:
   override def process: Future[Seq[MTGCard]] =
     for
-      prices    <- AllPricesScraper.scrap
       abilities <- AbilityScraper.scrap
-      mtgCards  <- AllSetConverter.convert(loadAllSet, abilities, prices)
+      mtgCards  <- AllSetConverter.convert(loadAllSet, abilities, loadAllPrices)
       _         <- EditionPictureDownloader.download(mtgCards)
       _         <- CardPictureDownloader.download(mtgCards)
       _         <- EsCardIndexer.delete()
@@ -56,7 +55,7 @@ object AllSetConvertTask extends Task[Seq[MTGCard]]:
     yield
       storeMTGCards(mtgCards)
 
-object DEALTask extends Task[Unit]:
+object MtgIndexScala extends Task[Unit]:
   override def process: Future[Unit] =
     for
       allPrices <- AllPricesScraper.scrap

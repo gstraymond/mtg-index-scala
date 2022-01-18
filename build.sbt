@@ -1,7 +1,7 @@
 import Dependencies._
 
 ThisBuild / scalaVersion                 := "3.1.0"
-ThisBuild / version                      := "1"
+ThisBuild / version                      := "2"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
 ThisBuild / packageDoc / publishArtifact := false
@@ -19,8 +19,8 @@ lazy val root = (project in file("."))
       dispatch
     ),
     libraryDependencies ++= List(specs2_core, specs2_junit).map(_ % Test),
-    Compile / run / mainClass        := Some("fr.gstraymond.task.DEALTask"),
-    Compile / packageBin / mainClass := Some("fr.gstraymond.task.DEALTask"),
+    Compile / run / mainClass        := Some("fr.gstraymond.task.MtgIndexScala"),
+    Compile / packageBin / mainClass := Some("fr.gstraymond.task.MtgIndexScala"),
     scalacOptions ++= Seq("-indent", "-rewrite")
   )
   .dependsOn(macros)

@@ -158,6 +158,7 @@ object AllSetConverter
         colors = _colors(castingCost, hints, firstCard.colors),
         dualColors = _dualColors(castingCost, firstCard.colors),
         tripleColors = _tripleColors(castingCost, firstCard.colors),
+        quadColors = _quadColors(castingCost, firstCard.colors),
         convertedManaCost = firstCard.convertedManaCost.map(_.toInt).getOrElse(0),
         `type` = firstCard.`type`,
         description = firstCard.text.getOrElse(""),
@@ -166,6 +167,8 @@ object AllSetConverter
         editions = editions.map(_.name).distinct,
         rarities = rarities,
         priceRanges = _priceRanges(cardPrices),
+        minPaperPriceRange = _minPaperPriceRange(cardPrices),
+        minMtgoPriceRange = _minMtgoPriceRange(cardPrices),
         publications = groupedCardsSorted.map { case (card, edition) =>
           val rarity      = card.rarity.replace("timeshifted ", "")
           val rarityCode  = rarity.head.toString.toUpperCase
