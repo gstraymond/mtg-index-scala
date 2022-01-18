@@ -52,8 +52,12 @@ object AllSetConvertTask extends Task[Seq[MTGCard]]:
       _         <- EsAutocompleteIndexer.delete()
       _         <- EsAutocompleteIndexer.configure()
       _         <- EsAutocompleteIndexer.index(mtgCards)
-    yield
-      storeMTGCards(mtgCards)
+      rawRules  <- RulesScraper.scrap
+      rules = (RulesParser.parse _).tupled(rawRules)
+      _ <- EsRulesIndexer.delete()
+      _ <- EsRulesIndexer.configure()
+      _ <- EsRulesIndexer.index(Seq(rules))
+    yield storeMTGCards(mtgCards)
 
 object MtgIndexScala extends Task[Unit]:
   override def process: Future[Unit] =
