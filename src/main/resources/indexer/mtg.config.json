@@ -55,6 +55,14 @@
           }
         }
       },
+      "quadColors": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
       "editions": {
         "type": "text",
         "fields": {
@@ -72,6 +80,22 @@
         }
       },
       "priceRanges": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "minPaperPriceRange": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "minMtgoPriceRange": {
         "type": "text",
         "fields": {
           "exact": {
