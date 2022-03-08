@@ -152,7 +152,7 @@ object AllSetConverter
 
       MTGCard(
         title = title,
-        altTitles = firstCard.names.map(_.filterNot(_ == title)).getOrElse(Seq.empty),
+        altTitles = firstCard.name.split(" // ").filterNot(_ == title).toSeq,
         frenchTitle = cards.flatMap(_.foreignData).flatten.find(_.language == "French").flatMap(_.name),
         castingCost = castingCost,
         colors = _colors(castingCost, hints, firstCard.colors),

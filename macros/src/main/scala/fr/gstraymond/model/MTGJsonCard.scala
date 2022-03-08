@@ -22,7 +22,6 @@ case class MTGJsonCard(
     layout: String,
     name: String,
     faceName: Option[String],
-    names: Option[Seq[String]],
     manaCost: Option[String],
     convertedManaCost: Option[Double],
     colors: Option[Seq[String]],
