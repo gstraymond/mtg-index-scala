@@ -3,6 +3,10 @@ package fr.gstraymond.scraper
 import dispatch.Defaults._
 import dispatch._
 import fr.gstraymond.utils.Log
+import io.netty.handler.ssl.SslContextBuilder
+import io.netty.handler.ssl.SslProvider
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory
+import org.asynchttpclient.DefaultAsyncHttpClientConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -44,13 +48,22 @@ trait Scraper extends Log:
       Jsoup.parse
     }
 
-  def get(path: String): Future[Array[Byte]] = download(buildFullUrl(path))
+  def get(path: String, disableSslValidation: Boolean = false): Future[Array[Byte]] = 
+    download(buildFullUrl(path), disableSslValidation)
 
-  def download(fullUrl: String): Future[Array[Byte]] =
-    Http
-      .default {
-        url(fullUrl) OK as.Bytes
-      }
+  private val insecureSslContext = SslContextBuilder
+    .forClient()
+    .sslProvider(SslProvider.JDK)
+    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+    .build()
+
+  def download(fullUrl: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
+    (disableSslValidation match {
+      case true  => Http.withConfiguration(_.setSslContext(insecureSslContext))
+      case false => Http.default
+    }) {
+      url(fullUrl) OK as.Bytes
+    }
       .map { bytes =>
         log.info(s"scraping url $fullUrl done")
         bytes
