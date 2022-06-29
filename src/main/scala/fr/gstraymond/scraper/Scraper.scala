@@ -21,6 +21,18 @@ trait Scraper extends Log:
 
   val protocol = "https"
 
+  private val insecureSslContext = SslContextBuilder
+    .forClient()
+    .sslProvider(SslProvider.JDK)
+    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+    .build()
+
+  private val defaultHttp = Http.default
+
+  private val insecureHttp = Http.withConfiguration(_ setSslContext insecureSslContext)
+
+  private val followRedirectHttp = Http.withConfiguration(_ setFollowRedirect true)
+
   def buildFullUrl(path: String): String = s"$protocol://$host$path"
 
   def oldScrap(path: String): Future[Document] =
@@ -35,32 +47,24 @@ trait Scraper extends Log:
 
   def scrap(path: String, followRedirect: Boolean = false): Future[Document] =
     val fullUrl = buildFullUrl(path)
-    val http = followRedirect match
-      case true =>
-        val h = Http.withConfiguration(_ setFollowRedirect true)
-        HttpClients.addClient(h)
-      case _ => Http.default
 
-    http {
+    (followRedirect match
+      case true => followRedirectHttp
+      case _    => defaultHttp
+    ) {
       url(fullUrl) OK as.String
     }.map {
       log.info(s"scraping url $fullUrl done")
       Jsoup.parse
     }
 
-  def get(path: String, disableSslValidation: Boolean = false): Future[Array[Byte]] = 
+  def get(path: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
     download(buildFullUrl(path), disableSslValidation)
-
-  private val insecureSslContext = SslContextBuilder
-    .forClient()
-    .sslProvider(SslProvider.JDK)
-    .trustManager(InsecureTrustManagerFactory.INSTANCE)
-    .build()
 
   def download(fullUrl: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
     (disableSslValidation match {
-      case true  => Http.withConfiguration(_.setSslContext(insecureSslContext))
-      case false => Http.default
+      case true  => insecureHttp
+      case false => defaultHttp
     }) {
       url(fullUrl) OK as.Bytes
     }
@@ -90,12 +94,5 @@ trait WizardsScraper extends Scraper:
   override val host = "magic.wizards.com"
 
 object HttpClients:
-  private val list = mutable.Buffer[Http]()
-
-  def addClient(http: Http) =
-    list.append(http)
-    http
-
   def shutdown() =
-    list.foreach(_.shutdown())
     Http.default.shutdown()
