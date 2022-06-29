@@ -21,18 +21,6 @@ trait Scraper extends Log:
 
   val protocol = "https"
 
-  private val insecureSslContext = SslContextBuilder
-    .forClient()
-    .sslProvider(SslProvider.JDK)
-    .trustManager(InsecureTrustManagerFactory.INSTANCE)
-    .build()
-
-  private val defaultHttp = Http.default
-
-  private val insecureHttp = Http.withConfiguration(_ setSslContext insecureSslContext)
-
-  private val followRedirectHttp = Http.withConfiguration(_ setFollowRedirect true)
-
   def buildFullUrl(path: String): String = s"$protocol://$host$path"
 
   def oldScrap(path: String): Future[Document] =
@@ -49,8 +37,8 @@ trait Scraper extends Log:
     val fullUrl = buildFullUrl(path)
 
     (followRedirect match
-      case true => followRedirectHttp
-      case _    => defaultHttp
+      case true => HttpClients.followRedirectHttp
+      case _    => HttpClients.defaultHttp
     ) {
       url(fullUrl) OK as.String
     }.map {
@@ -63,8 +51,8 @@ trait Scraper extends Log:
 
   def download(fullUrl: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
     (disableSslValidation match {
-      case true  => insecureHttp
-      case false => defaultHttp
+      case true  => HttpClients.insecureHttp
+      case false => HttpClients.defaultHttp
     }) {
       url(fullUrl) OK as.Bytes
     }
@@ -93,6 +81,22 @@ trait WikipediaScraper extends Scraper:
 trait WizardsScraper extends Scraper:
   override val host = "magic.wizards.com"
 
-object HttpClients:
+object HttpClients extends Log:
+  private val insecureSslContext = SslContextBuilder
+    .forClient()
+    .sslProvider(SslProvider.JDK)
+    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+    .build()
+
+  val defaultHttp = Http.default
+  val insecureHttp = Http.withConfiguration(_ setSslContext insecureSslContext)
+  val followRedirectHttp = Http.withConfiguration(_ setFollowRedirect true)
+
   def shutdown() =
-    Http.default.shutdown()
+    log.info(s"Shutdown...")
+
+    defaultHttp.shutdown()
+    insecureHttp.shutdown()
+    followRedirectHttp.shutdown()
+    
+    log.info(s"Shutdown... terminated")
