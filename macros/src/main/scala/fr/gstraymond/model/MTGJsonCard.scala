@@ -40,7 +40,8 @@ case class MTGJsonCard(
     identifiers: MTGJsonIdentifiers,
     foreignData: Option[Seq[MTGJsonForeignData]],
     legalities: Option[Map[String, String]],
-    rulings: Option[Seq[MTGJsonRuling]]
+    rulings: Option[Seq[MTGJsonRuling]],
+    isRebalanced: Option[Boolean]
 )
 
 case class MTGJsonIdentifiers(multiverseId: Option[String])

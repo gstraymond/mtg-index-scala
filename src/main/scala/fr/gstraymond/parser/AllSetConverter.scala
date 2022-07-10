@@ -202,7 +202,11 @@ object AllSetConverter
           )
         },
         abilities = _abilities(title, description, abilities),
-        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions),
+        formats = _formats(
+          cards.head.legalities.map(processLegalities).getOrElse(Seq.empty),
+          editions,
+          cards.flatMap(_.isRebalanced)
+        ),
         artists = cards.flatMap(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,
@@ -227,8 +231,7 @@ object AllSetConverter
     else cardPrice.flatMap(_.normal)
 
   private def processLegalities(data: Map[String, String]): Seq[MTGJsonLegality] =
-    data.toSeq
-      .map { case (format, legality) => MTGJsonLegality(format, legality) }
+    data.toSeq.map(MTGJsonLegality(_, _))
 
   val gathererMap: Map[String, String] = Map(
     "2ED" -> "2U",

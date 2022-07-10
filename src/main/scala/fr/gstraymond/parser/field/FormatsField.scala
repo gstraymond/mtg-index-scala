@@ -18,7 +18,7 @@ trait FormatsField:
     "penny"
   )
 
-  def _formats(formats: Seq[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] =
+  def _formats(formats: Seq[MTGJsonLegality], editions: Seq[MTGJsonEdition], isRebalanced: Seq[Boolean]): Seq[String] =
 
     val legalities =
       formats
@@ -42,4 +42,7 @@ trait FormatsField:
     //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
     //    }.map(_.name)
 
-    (legalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).distinct
+    if (isRebalanced.contains(true))
+      Seq("Alchemy")
+    else 
+      (legalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).distinct
