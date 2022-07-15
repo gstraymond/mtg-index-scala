@@ -123,7 +123,6 @@ object AllSetConverter
 
     val allCards = loadAllSet.values
       .filter(_.releaseDate.exists(LocalDate.parse(_).isBefore(nextWeek)))
-      .filterNot(_.isOnlineOnly.getOrElse(false))
       .flatMap(edition => edition.cards.map(_ -> edition.copy(cards = Nil)))
       .groupBy { case (card, _) => (card.faceName.getOrElse(card.name), card.manaCost, card.`type`) }
       .values
