@@ -201,7 +201,7 @@ object AllSetConverter
           )
         },
         abilities = _abilities(title, description, abilities),
-        formats = _formats(cards.head.legalities.map(processLegalities).getOrElse(Seq.empty), editions),
+        formats = _formats(cards.flatMap(_.legalities.map(processLegalities).getOrElse(Nil)).toSet, editions),
         artists = cards.flatMap(_.artist).distinct,
         devotions = _devotions(Some(firstCard.`type`), castingCost),
         blocks = editions.flatMap(_.block).distinct,

@@ -20,7 +20,7 @@ trait FormatsField:
     "historic"
   )
 
-  def _formats(formats: Seq[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] =
+  def _formats(formats: Set[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] =
 
     val legalities =
       formats
@@ -35,7 +35,7 @@ trait FormatsField:
         formats.contains(MTGJsonLegality("future", "Legal")) &&
         editions.forall(_.releaseDate.exists(LocalDate.parse(_).isBefore(LocalDate.now)))
       then
-        if formats.length == 1 then Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
+        if formats.size == 1 then Seq("Vintage", "Commander", "Legacy", "Modern", "Pioneer", "Standard")
         else Seq("Standard")
       else Nil
 
@@ -44,4 +44,4 @@ trait FormatsField:
     //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
     //    }.map(_.name)
 
-    (legalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).distinct
+    (legalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).toList
