@@ -8,16 +8,17 @@ import java.time.LocalDate
 trait FormatsField:
 
   private val includedFormats = Set(
-    "vintage",
+    "alchemy",
     "commander",
+    "duel",
+    "historic",
     "legacy",
     "modern",
     "pauper",
+    "penny",
     "pioneer",
     "standard",
-    "penny",
-    "alchemy",
-    "historic"
+    "vintage"
   )
 
   def _formats(formats: Set[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] =
@@ -44,4 +45,9 @@ trait FormatsField:
     //      format.availableSets.isEmpty || format.availableSets.exists(editions.contains)
     //    }.map(_.name)
 
-    (legalities.map(_.format.capitalize) ++ restricted.toSeq.map(_.legality) ++ future).toList
+    (legalities.map {
+      case MTGJsonLegality("duel", _) => "Duel Commander"
+      case MTGJsonLegality(format, _) => format.capitalize
+    } ++
+      restricted.toSeq.map(_.legality) ++
+      future).toList
