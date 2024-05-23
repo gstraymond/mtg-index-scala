@@ -14,7 +14,8 @@ object AllSetScraper extends MtgJsonScraper:
   def scrap: Future[Unit] =
     get(path).map { bytes =>
       val dir = new File(FileUtils.scrapPath)
-      if !dir.exists() then dir.mkdirs()
+      if !dir.exists() then 
+        val _ = dir.mkdirs()
       ZipUtils.unZip(bytes, FileUtils.scrapPath)
       ()
     }

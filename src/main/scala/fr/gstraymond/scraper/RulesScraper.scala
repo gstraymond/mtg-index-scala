@@ -1,6 +1,5 @@
 package fr.gstraymond.scraper
 
-import dispatch.UriEncode
 import fr.gstraymond.utils.Log
 
 import java.net.URLDecoder

@@ -44,7 +44,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
         .filterNot(_.exists(_.isDigit))
         .filterNot(_.endsWith("'t"))
         .filterNot(_.contains("/"))
-        .map {
+        .map:
           _.replace(",", "")
             .replace(".", "")
             .replace(":", "")
@@ -54,7 +54,6 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
             .replace("'s", "")
             .replace("'", "")
             .replace(";", "")
-        }
         .filter(_.length > 3)
         .groupBy(a => a)
         .view
@@ -62,10 +61,10 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
 
     tokenOccurrences.toSeq
       .foldLeft(Seq[(String, Int)]()) { case (acc, (k, v)) =>
-        acc ++ {
+        acc ++ (
           if k.endsWith("s") && tokenOccurrences.contains(k.dropRight(1)) then Seq(k.dropRight(1) -> v)
           else Seq(k                                                                              -> v)
-        }
+        )
       }
       .groupBy(_._1)
       .view
@@ -81,10 +80,9 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
     yield {
       pub.edition -> pub.stdEditionCode
     }).distinct
-      .map {
+      .map:
         case (edition, Some(stdCode)) => Autocomplete(Suggest(edition, Some(2)), stdEditionCode = Some(stdCode))
         case (edition, _)             => Autocomplete(Suggest(edition, Some(2)))
-      }
 
   private def extractSpecials(cards: Seq[MTGCard]): Seq[Autocomplete] =
     cards.flatMap(_.special).groupBy(_.toLowerCase).view.mapValues(_.size).toSeq.map { case (input, weight) =>
@@ -102,13 +100,12 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
       .mkString("\n") + "\n"
 
     Http
-      .default {
+      .default:
         url(bulkPath).POST
           .setContentType(
             "application/json",
             Charset.forName("utf-8")
           ) << body OK as.String
-      }
       .map { _ =>
         log.info(s"processed: ${autocompletes.size} ${`type`}")
       }

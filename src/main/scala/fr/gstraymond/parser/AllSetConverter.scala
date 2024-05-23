@@ -116,7 +116,7 @@ object AllSetConverter
       loadAllSet: Map[String, MTGJsonEdition],
       abilities: Seq[String],
       prices: Seq[CardPrice]
-  ): Future[Seq[MTGCard]] = Future.successful {
+  ): Future[Seq[MTGCard]] = Future.successful:
     val groupedPrices = prices.groupBy(_.uuid).view.mapValues(_.head).toMap
 
     val nextWeek = LocalDate.now().plusWeeks(1)
@@ -135,14 +135,13 @@ object AllSetConverter
       val editions   = groupedCardsSorted.map(_._2)
       val firstCard  = cards.head
       val cardPrices = cards.map(_.uuid).flatMap(groupedPrices.get(_))
-      val castingCost = firstCard.manaCost.map {
+      val castingCost = firstCard.manaCost.map:
         _.replace("}{", " ")
           .replace("{", "")
           .replace("}", "")
           .replace("2/", "2#")
           .replace("/", "")
           .replace("2#", "2/")
-      }
       val description = firstCard.text.map(_.split("\n").toSeq).getOrElse(Seq.empty)
       val hints       = _hiddenHints(description)
       val title       = firstCard.faceName.getOrElse(firstCard.name)
@@ -216,9 +215,8 @@ object AllSetConverter
     log.info(s"cards total before: ${allCards.size} / after ${result.size}")
 
     result
-  }
 
-  implicit val ord: Ordering[LocalDate] = _ compareTo _
+  implicit val ord: Ordering[LocalDate] = _.compareTo(_)
 
   private def computePrices(price: Option[CardPrice], foil: Boolean = false, online: Boolean = false) =
     val cardPrice = if online then price.flatMap(_.online) else price.flatMap(_.paper)

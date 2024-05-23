@@ -5,8 +5,6 @@ import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.rules.model.RuleFormats._
 import fr.gstraymond.rules.model.Rules
 
-import scala.annotation.nowarn
-
 object EsRulesIndexer extends EsIndexer[Rules]:
 
   override val index = "mtg-rules"

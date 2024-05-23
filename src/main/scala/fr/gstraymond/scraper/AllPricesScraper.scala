@@ -14,20 +14,20 @@ object AllPricesScraper extends MtgJsonScraper:
 
   val path = "/api/v5/AllPrices.json"
 
-  def scrap: Future[Seq[CardPrice]] = Future {
+  def scrap: Future[Seq[CardPrice]] = Future:
     new File(FileUtils.scrapPath).mkdirs()
 
     val command = s"curl '${buildFullUrl(path)}'" #> new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
 
     println(s"""command: $command""")
-    command.!
+    val _ = command.!
 
     val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| "jq -c --stream ." #> new File(
       s"${FileUtils.scrapPath}/AllPrices.stream.json"
     )
 
     println(s"""command2: $command2""")
-    command2.!
+    val _ = command2.!
 
     var currentCardPrice: Option[CardPrice] = None
     val cardPrices                          = scala.collection.mutable.ListBuffer.empty[CardPrice]
@@ -63,15 +63,13 @@ object AllPricesScraper extends MtgJsonScraper:
           if Some(uuid) != currentCardPrice.map(_.uuid) then
             currentCardPrice.foreach(cardPrices.addOne)
             currentCardPrice = Some(cp)
-          else
-            currentCardPrice = Some(mergeCP(currentCardPrice.get, cp))
+          else currentCardPrice = Some(mergeCP(currentCardPrice.get, cp))
         }
       }
 
     currentCardPrice.foreach(cardPrices.addOne)
 
     cardPrices.toSeq
-  }
 
   private def mergeCP(cp1: CardPrice, cp2: CardPrice): CardPrice =
     val paper  = mergeP(cp1.paper, cp2.paper)

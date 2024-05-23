@@ -7,20 +7,20 @@ trait LandField:
   case class LandCard(`type`: String, description: Seq[String])
 
   private val landFilters: Seq[(LandCard => Boolean, Seq[String])] = Seq(
-    countLandTypes(2) _   -> Seq("Dual Land", "Dual Basic Land"),
-    countLandColors(2) _  -> Seq("Dual Land"),
-    countLandColors(3) _  -> Seq("Triple Land"),
-    isFetchLand _         -> Seq("Fetch land"),
-    isManLand _           -> Seq("Man land"),
-    canLandProduce("B") _ -> Seq("Produce Black Mana"),
-    canLandProduce("U") _ -> Seq("Produce Blue Mana"),
-    canLandProduce("R") _ -> Seq("Produce Red Mana"),
-    canLandProduce("G") _ -> Seq("Produce Green Mana"),
-    canLandProduce("W") _ -> Seq("Produce White Mana"),
-    canLandProduce("C") _ -> Seq("Produce Colorless Mana")
+    countLandTypes(2)   -> Seq("Dual Land", "Dual Basic Land"),
+    countLandColors(2)  -> Seq("Dual Land"),
+    countLandColors(3)  -> Seq("Triple Land"),
+    isFetchLand         -> Seq("Fetch land"),
+    isManLand           -> Seq("Man land"),
+    canLandProduce("B") -> Seq("Produce Black Mana"),
+    canLandProduce("U") -> Seq("Produce Blue Mana"),
+    canLandProduce("R") -> Seq("Produce Red Mana"),
+    canLandProduce("G") -> Seq("Produce Green Mana"),
+    canLandProduce("W") -> Seq("Produce White Mana"),
+    canLandProduce("C") -> Seq("Produce Colorless Mana")
   )
 
-  def _land(`type`: String, description: Seq[String]) =
+  def _land(`type`: String, description: Seq[String]): Seq[String] =
     val card = LandCard(`type`, description)
     if isLand(card) then
       landFilters

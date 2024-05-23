@@ -21,4 +21,3 @@ trait FormatScrap:
       val result = doc.select(cssPath).asScala.map(_.text())
       assert(result.nonEmpty, s"no result for $name [$cssPath]")
       result.toSeq
-

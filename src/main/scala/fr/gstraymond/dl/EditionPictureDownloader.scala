@@ -14,7 +14,7 @@ object EditionPictureDownloader extends GathererScraper:
   val path = "/Handlers/Image.ashx?type=symbol&set={SET}&size={SIZE}&rarity={RARITY}"
 
   def download(cards: Seq[MTGCard]): Future[Unit] = Future
-    .sequence {
+    .sequence:
       val tuples = cards.flatMap {
         _.publications.flatMap { pub =>
           pub.stdEditionCode -> pub.rarityCode match
@@ -30,28 +30,25 @@ object EditionPictureDownloader extends GathererScraper:
           val file = new File(s"${URIs.pictureLocation}/sets/$edition/$rarity.gif")
 
           if !file.exists() then
-            getBytes(edition, rarity).map {
+            getBytes(edition, rarity).map:
               case Array() => ()
               case bytes =>
                 log.info(s"picture DLed: $edition-$rarity")
-                if !file.getParentFile.exists() then file.getParentFile.mkdirs()
+                if !file.getParentFile.exists() then 
+                  val _ = file.getParentFile.mkdirs()
                 val fos = new FileOutputStream(file)
                 fos.write(bytes)
                 fos.close()
-            }
-          else
-            Future.successful(())
+          else Future.successful(())
         }
       }
-    }
     .map(_ => ())
 
   private def getBytes(edition: String, rarity: String): Future[Array[Byte]] =
-    get(buildUrl(edition, rarity, "large"), disableSslValidation = true).flatMap {
+    get(buildUrl(edition, rarity, "large"), disableSslValidation = true).flatMap:
       case Array() if rarity == "S" => get(buildUrl(edition, "R", "large"), disableSslValidation = true)
       case Array()                  => get(buildUrl(edition, rarity, "small"), disableSslValidation = true)
       case bytes                    => Future.successful(bytes)
-    }
 
   private def buildUrl(edition: String, rarity: String, size: String): String =
     path.replace("{SET}", edition).replace("{RARITY}", rarity).replace("{SIZE}", size) // small

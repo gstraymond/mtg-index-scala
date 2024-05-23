@@ -9,6 +9,6 @@ object Dependencies {
   lazy val jsoniter_core   = "com.github.plokhotnyuk.jsoniter-scala" % "jsoniter-scala-core_2.13"   % "2.6.4"
   lazy val jsoniter_macros = "com.github.plokhotnyuk.jsoniter-scala" % "jsoniter-scala-macros_2.13" % "2.6.4"
 
-  lazy val specs2_core  = "org.specs2" % "specs2-core_2.13"  % "4.13.1"
-  lazy val specs2_junit = "org.specs2" % "specs2-junit_2.13" % "4.13.1"
+  lazy val specs2_core  = "org.specs2" % "specs2-core_2.13"  % "4.20.6"
+  lazy val specs2_junit = "org.specs2" % "specs2-junit_2.13" % "4.20.6"
 }

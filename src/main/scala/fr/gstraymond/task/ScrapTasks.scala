@@ -24,8 +24,8 @@ object EditionPictureDLTask extends Task[Unit]:
   override def process: Future[Unit] = EditionPictureDownloader.download(loadMTGCards)
 
 object RulesScrapTask extends Task[Rules]:
-  override def process: Future[Rules] = RulesScraper.scrap.map((RulesParser.parse _).tupled).map { rules =>
-    storeRules(rules)
+  override def process: Future[Rules] = RulesScraper.scrap.map(RulesParser.parse.tupled).map { rules =>
+    val _ = storeRules(rules)
     rules
   }
 
@@ -53,7 +53,7 @@ object AllSetConvertTask extends Task[Seq[MTGCard]]:
       _         <- EsAutocompleteIndexer.configure()
       _         <- EsAutocompleteIndexer.index(mtgCards)
       rawRules  <- RulesScraper.scrap
-      rules = (RulesParser.parse _).tupled(rawRules)
+      rules = RulesParser.parse.tupled(rawRules)
       _ <- EsRulesIndexer.delete()
       _ <- EsRulesIndexer.configure()
       _ <- EsRulesIndexer.index(Seq(rules))
@@ -75,7 +75,7 @@ object MtgIndexScala extends Task[Unit]:
       _         <- EsAutocompleteIndexer.configure()
       _         <- EsAutocompleteIndexer.index(mtgCards)
       rawRules  <- RulesScraper.scrap
-      rules = (RulesParser.parse _).tupled(rawRules)
+      rules = RulesParser.parse.tupled(rawRules)
       _ <- EsRulesIndexer.delete()
       _ <- EsRulesIndexer.configure()
       _ <- EsRulesIndexer.index(Seq(rules))

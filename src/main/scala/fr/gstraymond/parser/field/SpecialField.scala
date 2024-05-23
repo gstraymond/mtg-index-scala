@@ -9,18 +9,18 @@ trait SpecialField:
   // http://mtgsalvation.gamepedia.com/Mill
 
   private val specialFilters: Seq[(SpecialCard => Boolean, Seq[String])] = Seq(
-    isVanilla _         -> Seq("Vanilla"),
-    isPower9 _          -> Seq("Power 9"),
-    isTuck _            -> Seq("Tuck"),
-    isTutor _           -> Seq("Tutor"),
-    isUncounterable _   -> Seq("Uncounterable"),
-    isVenom _           -> Seq("Venom"),
-    isLandDestruction _ -> Seq("Land Destruction"),
-    isLord _            -> Seq("Lord"),
-    isWrathEffect _     -> Seq("Wrath Effect"),
-    isMill _            -> Seq("Mill"),
-    isManaDork _        -> Seq("Mana Dork"),
-    isManaRock _        -> Seq("Mana Rock")
+    isVanilla         -> Seq("Vanilla"),
+    isPower9          -> Seq("Power 9"),
+    isTuck            -> Seq("Tuck"),
+    isTutor           -> Seq("Tutor"),
+    isUncounterable   -> Seq("Uncounterable"),
+    isVenom           -> Seq("Venom"),
+    isLandDestruction -> Seq("Land Destruction"),
+    isLord            -> Seq("Lord"),
+    isWrathEffect     -> Seq("Wrath Effect"),
+    isMill            -> Seq("Mill"),
+    isManaDork        -> Seq("Mana Dork"),
+    isManaRock        -> Seq("Mana Rock")
   )
 
   def _special(title: String, `type`: String, description: Seq[String]): Seq[String] =
@@ -68,9 +68,8 @@ trait SpecialField:
   private val uncounterableKeywords = "can't be countered"
 
   private def isUncounterable(card: SpecialCard) =
-    card.description.exists {
+    card.description.exists:
       _.contains(uncounterableKeywords)
-    }
 
   private val venomKeywords = Seq(
     Seq("blocks or becomes blocked by ", "destroy"),
@@ -107,14 +106,13 @@ trait SpecialField:
   )
 
   private def isLord(card: SpecialCard) =
-    card.`type`.contains("Creature ? ") && {
-      val subTypes = card.`type`.toLowerCase.split(" ? ")(1).split(" ")
+    card.`type`.contains("Creature ? ") `&&`:
+      val subTypes = card.`type`.toLowerCase.split(" ? ")(1).split(" ");
       card.description.map(_.toLowerCase).exists { line =>
         subTypes.exists(line.contains) &&
         lordNonKeywords.forall(!line.contains(_)) &&
         lordKeywords.exists(_.forall(line.contains))
       }
-    }
 
   private val wrathEffectKeywords = Seq(
     Seq("Destroy all ", " lands "),

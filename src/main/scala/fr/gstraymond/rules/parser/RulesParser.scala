@@ -15,11 +15,12 @@ object RulesParser extends Log:
       index -> prevEmpty
     }.toMap
 
-    val nonEmptyLines = lines.filter(_.nonEmpty).map {
-      case "Glossary" => "10. Glossary"
-      case "Credits"  => "11. Credits"
-      case l          => l
-    }
+    val nonEmptyLines = lines
+      .filter(_.nonEmpty)
+      .map:
+        case "Glossary" => "10. Glossary"
+        case "Credits"  => "11. Credits"
+        case l          => l
     val titleIndex        = 0
     val introductionIndex = nonEmptyLines.indexOf("Introduction")
     val contentsIndex     = nonEmptyLines.indexOf("Contents")
@@ -31,21 +32,19 @@ object RulesParser extends Log:
 
     def parseLevel(maybeId: Option[String], position: Int): Int =
       maybeId
-        .map {
+        .map:
           case id if id.contains(".") && id.exists(_.isLetter) => 4
           case id if id.contains(".")                          => 3
           case id if id.length == 3                            => 2
           case _                                               => 1
-        }
-        .getOrElse {
+        .getOrElse:
           position match
             case `titleIndex`        => 1
             case `introductionIndex` => 1
             case `contentsIndex`     => 1
             case _                   => 4
-        }
 
-    val rules = nonEmptyLines.zipWithIndex.map {
+    val rules = nonEmptyLines.zipWithIndex.map:
       case (line, index) if line.head.isDigit && !glossaryRange.contains(index) =>
         val split = line.split(" ", 2)
         val id = split.head match
@@ -60,7 +59,6 @@ object RulesParser extends Log:
           val level = if emptyMap(index) then 2 else 4
           Rule(id = None, text = line, links = Nil, level)
         else Rule(id = None, text = line, links = Nil, parseLevel(None, index))
-    }
 
     val ids = rules.flatMap(_.id).filter(_.length > 2).sortBy(-_.length).map(_.r)
 
@@ -77,8 +75,7 @@ object RulesParser extends Log:
             }
           acc.copy(links = acc.links ++ links)
         }
-      else
-        rule
+      else rule
     }
 
     Rules(filename, rules1)

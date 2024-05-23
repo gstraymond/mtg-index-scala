@@ -10,14 +10,14 @@ import scala.concurrent.Future
 object FormatScraper extends MTGSalvationScraper with Log:
 
   val scrapers: Seq[FormatScrap] = Seq(
-    //StandardFormatScrap,
-    //ExtendedFormatScrap,
-    //ModernFormatScrap,
-    //LegacyFormatScrap,
-    //CommanderFormatScrap,
-    //PauperFormatScrap,
-    //VintageFormatScrap,
-    //VintageRestrictedFormatScrap
+    // StandardFormatScrap,
+    // ExtendedFormatScrap,
+    // ModernFormatScrap,
+    // LegacyFormatScrap,
+    // CommanderFormatScrap,
+    // PauperFormatScrap,
+    // VintageFormatScrap,
+    // VintageRestrictedFormatScrap
   )
 
   def scrap: Future[Seq[ScrapedFormat]] =

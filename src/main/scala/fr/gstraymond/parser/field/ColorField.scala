@@ -42,10 +42,9 @@ trait ColorField:
               case 1 => count > 0 && count <= 2
               case _ => false
           }
-          .map {
+          .map:
             case Seq(c1, c2) => s"${c1.lbl} OR ${c2.lbl}"
             case any         => throw new RuntimeException(s"should not happen: $any has not length of 2")
-          }
       case _ => Nil
 
   def _tripleColors(maybeCastingCost: Option[String], additionalColors: Option[Seq[String]]): Seq[String] =
@@ -61,10 +60,9 @@ trait ColorField:
               case 1 => count > 0 && count <= 3
               case _ => false
           }
-          .map {
+          .map:
             case Seq(c1, c2, c3) => s"${c1.lbl} OR ${c2.lbl} OR ${c3.lbl}"
             case any             => throw new RuntimeException(s"should not happen: $any has not length of 3")
-          }
       case _ => Nil
 
   def _quadColors(maybeCastingCost: Option[String], additionalColors: Option[Seq[String]]): Seq[String] =
@@ -81,10 +79,9 @@ trait ColorField:
               case 1 => count > 0 && count <= 4
               case _ => false
           }
-          .map {
+          .map:
             case Seq(c1, c2, c3, c4) => s"${c1.lbl} OR ${c2.lbl} OR ${c3.lbl} OR ${c4.lbl}"
             case any                 => throw new RuntimeException(s"should not happen: $any has not length of 3")
-          }
       case _ => Nil
 
   private def ccWithHint(
@@ -94,11 +91,10 @@ trait ColorField:
   ) =
     val uncoloredHint = hints.contains("Devoid (This card has no color.)")
     val cc = maybeCastingCost.getOrElse("") ++ additionalColors
-      .map {
+      .map:
         _.flatMap { color =>
           ALL_COLORS_SYMBOLS.find(_.lbl == color).map(_.symbol)
         }.mkString(" ", " ", "")
-      }
       .getOrElse("")
 
     cc -> uncoloredHint

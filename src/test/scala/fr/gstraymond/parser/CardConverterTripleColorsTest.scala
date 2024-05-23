@@ -4,16 +4,17 @@ import fr.gstraymond.parser.field.ColorField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
+import scala.annotation.nowarn
 
+@nowarn
 @RunWith(classOf[JUnitRunner])
 class CardConverterTripleColorsTest extends Specification with ColorField:
 
-  "card converter" should {
-    "Nope" in {
+  "card converter" should:
+    "Nope" in:
       _tripleColors(None, None) === Nil
-    }
 
-    "Zuran Spellcaster" in {
+    "Zuran Spellcaster" in:
       _tripleColors("2 U").sorted ===
         Seq(
           "Black OR Blue OR Green",
@@ -23,9 +24,8 @@ class CardConverterTripleColorsTest extends Specification with ColorField:
           "Blue OR Green OR White",
           "Blue OR Red OR White"
         ).sorted
-    }
 
-    "Zhou Yu, Chief Commander" in {
+    "Zhou Yu, Chief Commander" in:
       _tripleColors("5 U U").sorted ===
         Seq(
           "Black OR Blue OR Green",
@@ -35,17 +35,14 @@ class CardConverterTripleColorsTest extends Specification with ColorField:
           "Blue OR Green OR White",
           "Blue OR Red OR White"
         ).sorted
-    }
 
-    "Yore-Tiller Nephilim" in {
+    "Yore-Tiller Nephilim" in:
       _tripleColors("W U B R") === Nil
-    }
 
-    "Arsenal Thresher" in {
+    "Arsenal Thresher" in:
       _tripleColors("2 WB U") === Seq("Black OR Blue OR White")
-    }
 
-    "Fireball" in {
+    "Fireball" in:
       _tripleColors("X R") ===
         Seq(
           "Black OR Blue OR Red",
@@ -55,13 +52,11 @@ class CardConverterTripleColorsTest extends Specification with ColorField:
           "Blue OR Red OR White",
           "Green OR Red OR White"
         ).sorted
-    }
 
-    "Reaper King" in {
+    "Reaper King" in:
       _tripleColors("2/W 2/U 2/B 2/R 2/G") === Nil
-    }
 
-    "Act of Aggression" in {
+    "Act of Aggression" in:
       _tripleColors("3 RP RP") ===
         Seq(
           "Black OR Blue OR Red",
@@ -71,9 +66,8 @@ class CardConverterTripleColorsTest extends Specification with ColorField:
           "Blue OR Red OR White",
           "Green OR Red OR White"
         ).sorted
-    }
 
-    "Decree of Justice" in {
+    "Decree of Justice" in:
       _tripleColors("X X 2 W W") ===
         Seq(
           "Black OR Blue OR White",
@@ -83,30 +77,24 @@ class CardConverterTripleColorsTest extends Specification with ColorField:
           "Blue OR Red OR White",
           "Green OR Red OR White"
         ).sorted
-    }
 
-    "Emrakul, the Aeons Torn" in {
+    "Emrakul, the Aeons Torn" in:
       _tripleColors("15") === Nil
-    }
 
-    "Autochthon Wurm" in {
+    "Autochthon Wurm" in:
       _tripleColors("10 G G G W W") ===
         Seq("Black OR Green OR White", "Blue OR Green OR White", "Green OR Red OR White").sorted
-    }
 
-    "Transguild Courier" in {
+    "Transguild Courier" in:
       _tripleColors(Some("4"), None) === Nil
-    }
 
-    "Transguild Courier - new" in {
+    "Transguild Courier - new" in:
       _tripleColors(Some("4"), Some(Seq("White", "Blue", "Black", "Red", "Green"))).sorted === Nil
-    }
 
-    "Kozilek, the Great Distortion" in {
+    "Kozilek, the Great Distortion" in:
       _tripleColors("8 C C") === Nil
-    }
 
-    "Abstruse Interference" in {
+    "Abstruse Interference" in:
       _tripleColors(Some("2 U"), None).sorted ===
         Seq(
           "Black OR Blue OR Green",
@@ -116,9 +104,8 @@ class CardConverterTripleColorsTest extends Specification with ColorField:
           "Blue OR Green OR White",
           "Blue OR Red OR White"
         ).sorted
-    }
 
-    "Ludevic's Abomination" in {
+    "Ludevic's Abomination" in:
       _tripleColors(None, Some(Seq("Blue"))).sorted ===
         Seq(
           "Black OR Blue OR Green",
@@ -128,12 +115,9 @@ class CardConverterTripleColorsTest extends Specification with ColorField:
           "Blue OR Green OR White",
           "Blue OR Red OR White"
         ).sorted
-    }
 
-    "Dralnu, seigneur liche" in {
+    "Dralnu, seigneur liche" in:
       _tripleColors(Some("3 U B"), Some(Seq("Blue", "Black"))).sorted ===
         Seq("Black OR Blue OR Green", "Black OR Blue OR Red", "Black OR Blue OR White").sorted
-    }
-  }
 
   private def _tripleColors(cc: String): Seq[String] = _tripleColors(Some(cc), None).sorted

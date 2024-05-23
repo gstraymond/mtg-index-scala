@@ -23,12 +23,11 @@ trait Task[A] extends Log:
 
   def main(args: Array[String]): Unit =
 
-    val timing = Timing(name) {
+    val timing = Timing(name):
       val eventualProcess = process.recover[Any] { case NonFatal(e) =>
         log.error(s"error during $name", e)
       }
       Await.result(eventualProcess, Duration.Inf)
-    }
 
     log.info(s"Task terminated\n${timing.json}")
     HttpClients.shutdown()
@@ -91,4 +90,5 @@ trait Task[A] extends Log:
 
   private def mkDir(path: String) =
     val dir = new File(path)
-    if !dir.exists() then dir.mkdirs()
+    if !dir.exists() then 
+      val _ = dir.mkdirs()

@@ -85,4 +85,3 @@ object Color:
     UR,
     BG
   )
-

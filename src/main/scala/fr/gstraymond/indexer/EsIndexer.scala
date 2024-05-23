@@ -2,13 +2,11 @@ package fr.gstraymond.indexer
 
 import dispatch.Defaults._
 import dispatch._
-import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.model.MTGCard
 import fr.gstraymond.utils.Log
 import fr.gstraymond.utils.StringUtils
 
 import java.nio.charset.Charset
-import scala.annotation.nowarn
 import scala.concurrent.Future
 import scala.io.Source
 
@@ -26,9 +24,8 @@ trait EsIndexer[A] extends Log:
 
   def delete(): Future[Unit] =
     Http
-      .default {
+      .default:
         url(indexPath).DELETE > as.String
-      }
       .map { result =>
         log.info(s"delete: $result")
         ()
@@ -37,13 +34,12 @@ trait EsIndexer[A] extends Log:
   def configure(): Future[Unit] =
     val body = Source.fromInputStream(getClass.getResourceAsStream(s"/indexer/$index.config.json")).mkString
     Http
-      .default {
+      .default:
         url(indexPath).PUT
           .setContentType(
             "application/json",
             Charset.forName("utf-8")
           ) << body OK as.String
-      }
       .map { result =>
         log.info(s"configure: $result")
       }
@@ -59,18 +55,16 @@ trait EsIndexer[A] extends Log:
           count <- acc
           _ <-
             Http
-              .default {
+              .default:
                 url(bulkPath).POST
                   .setContentType(
                     "application/json",
                     Charset.forName("utf-8")
                   ) << buildBody(group) OK as.String
-              }
               .map { _ =>
                 log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
               }
-        yield
-          count + group.size
+        yield count + group.size
       }
       .map { _ => log.info(s"bulk finished !") }
 

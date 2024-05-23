@@ -6,12 +6,10 @@ import fr.gstraymond.utils.Log
 import io.netty.handler.ssl.SslContextBuilder
 import io.netty.handler.ssl.SslProvider
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
-import org.asynchttpclient.DefaultAsyncHttpClientConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 import java.util.Date
-import scala.collection.mutable
 import scala.concurrent.Future
 
 trait Scraper extends Log:
@@ -41,22 +39,19 @@ trait Scraper extends Log:
       case _    => HttpClients.defaultHttp
     ) {
       url(fullUrl) OK as.String
-    }.map {
+    }.map:
       log.info(s"scraping url $fullUrl done")
       Jsoup.parse
-    }
 
   def get(path: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
     download(buildFullUrl(path), disableSslValidation)
 
   def download(fullUrl: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
-    (disableSslValidation match {
+    val http = disableSslValidation match
       case true  => HttpClients.insecureHttp
       case false => HttpClients.defaultHttp
-    }) {
-      url(fullUrl) OK as.Bytes
-    }
-      .map { bytes =>
+    http(url(fullUrl).OK(as.Bytes))
+      .map { (bytes: Array[Byte]) =>
         log.info(s"scraping url $fullUrl done")
         bytes
       }
@@ -88,9 +83,9 @@ object HttpClients extends Log:
     .trustManager(InsecureTrustManagerFactory.INSTANCE)
     .build()
 
-  val defaultHttp = Http.default
-  val insecureHttp = Http.withConfiguration(_ setSslContext insecureSslContext)
-  val followRedirectHttp = Http.withConfiguration(_ setFollowRedirect true)
+  val defaultHttp        = Http.default
+  val insecureHttp       = Http.withConfiguration(_.setSslContext(insecureSslContext))
+  val followRedirectHttp = Http.withConfiguration(_.setFollowRedirect(true))
 
   def shutdown() =
     log.info(s"Shutdown...")
@@ -98,5 +93,5 @@ object HttpClients extends Log:
     defaultHttp.shutdown()
     insecureHttp.shutdown()
     followRedirectHttp.shutdown()
-    
+
     log.info(s"Shutdown... terminated")
