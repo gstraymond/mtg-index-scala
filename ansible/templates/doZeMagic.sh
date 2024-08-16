@@ -14,7 +14,7 @@ curl -sL https://api.github.com/repos/gstraymond/mtg-index-scala/releases/latest
   xargs -I {} curl -L {} -so release.zip
 unzip release.zip
 cd ..
-JAVA_OPTS=-Xmx768m find . -name 'mtg-index-scala' -exec {} \; > /tmp/import_${today}.html
+JAVA_OPTS=-Xmx820m find . -name 'mtg-index-scala' -exec {} \; > /tmp/import_${today}.html
 rm -rf /tmp/mtg-search/
 cd pics
 git add .
