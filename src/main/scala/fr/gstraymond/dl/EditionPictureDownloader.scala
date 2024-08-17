@@ -45,9 +45,9 @@ object EditionPictureDownloader extends GathererScraper:
     .map(_ => ())
 
   private def getBytes(edition: String, rarity: String): Future[Array[Byte]] =
-    get(buildUrl(edition, rarity, "large"), disableSslValidation = true).flatMap:
-      case Array() if rarity == "S" => get(buildUrl(edition, "R", "large"), disableSslValidation = true)
-      case Array()                  => get(buildUrl(edition, rarity, "small"), disableSslValidation = true)
+    get(buildUrl(edition, rarity, "large")).flatMap:
+      case Array() if rarity == "S" => get(buildUrl(edition, "R", "large"))
+      case Array()                  => get(buildUrl(edition, rarity, "small"))
       case bytes                    => Future.successful(bytes)
 
   private def buildUrl(edition: String, rarity: String, size: String): String =

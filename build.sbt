@@ -1,11 +1,15 @@
-import Dependencies._
+import org.typelevel.sbt.tpolecat.DevMode
+
+import Dependencies.*
 
 ThisBuild / scalaVersion                 := "3.4.2"
-ThisBuild / version                      := "14"
+ThisBuild / version                      := "15"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
 ThisBuild / packageDoc / publishArtifact := false
 ThisBuild / packageSrc / publishArtifact := false
+
+ThisBuild / tpolecatDefaultOptionsMode := DevMode
 
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging)
@@ -16,7 +20,7 @@ lazy val root = (project in file("."))
       logback,
       jsoup,
       jsoniter_core,
-      dispatch
+      sttp
     ),
     libraryDependencies ++= List(specs2_core, specs2_junit).map(_ % Test),
     Compile / run / mainClass        := Some("fr.gstraymond.task.MtgIndexScala"),
@@ -25,8 +29,7 @@ lazy val root = (project in file("."))
   )
   .dependsOn(macros)
 
-// Scala 2.13 macros compat
+// TODO can be merged in root
 lazy val macros = project.settings(
-  scalaVersion                          := "2.13.7",
   libraryDependencies += jsoniter_macros % "compile-internal"
 )

@@ -1,12 +1,12 @@
 package fr.gstraymond.indexer
 
-import dispatch.Defaults._
-import dispatch._
 import fr.gstraymond.model.MTGCard
+import fr.gstraymond.scraper.Sttp
 import fr.gstraymond.utils.Log
 import fr.gstraymond.utils.StringUtils
+import sttp.client4.quick.*
 
-import java.nio.charset.Charset
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source
 
@@ -23,23 +23,15 @@ trait EsIndexer[A] extends Log:
   val bulk = 500
 
   def delete(): Future[Unit] =
-    Http
-      .default:
-        url(indexPath).DELETE > as.String
-      .map { result =>
-        log.info(s"delete: $result")
-        ()
-      }
+    Sttp.delete(indexPath).map { result =>
+      log.info(s"delete: $result")
+      ()
+    }
 
   def configure(): Future[Unit] =
     val body = Source.fromInputStream(getClass.getResourceAsStream(s"/indexer/$index.config.json")).mkString
-    Http
-      .default:
-        url(indexPath).PUT
-          .setContentType(
-            "application/json",
-            Charset.forName("utf-8")
-          ) << body OK as.String
+    Sttp
+      .putJson(indexPath, body)
       .map { result =>
         log.info(s"configure: $result")
       }
@@ -53,17 +45,11 @@ trait EsIndexer[A] extends Log:
       .foldLeft(Future.successful(0)) { case (acc, (group, i)) =>
         for
           count <- acc
-          _ <-
-            Http
-              .default:
-                url(bulkPath).POST
-                  .setContentType(
-                    "application/json",
-                    Charset.forName("utf-8")
-                  ) << buildBody(group) OK as.String
-              .map { _ =>
-                log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
-              }
+          _ <- Sttp
+            .postJson(bulkPath, buildBody(group))
+            .map { _ =>
+              log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
+            }
         yield count + group.size
       }
       .map { _ => log.info(s"bulk finished !") }

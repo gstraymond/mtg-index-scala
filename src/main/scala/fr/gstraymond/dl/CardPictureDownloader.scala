@@ -36,8 +36,7 @@ object CardPictureDownloader extends GathererScraper with Log:
             log.warn(s"picture not found: [${file.getAbsoluteFile}] ${card.title} - ${publication.edition}")
             Thread.sleep(100)
             val path = s"/Handlers/Image.ashx?multiverseid=$multiverseId&type=card"
-            // certificate problems with gatherer
-            get(path, disableSslValidation = true).map:
+            get(path).map:
               case Array() =>
               case bytes =>
                 val fos = new FileOutputStream(file)

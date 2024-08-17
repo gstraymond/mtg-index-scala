@@ -2,9 +2,8 @@ package fr.gstraymond.task
 
 import com.github.plokhotnyuk.jsoniter_scala.core.ReaderConfig
 import com.github.plokhotnyuk.jsoniter_scala.core.readFromStream
-import fr.gstraymond.model._
+import fr.gstraymond.model.*
 import fr.gstraymond.rules.model.Rules
-import fr.gstraymond.scraper.HttpClients
 import fr.gstraymond.stats.Timing
 import fr.gstraymond.utils.FileUtils
 import fr.gstraymond.utils.Log
@@ -30,7 +29,6 @@ trait Task[A] extends Log:
       Await.result(eventualProcess, Duration.Inf)
 
     log.info(s"Task terminated\n${timing.json}")
-    HttpClients.shutdown()
 
   def process: Future[A]
 

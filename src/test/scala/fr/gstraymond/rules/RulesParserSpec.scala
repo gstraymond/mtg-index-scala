@@ -16,5 +16,5 @@ class RulesParserSpec extends Specification:
     "parse rules" in:
       val lines = Source.fromResource("rules.txt")("CP1252").getLines().toSeq
       val rules = RulesParser.parse("file", lines)
-      rules.rules must have length 3888
+      rules.rules.length === 3888
       rules.rules.take(10).mkString("\n") === ""

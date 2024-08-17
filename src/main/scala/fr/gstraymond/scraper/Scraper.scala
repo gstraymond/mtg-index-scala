@@ -1,15 +1,16 @@
 package fr.gstraymond.scraper
 
-import dispatch.Defaults._
-import dispatch._
 import fr.gstraymond.utils.Log
-import io.netty.handler.ssl.SslContextBuilder
-import io.netty.handler.ssl.SslProvider
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import sttp.client4.Request
+import sttp.client4.httpclient.HttpClientFutureBackend
+import sttp.client4.quick.*
+import sttp.model.MediaType.ApplicationJson
 
+import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Date
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait Scraper extends Log:
@@ -34,24 +35,16 @@ trait Scraper extends Log:
   def scrap(path: String, followRedirect: Boolean = false): Future[Document] =
     val fullUrl = buildFullUrl(path)
 
-    (followRedirect match
-      case true => HttpClients.followRedirectHttp
-      case _    => HttpClients.defaultHttp
-    ) {
-      url(fullUrl) OK as.String
-    }.map:
+    Sttp.getString(fullUrl).map: 
       log.info(s"scraping url $fullUrl done")
       Jsoup.parse
 
-  def get(path: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
-    download(buildFullUrl(path), disableSslValidation)
+  def get(path: String): Future[Array[Byte]] =
+    download(buildFullUrl(path))
 
-  def download(fullUrl: String, disableSslValidation: Boolean = false): Future[Array[Byte]] =
-    val http = disableSslValidation match
-      case true  => HttpClients.insecureHttp
-      case false => HttpClients.defaultHttp
-    http(url(fullUrl).OK(as.Bytes))
-      .map { (bytes: Array[Byte]) =>
+  def download(fullUrl: String): Future[Array[Byte]] =
+    Sttp.getBytes(fullUrl)
+      .map { bytes =>
         log.info(s"scraping url $fullUrl done")
         bytes
       }
@@ -76,22 +69,33 @@ trait WikipediaScraper extends Scraper:
 trait WizardsScraper extends Scraper:
   override val host = "magic.wizards.com"
 
-object HttpClients extends Log:
-  private val insecureSslContext = SslContextBuilder
-    .forClient()
-    .sslProvider(SslProvider.JDK)
-    .trustManager(InsecureTrustManagerFactory.INSTANCE)
-    .build()
+object Sttp:
+  private val backend = HttpClientFutureBackend()
 
-  val defaultHttp        = Http.default
-  val insecureHttp       = Http.withConfiguration(_.setSslContext(insecureSslContext))
-  val followRedirectHttp = Http.withConfiguration(_.setFollowRedirect(true))
+  def delete(path: String): Future[String] =
+    send(quickRequest.delete(uri"""$path"""))
 
-  def shutdown() =
-    log.info(s"Shutdown...")
+  def getString(path: String): Future[String] =
+    send(quickRequest.get(uri"""$path"""))
 
-    defaultHttp.shutdown()
-    insecureHttp.shutdown()
-    followRedirectHttp.shutdown()
+  def getBytes(path: String): Future[Array[Byte]] =
+    send(basicRequest.get(uri"""$path""").response(asByteArrayAlways))
 
-    log.info(s"Shutdown... terminated")
+  def postJson(path: String, body: String): Future[String] =
+    send(
+      quickRequest
+        .post(uri"""$path""")
+        .contentType(ApplicationJson.charset(UTF_8))
+        .body(body)
+    )
+
+  def putJson(path: String, body: String): Future[String] =
+    send(
+      quickRequest
+        .put(uri"""$path""")
+        .contentType(ApplicationJson.charset(UTF_8))
+        .body(body)
+    )
+
+  private def send[A](req: Request[A]): Future[A] =
+    req.send(backend).map(_.body)

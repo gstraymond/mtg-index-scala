@@ -1,12 +1,11 @@
 package fr.gstraymond.indexer
 
-import com.github.plokhotnyuk.jsoniter_scala.core._
-import dispatch.Defaults._
-import dispatch._
-import fr.gstraymond.indexer.IndexerModels._
+import com.github.plokhotnyuk.jsoniter_scala.core.*
+import fr.gstraymond.indexer.IndexerModels.*
 import fr.gstraymond.model.MTGCard
+import fr.gstraymond.scraper.Sttp
 
-import java.nio.charset.Charset
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
@@ -99,13 +98,8 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
       }
       .mkString("\n") + "\n"
 
-    Http
-      .default:
-        url(bulkPath).POST
-          .setContentType(
-            "application/json",
-            Charset.forName("utf-8")
-          ) << body OK as.String
+    Sttp
+      .postJson(bulkPath, body)
       .map { _ =>
         log.info(s"processed: ${autocompletes.size} ${`type`}")
       }
