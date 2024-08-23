@@ -47,7 +47,7 @@ trait SpecialField {
     "Time Walk"
   )
 
-  private def isPower9(card: SpecialCard) = power9.contains(card.title)
+  private def isPower9(card: SpecialCard): Boolean = power9.contains(card.title)
 
   private val tuckKeywords = Seq("put ", " on the bottom", "owner's library.")
 

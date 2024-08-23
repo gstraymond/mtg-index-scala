@@ -2,7 +2,7 @@ import org.typelevel.sbt.tpolecat.DevMode
 
 import Dependencies.*
 
-ThisBuild / scalaVersion                 := "3.4.2"
+ThisBuild / scalaVersion                 := "3.5.0"
 ThisBuild / version                      := "15"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
@@ -25,7 +25,13 @@ lazy val root = (project in file("."))
     libraryDependencies ++= List(specs2_core, specs2_junit).map(_ % Test),
     Compile / run / mainClass        := Some("fr.gstraymond.task.MtgIndexScala"),
     Compile / packageBin / mainClass := Some("fr.gstraymond.task.MtgIndexScala"),
-    scalacOptions ++= Seq("-no-indent", "-rewrite")
+    scalacOptions ++= Seq(
+      // https://docs.scala-lang.org/scala3/reference/other-new-features/indentation.html
+      "-no-indent",
+      "-rewrite",
+      // https://docs.scala-lang.org/scala3/reference/other-new-features/safe-initialization.html
+      "-Wsafe-init"
+    )
   )
   .dependsOn(macros)
 

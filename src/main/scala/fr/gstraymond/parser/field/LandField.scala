@@ -45,22 +45,22 @@ trait LandField {
 
   private val fetchLandKeywords = Seq("Sacrifice", "Search your library", "put it onto the battlefield")
 
-  private def isFetchLand(card: LandCard) =
+  private def isFetchLand(card: LandCard): Boolean =
     fetchLandKeywords.forall(card.description.mkString.contains) &&
       Land.ALL.keys.count(card.description.mkString.contains) > 0
 
   private val manLandKeywords = Seq(" becomes ", " creature ")
 
-  private def isManLand(card: LandCard) =
+  private def isManLand(card: LandCard): Boolean =
     manLandKeywords.forall(card.description.mkString.contains)
 
   private val produceLandKeywords = Seq("Add {", "}.")
 
-  private def canLandProduce(color: String)(card: LandCard) =
+  private def canLandProduce(color: String)(card: LandCard): Boolean =
     (card.`type`.contains("Basic") && card.`type`.contains(Land.REV.getOrElse(color, "???"))) ||
       card.description.exists { line =>
         produceLandKeywords.forall(line.contains) && landProduce(line, color)
       }
 
-  private def isLand(card: LandCard) = card.`type`.contains("Land")
+  private def isLand(card: LandCard): Boolean = card.`type`.contains("Land")
 }
