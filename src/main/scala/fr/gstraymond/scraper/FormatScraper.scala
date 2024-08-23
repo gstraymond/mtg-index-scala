@@ -7,7 +7,7 @@ import fr.gstraymond.utils.Log
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object FormatScraper extends MTGSalvationScraper with Log:
+object FormatScraper extends MTGSalvationScraper with Log {
 
   val scrapers: Seq[FormatScrap] = Seq(
     // StandardFormatScrap,
@@ -33,3 +33,4 @@ object FormatScraper extends MTGSalvationScraper with Log:
         format
       }
     }
+}

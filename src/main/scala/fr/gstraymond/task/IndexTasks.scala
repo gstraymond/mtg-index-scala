@@ -4,29 +4,38 @@ import fr.gstraymond.indexer.EsAutocompleteIndexer
 import fr.gstraymond.indexer.EsCardIndexer
 import fr.gstraymond.indexer.EsRulesIndexer
 
-object DeleteCardIndexTask extends Task[Unit]:
+object DeleteCardIndexTask extends Task[Unit] {
   override def process = EsCardIndexer.delete()
+}
 
-object ConfigureCardIndexTask extends Task[Unit]:
+object ConfigureCardIndexTask extends Task[Unit] {
   override def process = EsCardIndexer.configure()
+}
 
-object CardIndexTask extends Task[Unit]:
+object CardIndexTask extends Task[Unit] {
   override def process = EsCardIndexer.index(loadMTGCards)
+}
 
-object DeleteAutocompleteIndexTask extends Task[Unit]:
+object DeleteAutocompleteIndexTask extends Task[Unit] {
   override def process = EsAutocompleteIndexer.delete()
+}
 
-object ConfigureAutocompleteIndexTask extends Task[Unit]:
+object ConfigureAutocompleteIndexTask extends Task[Unit] {
   override def process = EsAutocompleteIndexer.configure()
+}
 
-object AutocompleteIndexTask extends Task[Unit]:
+object AutocompleteIndexTask extends Task[Unit] {
   override def process = EsAutocompleteIndexer.index(loadMTGCards)
+}
 
-object DeleteRulesIndexTask extends Task[Unit]:
+object DeleteRulesIndexTask extends Task[Unit] {
   override def process = EsRulesIndexer.delete()
+}
 
-object ConfigureRulesIndexTask extends Task[Unit]:
+object ConfigureRulesIndexTask extends Task[Unit] {
   override def process = EsRulesIndexer.configure()
+}
 
-object RulesIndexTask extends Task[Unit]:
+object RulesIndexTask extends Task[Unit] {
   override def process = EsRulesIndexer.index(loadRules)
+}

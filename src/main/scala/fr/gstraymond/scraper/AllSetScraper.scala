@@ -7,15 +7,17 @@ import java.io.File
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object AllSetScraper extends MtgJsonScraper:
+object AllSetScraper extends MtgJsonScraper {
 
   val path = "/api/v5/AllPrintings.json.zip"
 
   def scrap: Future[Unit] =
     get(path).map { bytes =>
       val dir = new File(FileUtils.scrapPath)
-      if !dir.exists() then 
+      if !dir.exists() then { 
         val _ = dir.mkdirs()
+      }
       ZipUtils.unZip(bytes, FileUtils.scrapPath)
       ()
     }
+}

@@ -5,7 +5,7 @@ import fr.gstraymond.model.MTGJsonLegality
 
 import java.time.LocalDate
 
-trait FormatsField:
+trait FormatsField {
 
   private val includedFormats = Set(
     "alchemy",
@@ -21,7 +21,7 @@ trait FormatsField:
     "vintage"
   )
 
-  def _formats(formats: Set[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] =
+  def _formats(formats: Set[MTGJsonLegality], editions: Seq[MTGJsonEdition]): Seq[String] = {
 
     val legalities =
       formats
@@ -50,3 +50,5 @@ trait FormatsField:
     } ++
       restricted.toSeq.map(_.legality) ++
       future).toList
+  }
+}

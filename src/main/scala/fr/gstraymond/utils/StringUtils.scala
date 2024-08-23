@@ -2,7 +2,7 @@ package fr.gstraymond.utils
 
 import java.text.Normalizer
 
-object StringUtils:
+object StringUtils {
   def normalize(text: String) =
     Normalizer
       .normalize(text.toLowerCase, Normalizer.Form.NFD)
@@ -14,3 +14,4 @@ object StringUtils:
       .replace("aether", "ther")
       .replace("aerathi", "rathi")
       .replace("coast(r)", "coast")
+}

@@ -5,7 +5,7 @@ import fr.gstraymond.indexer.IndexerModels._
 import fr.gstraymond.rules.model.RuleFormats._
 import fr.gstraymond.rules.model.Rules
 
-object EsRulesIndexer extends EsIndexer[Rules]:
+object EsRulesIndexer extends EsIndexer[Rules] {
 
   override val index = "mtg-rules"
 
@@ -24,3 +24,4 @@ object EsRulesIndexer extends EsIndexer[Rules]:
         )
       }
       .mkString("\n") + "\n"
+}

@@ -4,7 +4,7 @@ import org.jsoup.nodes.Document
 
 import scala.jdk.CollectionConverters._
 
-object ExtendedFormatScrap extends FormatScrap:
+object ExtendedFormatScrap extends FormatScrap {
   override val name = "extended"
   override val path = "/Extended"
 
@@ -29,3 +29,4 @@ object ExtendedFormatScrap extends FormatScrap:
       .filter(_.select("td").asScala.nonEmpty)
       .map(_.select("td").asScala.head.text())
       .toSeq
+}

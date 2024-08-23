@@ -1,6 +1,6 @@
 package fr.gstraymond.parser.field
 
-trait HiddenHintsField:
+trait HiddenHintsField {
 
   def _hiddenHints(description: Seq[String]) =
     description.collect {
@@ -8,3 +8,4 @@ trait HiddenHintsField:
       case desc if desc.contains("[") && desc.contains("]") =>
         desc.split("\\[")(1).split("\\]").head.split("\\.").toSeq
     }.flatten
+}

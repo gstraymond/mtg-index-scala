@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source
 
-trait EsIndexer[A] extends Log:
+trait EsIndexer[A] extends Log {
 
   val host = "localhost:9200"
 
@@ -28,36 +28,41 @@ trait EsIndexer[A] extends Log:
       ()
     }
 
-  def configure(): Future[Unit] =
+  def configure(): Future[Unit] = {
     val body = Source.fromInputStream(getClass.getResourceAsStream(s"/indexer/$index.config.json")).mkString
     Sttp
       .putJson(indexPath, body)
       .map { result =>
         log.info(s"configure: $result")
       }
+  }
 
-  def index(elems: Seq[A]): Future[Unit] =
+  def index(elems: Seq[A]): Future[Unit] = {
     val grouped     = elems.grouped(bulk).to(LazyList)
     val groupedSize = grouped.size
     val cardSize    = elems.size
 
     grouped.zipWithIndex
       .foldLeft(Future.successful(0)) { case (acc, (group, i)) =>
-        for
+        for {
           count <- acc
           _ <- Sttp
             .postJson(bulkPath, buildBody(group))
             .map { _ =>
               log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
             }
+        }
         yield count + group.size
       }
       .map { _ => log.info(s"bulk finished !") }
+  }
 
   def buildBody(group: Seq[A]): String
 
-  protected def getId(card: MTGCard): String =
+  protected def getId(card: MTGCard): String = {
     val id = card.publications.flatMap(_.multiverseId).headOption.getOrElse(-1L)
     norm(s"$id-${card.title}")
+  }
 
   protected def norm(string: String): String = StringUtils.normalize(string)
+}

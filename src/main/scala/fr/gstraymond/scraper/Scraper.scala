@@ -13,7 +13,7 @@ import java.util.Date
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait Scraper extends Log:
+trait Scraper extends Log {
   def host: String
 
   val TIMEOUT: Int = 60 * 1000
@@ -22,7 +22,7 @@ trait Scraper extends Log:
 
   def buildFullUrl(path: String): String = s"$protocol://$host$path"
 
-  def oldScrap(path: String): Future[Document] =
+  def oldScrap(path: String): Future[Document] = {
     val fullUrl = buildFullUrl(path)
     Future {
       val now = new Date().getTime
@@ -31,13 +31,16 @@ trait Scraper extends Log:
       log.info(s"scraping url $fullUrl done in ${new Date().getTime - now}ms !")
       doc
     }
+  }
 
-  def scrap(path: String, followRedirect: Boolean = false): Future[Document] =
+  def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
     val fullUrl = buildFullUrl(path)
 
-    Sttp.getString(fullUrl).map: 
+    Sttp.getString(fullUrl).map { 
       log.info(s"scraping url $fullUrl done")
       Jsoup.parse
+    }
+  }
 
   def get(path: String): Future[Array[Byte]] =
     download(buildFullUrl(path))
@@ -52,24 +55,30 @@ trait Scraper extends Log:
         log.warn(s"not found: [${e.getMessage}], $fullUrl")
         Array()
       }
+}
 
-trait MTGSalvationScraper extends Scraper:
+trait MTGSalvationScraper extends Scraper {
   override val host     = "mtgsalvation.gamepedia.com"
   override val protocol = "http"
+}
 
-trait GathererScraper extends Scraper:
+trait GathererScraper extends Scraper {
   override val host = "gatherer.wizards.com"
+}
 
-trait MtgJsonScraper extends Scraper:
+trait MtgJsonScraper extends Scraper {
   override val host = "mtgjson.com"
+}
 
-trait WikipediaScraper extends Scraper:
+trait WikipediaScraper extends Scraper {
   override val host = "en.wikipedia.org"
+}
 
-trait WizardsScraper extends Scraper:
+trait WizardsScraper extends Scraper {
   override val host = "magic.wizards.com"
+}
 
-object Sttp:
+object Sttp {
   private val backend = HttpClientFutureBackend()
 
   def delete(path: String): Future[String] =
@@ -99,3 +108,4 @@ object Sttp:
 
   private def send[A](req: Request[A]): Future[A] =
     req.send(backend).map(_.body)
+}

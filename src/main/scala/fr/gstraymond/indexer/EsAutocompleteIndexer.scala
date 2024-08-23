@@ -8,15 +8,16 @@ import fr.gstraymond.scraper.Sttp
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
+object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
 
   override val index = "autocomplete"
 
-  override def index(cards: Seq[MTGCard]): Future[Unit] = for
+  override def index(cards: Seq[MTGCard]): Future[Unit] = for {
     _ <- super.index(cards)
     _ <- indexSuggest("token", extractTokens(cards))
     _ <- indexSuggest("edition", extractEditions(cards))
     _ <- indexSuggest("special", extractSpecials(cards))
+  }
   yield ()
 
   override def buildBody(group: Seq[MTGCard]): String =
@@ -33,7 +34,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
       }
       .mkString("\n") + "\n"
 
-  private def extractTokens(cards: Seq[MTGCard]): Seq[Autocomplete] =
+  private def extractTokens(cards: Seq[MTGCard]): Seq[Autocomplete] = {
     val tokenOccurrences =
       cards
         .flatMap(c => c.description.toLowerCase.split(" ") ++ c.`type`.toLowerCase.split(" "))
@@ -43,7 +44,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
         .filterNot(_.exists(_.isDigit))
         .filterNot(_.endsWith("'t"))
         .filterNot(_.contains("/"))
-        .map:
+        .map {
           _.replace(",", "")
             .replace(".", "")
             .replace(":", "")
@@ -53,6 +54,7 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
             .replace("'s", "")
             .replace("'", "")
             .replace(";", "")
+      }
         .filter(_.length > 3)
         .groupBy(a => a)
         .view
@@ -71,24 +73,27 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
       .filter(_._2 > 5)
       .toSeq
       .map { case (input, weight) => Autocomplete(Suggest(input, Some(weight))) }
+  }
 
   private def extractEditions(cards: Seq[MTGCard]): Seq[Autocomplete] =
-    (for
+    (for {
       card <- cards
       pub  <- card.publications
+    }
     yield {
       pub.edition -> pub.stdEditionCode
     }).distinct
-      .map:
+      .map {
         case (edition, Some(stdCode)) => Autocomplete(Suggest(edition, Some(2)), stdEditionCode = Some(stdCode))
         case (edition, _)             => Autocomplete(Suggest(edition, Some(2)))
+    }
 
   private def extractSpecials(cards: Seq[MTGCard]): Seq[Autocomplete] =
     cards.flatMap(_.special).groupBy(_.toLowerCase).view.mapValues(_.size).toSeq.map { case (input, weight) =>
       Autocomplete(Suggest(input, Some(weight)))
     }
 
-  private def indexSuggest(`type`: String, autocompletes: Seq[Autocomplete]): Future[Unit] =
+  private def indexSuggest(`type`: String, autocompletes: Seq[Autocomplete]): Future[Unit] = {
     val body = autocompletes
       .flatMap { autocomplete =>
         val indexJson =
@@ -103,3 +108,5 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard]:
       .map { _ =>
         log.info(s"processed: ${autocompletes.size} ${`type`}")
       }
+  }
+}

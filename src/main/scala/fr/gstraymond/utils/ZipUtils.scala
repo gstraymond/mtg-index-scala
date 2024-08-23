@@ -4,7 +4,7 @@ import java.io._
 import java.util.zip.ZipInputStream
 import scala.util.Using
 
-object ZipUtils:
+object ZipUtils {
   val BUFSIZE = 4096
   val buffer  = new Array[Byte](BUFSIZE)
 
@@ -24,3 +24,4 @@ object ZipUtils:
           }
         }
     }
+}

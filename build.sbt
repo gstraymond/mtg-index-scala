@@ -25,7 +25,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= List(specs2_core, specs2_junit).map(_ % Test),
     Compile / run / mainClass        := Some("fr.gstraymond.task.MtgIndexScala"),
     Compile / packageBin / mainClass := Some("fr.gstraymond.task.MtgIndexScala"),
-    scalacOptions ++= Seq("-indent", "-rewrite")
+    scalacOptions ++= Seq("-no-indent", "-rewrite")
   )
   .dependsOn(macros)
 

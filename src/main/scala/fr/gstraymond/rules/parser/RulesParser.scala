@@ -5,9 +5,9 @@ import fr.gstraymond.rules.model.RuleLink
 import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.utils.Log
 
-object RulesParser extends Log:
+object RulesParser extends Log {
 
-  def parse(filename: String, lines: Seq[String]): Rules =
+  def parse(filename: String, lines: Seq[String]): Rules = {
     val emptyMap = ((lines.head -> false) +: lines.tail
       .zip(lines)
       .map { case (line, prev) => line -> prev.isEmpty }
@@ -17,10 +17,11 @@ object RulesParser extends Log:
 
     val nonEmptyLines = lines
       .filter(_.nonEmpty)
-      .map:
+      .map {
         case "Glossary" => "10. Glossary"
         case "Credits"  => "11. Credits"
         case l          => l
+    }
     val titleIndex        = 0
     val introductionIndex = nonEmptyLines.indexOf("Introduction")
     val contentsIndex     = nonEmptyLines.indexOf("Contents")
@@ -32,33 +33,39 @@ object RulesParser extends Log:
 
     def parseLevel(maybeId: Option[String], position: Int): Int =
       maybeId
-        .map:
+        .map {
           case id if id.contains(".") && id.exists(_.isLetter) => 4
           case id if id.contains(".")                          => 3
           case id if id.length == 3                            => 2
           case _                                               => 1
-        .getOrElse:
-          position match
+      }
+        .getOrElse {
+          position match {
             case `titleIndex`        => 1
             case `introductionIndex` => 1
             case `contentsIndex`     => 1
             case _                   => 4
+          }
+      }
 
-    val rules = nonEmptyLines.zipWithIndex.map:
+    val rules = nonEmptyLines.zipWithIndex.map {
       case (line, index) if line.head.isDigit && !glossaryRange.contains(index) =>
         val split = line.split(" ", 2)
-        val id = split.head match
+        val id = split.head match {
           case i if i.last == '.' => i.dropRight(1)
           case i                  => i
+        }
         val level = parseLevel(Some(id), index)
         if index <= creditsMenuIndex then
           Rule(id = None, text = split(1), links = Seq(RuleLink(id, 0, split(1).length - 1)), level + 1)
         else Rule(id = Some(id), text = split(1), links = Nil, level)
       case (line, index) =>
-        if glossaryRange.contains(index) then
+        if glossaryRange.contains(index) then {
           val level = if emptyMap(index) then 2 else 4
           Rule(id = None, text = line, links = Nil, level)
+        }
         else Rule(id = None, text = line, links = Nil, parseLevel(None, index))
+    }
 
     val ids = rules.flatMap(_.id).filter(_.length > 2).sortBy(-_.length).map(_.r)
 
@@ -79,3 +86,5 @@ object RulesParser extends Log:
     }
 
     Rules(filename, rules1)
+  }
+}

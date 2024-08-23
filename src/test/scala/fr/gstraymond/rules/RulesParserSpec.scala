@@ -10,11 +10,14 @@ import scala.annotation.nowarn
 
 @nowarn
 @RunWith(classOf[JUnitRunner])
-class RulesParserSpec extends Specification:
+class RulesParserSpec extends Specification {
 
-  "Rules parser" should:
-    "parse rules" in:
+  "Rules parser" should {
+    "parse rules" in {
       val lines = Source.fromResource("rules.txt")("CP1252").getLines().toSeq
       val rules = RulesParser.parse("file", lines)
       rules.rules.length === 3888
       rules.rules.take(10).mkString("\n") === ""
+    }
+  }
+}

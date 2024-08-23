@@ -2,7 +2,7 @@ package fr.gstraymond.scraper.format
 
 import org.jsoup.nodes.Document
 
-object StandardFormatScrap extends FormatScrap:
+object StandardFormatScrap extends FormatScrap {
   override val name = "Standard"
   override val path = "/Standard"
 
@@ -11,3 +11,4 @@ object StandardFormatScrap extends FormatScrap:
 
   override def currentRotation(doc: Document): Seq[String] =
     doc.getTexts(".wikitable > tbody:nth-child(1) > tr > td > i > a").map(_.split(" \\(").head)
+}

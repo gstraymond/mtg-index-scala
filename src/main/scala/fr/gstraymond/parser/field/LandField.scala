@@ -2,7 +2,7 @@ package fr.gstraymond.parser.field
 
 import fr.gstraymond.constant.Land
 
-trait LandField:
+trait LandField {
 
   case class LandCard(`type`: String, description: Seq[String])
 
@@ -20,7 +20,7 @@ trait LandField:
     canLandProduce("C") -> Seq("Produce Colorless Mana")
   )
 
-  def _land(`type`: String, description: Seq[String]): Seq[String] =
+  def _land(`type`: String, description: Seq[String]): Seq[String] = {
     val card = LandCard(`type`, description)
     if isLand(card) then
       landFilters
@@ -29,6 +29,7 @@ trait LandField:
         }
         .distinct
     else Seq.empty
+  }
 
   private def countLandTypes(count: Int)(card: LandCard) =
     Land.ALL.keys.count(card.`type`.contains) == count
@@ -62,3 +63,4 @@ trait LandField:
       }
 
   private def isLand(card: LandCard) = card.`type`.contains("Land")
+}
