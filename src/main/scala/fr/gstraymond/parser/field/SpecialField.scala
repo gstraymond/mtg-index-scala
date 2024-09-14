@@ -8,7 +8,7 @@ trait SpecialField {
 
   // http://mtgsalvation.gamepedia.com/Mill
 
-  private val specialFilters: Seq[(SpecialCard => Boolean, Seq[String])] = Seq(
+  private lazy val specialFilters: Seq[(SpecialCard => Boolean, Seq[String])] = Seq(
     isVanilla         -> Seq("Vanilla"),
     isPower9          -> Seq("Power 9"),
     isTuck            -> Seq("Tuck"),

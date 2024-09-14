@@ -6,7 +6,7 @@ trait LandField {
 
   case class LandCard(`type`: String, description: Seq[String])
 
-  private val landFilters: Seq[(LandCard => Boolean, Seq[String])] = Seq(
+  private lazy val landFilters: Seq[(LandCard => Boolean, Seq[String])] = Seq(
     countLandTypes(2)   -> Seq("Dual Land", "Dual Basic Land"),
     countLandColors(2)  -> Seq("Dual Land"),
     countLandColors(3)  -> Seq("Triple Land"),
