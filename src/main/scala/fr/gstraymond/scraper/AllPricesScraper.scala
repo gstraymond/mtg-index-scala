@@ -1,6 +1,6 @@
 package fr.gstraymond.scraper
 
-import fr.gstraymond.parser.PriceModels._
+import fr.gstraymond.parser.PriceModels.*
 import fr.gstraymond.utils.FileUtils
 
 import java.io.File
@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source
 
-import sys.process._
+import sys.process.*
 
 object AllPricesScraper extends MtgJsonScraper {
 

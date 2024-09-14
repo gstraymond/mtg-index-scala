@@ -4,7 +4,7 @@ import fr.gstraymond.constant.URIs
 import fr.gstraymond.utils.Log
 
 import java.io.File
-import scala.sys.process._
+import scala.sys.process.*
 
 object ImageConverter extends Log {
 

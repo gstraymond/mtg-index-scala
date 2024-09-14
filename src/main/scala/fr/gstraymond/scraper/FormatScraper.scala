@@ -1,7 +1,7 @@
 package fr.gstraymond.scraper
 
 import fr.gstraymond.model.ScrapedFormat
-import fr.gstraymond.scraper.format._
+import fr.gstraymond.scraper.format.*
 import fr.gstraymond.utils.Log
 
 import scala.concurrent.ExecutionContext.Implicits.global

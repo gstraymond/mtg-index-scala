@@ -1,8 +1,8 @@
 package fr.gstraymond.indexer
 
-import com.github.plokhotnyuk.jsoniter_scala.core._
-import fr.gstraymond.indexer.IndexerModels._
-import fr.gstraymond.rules.model.RuleFormats._
+import com.github.plokhotnyuk.jsoniter_scala.core.*
+import fr.gstraymond.indexer.IndexerModels.*
+import fr.gstraymond.rules.model.RuleFormats.*
 import fr.gstraymond.rules.model.Rules
 
 object EsRulesIndexer extends EsIndexer[Rules] {

@@ -1,6 +1,6 @@
 package fr.gstraymond.parser
 
-import fr.gstraymond.constant.Color._
+import fr.gstraymond.constant.Color.*
 import fr.gstraymond.parser.field.ColorField
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification

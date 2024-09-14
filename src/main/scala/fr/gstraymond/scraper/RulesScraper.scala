@@ -6,7 +6,7 @@ import java.net.URLDecoder
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 object RulesScraper extends WizardsScraper with Log {
 

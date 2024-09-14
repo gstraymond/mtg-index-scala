@@ -2,7 +2,7 @@ package fr.gstraymond.scraper.format
 
 import org.jsoup.nodes.Document
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 object VintageRestrictedFormatScrap extends FormatScrap {
   override val name = "restricted"

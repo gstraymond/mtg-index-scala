@@ -1,9 +1,9 @@
 package fr.gstraymond.parser
 
 import fr.gstraymond.constant.URIs
-import fr.gstraymond.model._
-import fr.gstraymond.parser.PriceModels._
-import fr.gstraymond.parser.field._
+import fr.gstraymond.model.*
+import fr.gstraymond.parser.PriceModels.*
+import fr.gstraymond.parser.field.*
 import fr.gstraymond.utils.Log
 import fr.gstraymond.utils.StringUtils
 

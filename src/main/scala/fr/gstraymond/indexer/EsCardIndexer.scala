@@ -1,9 +1,9 @@
 package fr.gstraymond.indexer
 
-import com.github.plokhotnyuk.jsoniter_scala.core._
-import fr.gstraymond.indexer.IndexerModels._
+import com.github.plokhotnyuk.jsoniter_scala.core.*
+import fr.gstraymond.indexer.IndexerModels.*
 import fr.gstraymond.model.MTGCard
-import fr.gstraymond.model.MTGCardFormat._
+import fr.gstraymond.model.MTGCardFormat.*
 
 object EsCardIndexer extends EsIndexer[MTGCard] {
 

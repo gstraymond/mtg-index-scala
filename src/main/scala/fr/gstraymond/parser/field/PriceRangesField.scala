@@ -1,6 +1,6 @@
 package fr.gstraymond.parser.field
 
-import fr.gstraymond.parser.PriceModels._
+import fr.gstraymond.parser.PriceModels.*
 
 trait PriceRangesField {
 

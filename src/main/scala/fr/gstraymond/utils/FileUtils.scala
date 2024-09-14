@@ -1,6 +1,6 @@
 package fr.gstraymond.utils
 
-import com.github.plokhotnyuk.jsoniter_scala.core._
+import com.github.plokhotnyuk.jsoniter_scala.core.*
 
 import java.io.File
 import java.io.PrintWriter

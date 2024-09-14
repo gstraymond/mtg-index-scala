@@ -1,7 +1,7 @@
 package fr.gstraymond.parser.field
 
 import fr.gstraymond.constant.Color
-import fr.gstraymond.constant.Color._
+import fr.gstraymond.constant.Color.*
 
 trait ColorField {
 

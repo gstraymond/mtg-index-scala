@@ -4,7 +4,7 @@ import fr.gstraymond.utils.Log
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 object AbilityScraper extends WikipediaScraper with Log {
 

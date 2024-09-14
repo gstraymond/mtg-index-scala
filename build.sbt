@@ -32,7 +32,7 @@ lazy val root = (project in file("."))
       // https://docs.scala-lang.org/scala3/reference/other-new-features/safe-initialization.html
       "-Wsafe-init",
       // https://docs.scala-lang.org/scala3/guides/migration/tooling-migration-mode.html
-      "-source:3.0-migration"
+      "-source:future-migration"
     )
   )
   .dependsOn(macros)

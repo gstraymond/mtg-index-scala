@@ -5,11 +5,11 @@ import fr.gstraymond.dl.EditionPictureDownloader
 import fr.gstraymond.indexer.EsAutocompleteIndexer
 import fr.gstraymond.indexer.EsCardIndexer
 import fr.gstraymond.indexer.EsRulesIndexer
-import fr.gstraymond.model._
+import fr.gstraymond.model.*
 import fr.gstraymond.parser.AllSetConverter
 import fr.gstraymond.rules.model.Rules
 import fr.gstraymond.rules.parser.RulesParser
-import fr.gstraymond.scraper._
+import fr.gstraymond.scraper.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

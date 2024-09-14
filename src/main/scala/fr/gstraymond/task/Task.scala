@@ -16,14 +16,14 @@ import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.util.control.NonFatal
 
-trait Task[A] extends Log {
+trait Task[A <: Matchable] extends Log {
 
   private val name = getClass.getSimpleName.replace("$", "")
 
   def main(args: Array[String]): Unit = {
 
     val timing = Timing(name) {
-      val eventualProcess = process.recover[Any] { case NonFatal(e) =>
+      val eventualProcess = process.recover { case NonFatal(e) =>
         log.error(s"error during $name", e)
       }
       Await.result(eventualProcess, Duration.Inf)
@@ -34,11 +34,11 @@ trait Task[A] extends Log {
 
   def process: Future[A]
 
-  import fr.gstraymond.model.MTGCardFormat._
-  import fr.gstraymond.model.MTGJsonFormats._
-  import fr.gstraymond.model.ScrapedFormatFormat._
-  import fr.gstraymond.rules.model.RuleFormats._
-  import fr.gstraymond.parser.PriceModels._
+  import fr.gstraymond.model.MTGCardFormat.*
+  import fr.gstraymond.model.MTGJsonFormats.*
+  import fr.gstraymond.model.ScrapedFormatFormat.*
+  import fr.gstraymond.rules.model.RuleFormats.*
+  import fr.gstraymond.parser.PriceModels.*
 
   protected def storeMTGCards(cards: Seq[MTGCard]) = {
     mkDir(FileUtils.outputPath)
