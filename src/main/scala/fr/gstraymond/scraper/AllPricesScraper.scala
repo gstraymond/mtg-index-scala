@@ -14,7 +14,7 @@ object AllPricesScraper extends MtgJsonScraper {
 
   val path = "/api/v5/AllPrices.json"
 
-  def scrap: Future[Seq[CardPrice]] = Future {
+  def scrap: Future[Map[String, CardPricePartial]] = Future {
     new File(FileUtils.scrapPath).mkdirs()
 
     val command = s"curl '${buildFullUrl(path)}'" #> new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
@@ -48,14 +48,14 @@ object AllPricesScraper extends MtgJsonScraper {
           .flatMap(_.split(','))
           .filterNot(_.isEmpty)
           .map(_.replace("\"", ""))
-        elements.lastOption.flatMap(_.toDoubleOption).foreach { priceAsDouble =>
+        elements.lastOption.flatMap(_.toFloatOption).foreach { priceAsFloat =>
           val uuid     = elements(1)
           val isPaper  = elements(2) == "paper"
           val isNormal = elements(5) == "normal"
           val cp = {
             val price =
-              if isNormal then Price(Some(priceAsDouble), None)
-              else Price(None, Some(priceAsDouble))
+              if isNormal then Price(Some(priceAsFloat), None)
+              else Price(None, Some(priceAsFloat))
 
             if isPaper then CardPrice(uuid, Some(price), None)
             else CardPrice(uuid, None, Some(price))
@@ -64,14 +64,13 @@ object AllPricesScraper extends MtgJsonScraper {
           if Some(uuid) != currentCardPrice.map(_.uuid) then {
             currentCardPrice.foreach(cardPrices.addOne)
             currentCardPrice = Some(cp)
-          }
-          else currentCardPrice = Some(mergeCP(currentCardPrice.get, cp))
+          } else currentCardPrice = Some(mergeCP(currentCardPrice.get, cp))
         }
       }
 
     currentCardPrice.foreach(cardPrices.addOne)
 
-    cardPrices.toSeq
+    cardPrices.toSeq.groupBy(_.uuid).view.mapValues(_.head).mapValues(cp => CardPricePartial(cp.paper, cp.online)).toMap
   }
 
   private def mergeCP(cp1: CardPrice, cp2: CardPrice): CardPrice = {
@@ -88,6 +87,6 @@ object AllPricesScraper extends MtgJsonScraper {
     else Some(Price(normal, foil))
   }
 
-  private def mergeD(p1: Option[Double], p2: Option[Double]): Option[Double] =
+  private def mergeD(p1: Option[Float], p2: Option[Float]): Option[Float] =
     p2.orElse(p1)
 }

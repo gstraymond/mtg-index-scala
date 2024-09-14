@@ -26,12 +26,12 @@ case class MTGJsonCard(
     convertedManaCost: Option[Double],
     colors: Option[Seq[String]],
     `type`: String,
-    //supertypes: Option[Seq[String]],
-    //types: Option[Seq[String]],
-    //subtypes: Option[Seq[String]],
+    // supertypes: Option[Seq[String]],
+    // types: Option[Seq[String]],
+    // subtypes: Option[Seq[String]],
     rarity: String,
     text: Option[String],
-    //flavorText: Option[String],
+    // flavorText: Option[String],
     artist: Option[String],
     number: Option[String],
     power: Option[String],
@@ -62,8 +62,8 @@ case class MTGJsonPriceOnline(cardhoarder: MTGJsonPriceProvider)
 case class MTGJsonPriceProvider(retail: Option[MTGJsonRetail])
 
 case class MTGJsonRetail(
-    normal: Option[Map[String, Double]],
-    foil: Option[Map[String, Double]]
+    normal: Option[Map[String, Float]],
+    foil: Option[Map[String, Float]]
 )
 
 object MTGJsonFormats {

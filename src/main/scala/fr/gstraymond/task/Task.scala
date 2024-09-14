@@ -61,7 +61,7 @@ trait Task[A] extends Log {
     rules
   }
 
-  protected def storePrices(prices: Seq[CardPrice]) = {
+  protected def storePrices(prices: Map[String, CardPricePartial]) = {
     mkDir(FileUtils.outputPath)
     val file = new File(s"${FileUtils.outputPath}/prices.json")
     FileUtils.storeJson(file, prices)
@@ -71,14 +71,15 @@ trait Task[A] extends Log {
   protected def loadAllSet: Map[String, MTGJsonEdition] =
     readFromStream[MTGJsonAllPrintings](
       new FileInputStream(s"${FileUtils.scrapPath}/AllPrintings.json"),
-      ReaderConfig.withPreferredBufSize(30 * 1024 * 1024)
+      ReaderConfig.withPreferredBufSize(30_000_000)
     ).data
 
-  protected def loadAllPrices: Seq[CardPrice] =
-    readFromStream[Seq[CardPrice]](
+  protected def loadAllPrices: Map[String, CardPricePartial] = {
+    readFromStream(
       new FileInputStream(s"${FileUtils.outputPath}/prices.json"),
-      ReaderConfig.withPreferredBufSize(1 * 1024 * 1024)
+      ReaderConfig.withPreferredBufSize(1_000_000)
     )
+  }
 
   protected def loadFormats: Seq[ScrapedFormat] = {
     val json = new FileInputStream(s"${FileUtils.scrapPath}/formats.json")
@@ -97,7 +98,7 @@ trait Task[A] extends Log {
 
   private def mkDir(path: String) = {
     val dir = new File(path)
-    if !dir.exists() then { 
+    if !dir.exists() then {
       val _ = dir.mkdirs()
     }
   }

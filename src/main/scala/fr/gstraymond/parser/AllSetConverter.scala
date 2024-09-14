@@ -115,10 +115,8 @@ object AllSetConverter
   def convert(
       loadAllSet: Map[String, MTGJsonEdition],
       abilities: Seq[String],
-      prices: Seq[CardPrice]
+      prices: Map[String, CardPricePartial]
   ): Future[Seq[MTGCard]] = Future.successful {
-    val groupedPrices = prices.groupBy(_.uuid).view.mapValues(_.head).toMap
-
     val nextWeek = LocalDate.now().plusWeeks(1)
 
     val allCards = loadAllSet.values
@@ -134,7 +132,7 @@ object AllSetConverter
       val cards      = groupedCardsSorted.map(_._1)
       val editions   = groupedCardsSorted.map(_._2)
       val firstCard  = cards.head
-      val cardPrices = cards.map(_.uuid).flatMap(groupedPrices.get(_))
+      val cardPrices = cards.map(_.uuid).flatMap(prices.get)
       val castingCost = firstCard.manaCost.map {
         _.replace("}{", " ")
           .replace("{", "")
@@ -192,10 +190,10 @@ object AllSetConverter
             editionImage = stdEditionCode.map { code =>
               s"${URIs.pictureHost}/sets/$code/$rarityCode.gif"
             },
-            price = computePrices(groupedPrices.get(card.uuid)),
-            foilPrice = computePrices(groupedPrices.get(card.uuid), foil = true),
-            mtgoPrice = computePrices(groupedPrices.get(card.uuid), online = true),
-            mtgoFoilPrice = computePrices(groupedPrices.get(card.uuid), foil = true, online = true),
+            price = computePrices(prices.get(card.uuid)),
+            foilPrice = computePrices(prices.get(card.uuid), foil = true),
+            mtgoPrice = computePrices(prices.get(card.uuid), online = true),
+            mtgoFoilPrice = computePrices(prices.get(card.uuid), foil = true, online = true),
             block = edition.block,
             multiverseId = card.identifiers.multiverseId.flatMap(_.toLongOption)
           )
@@ -220,7 +218,7 @@ object AllSetConverter
 
   implicit val ord: Ordering[LocalDate] = _.compareTo(_)
 
-  private def computePrices(price: Option[CardPrice], foil: Boolean = false, online: Boolean = false) = {
+  private def computePrices(price: Option[CardPricePartial], foil: Boolean = false, online: Boolean = false) = {
     val cardPrice = if online then price.flatMap(_.online) else price.flatMap(_.paper)
     if foil then cardPrice.flatMap(_.foil)
     else cardPrice.flatMap(_.normal)

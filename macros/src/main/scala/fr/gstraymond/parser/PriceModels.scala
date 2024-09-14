@@ -8,8 +8,10 @@ object PriceModels {
 
   case class CardPrice(uuid: String, paper: Option[Price], online: Option[Price])
 
-  case class Price(normal: Option[Double], foil: Option[Double])
+  case class CardPricePartial(paper: Option[Price], online: Option[Price])
 
-  implicit val cardPriceFormat: JsonValueCodec[Seq[CardPrice]] =
-    JsonCodecMaker.make(CodecMakerConfig.withTransientEmpty(false))
+  case class Price(normal: Option[Float], foil: Option[Float])
+
+  implicit val cardPriceFormat: JsonValueCodec[Map[String, CardPricePartial]] =
+    JsonCodecMaker.make(CodecMakerConfig.withTransientEmpty(false).withMapMaxInsertNumber(1_000_000))
 }
