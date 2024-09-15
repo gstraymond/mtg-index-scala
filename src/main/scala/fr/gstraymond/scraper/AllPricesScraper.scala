@@ -2,6 +2,7 @@ package fr.gstraymond.scraper
 
 import fr.gstraymond.parser.PriceModels.*
 import fr.gstraymond.utils.FileUtils
+import fr.gstraymond.utils.Log
 
 import java.io.File
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -10,7 +11,7 @@ import scala.io.Source
 
 import sys.process.*
 
-object AllPricesScraper extends MtgJsonScraper {
+object AllPricesScraper extends MtgJsonScraper, Log {
 
   val path = "/api/v5/AllPrices.json"
 
@@ -19,14 +20,14 @@ object AllPricesScraper extends MtgJsonScraper {
 
     val command = s"curl '${buildFullUrl(path)}'" #> new File(s"${FileUtils.scrapPath}/AllPrices.orig.json")
 
-    println(s"""command: $command""")
+    log.info(s"""command: $command""")
     val _ = command.!
 
     val command2 = s"cat ${FileUtils.scrapPath}/AllPrices.orig.json" #| "jq -c --stream ." #> new File(
       s"${FileUtils.scrapPath}/AllPrices.stream.json"
     )
 
-    println(s"""command2: $command2""")
+    log.info(s"""command2: $command2""")
     val _ = command2.!
 
     var currentCardPrice: Option[CardPrice] = None
@@ -39,7 +40,7 @@ object AllPricesScraper extends MtgJsonScraper {
       .filterNot(_.contains("cardmarket"))
       .zipWithIndex
       .foreach { case (line, i) =>
-        if i % 100000 == 0 then println(s"i: $i - ${cardPrices.lastOption}")
+        if i % 100000 == 0 then log.debug(s"i: $i - ${cardPrices.lastOption}")
 
         val elements = line
           .split('[')

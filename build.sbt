@@ -3,7 +3,7 @@ import org.typelevel.sbt.tpolecat.DevMode
 import Dependencies.*
 
 ThisBuild / scalaVersion                 := "3.5.0"
-ThisBuild / version                      := "15"
+ThisBuild / version                      := "16"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
 ThisBuild / packageDoc / publishArtifact := false
@@ -16,11 +16,10 @@ lazy val root = (project in file("."))
   .settings(
     name := "mtg-index-scala",
     libraryDependencies ++= List(
-      slf4j,
-      logback,
       jsoup,
       jsoniter_core,
-      sttp
+      scribe,
+      sttp,
     ),
     libraryDependencies ++= List(specs2_core, specs2_junit).map(_ % Test),
     Compile / run / mainClass        := Some("fr.gstraymond.task.MtgIndexScala"),
