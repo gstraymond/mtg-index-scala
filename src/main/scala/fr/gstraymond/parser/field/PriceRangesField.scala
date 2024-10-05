@@ -13,7 +13,7 @@ trait PriceRangesField {
   def _minMtgoPriceRange(prices: Seq[CardPricePartial]): Option[String] =
     getMtgoPrices(prices).minOption.map(toRange)
 
-  private def toRange(price: Float) = price match {
+  private def toRange(price: Double) = price match {
     case p if p < 0.20              => "< 0.20$"
     case p if p >= 0.20 && p < 0.50 => "0.20$ .. 0.50$"
     case p if p >= 0.50 && p < 1    => "0.50$ .. 1$"
@@ -23,13 +23,13 @@ trait PriceRangesField {
     case _                          => "> 100$"
   }
 
-  private def getPaperPrices(prices: Seq[CardPricePartial]): Set[Float] =
+  private def getPaperPrices(prices: Seq[CardPricePartial]): Set[Double] =
     prices
       .flatMap { _.paper }
       .flatMap { price => price.normal ++ price.foil }
       .toSet
 
-  private def getMtgoPrices(prices: Seq[CardPricePartial]): Set[Float] =
+  private def getMtgoPrices(prices: Seq[CardPricePartial]): Set[Double] =
     prices
       .flatMap { _.online }
       .flatMap { price => price.normal ++ price.foil }

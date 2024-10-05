@@ -49,14 +49,14 @@ object AllPricesScraper extends MtgJsonScraper, Log {
           .flatMap(_.split(','))
           .filterNot(_.isEmpty)
           .map(_.replace("\"", ""))
-        elements.lastOption.flatMap(_.toFloatOption).foreach { priceAsFloat =>
+        elements.lastOption.flatMap(_.toDoubleOption).foreach { priceAsDouble =>
           val uuid     = elements(1)
           val isPaper  = elements(2) == "paper"
           val isNormal = elements(5) == "normal"
           val cp = {
             val price =
-              if isNormal then Price(Some(priceAsFloat), None)
-              else Price(None, Some(priceAsFloat))
+              if isNormal then Price(Some(priceAsDouble), None)
+              else Price(None, Some(priceAsDouble))
 
             if isPaper then CardPrice(uuid, Some(price), None)
             else CardPrice(uuid, None, Some(price))
@@ -88,6 +88,6 @@ object AllPricesScraper extends MtgJsonScraper, Log {
     else Some(Price(normal, foil))
   }
 
-  private def mergeD(p1: Option[Float], p2: Option[Float]): Option[Float] =
+  private def mergeD(p1: Option[Double], p2: Option[Double]): Option[Double] =
     p2.orElse(p1)
 }

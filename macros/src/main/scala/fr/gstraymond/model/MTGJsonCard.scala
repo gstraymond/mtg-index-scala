@@ -62,8 +62,8 @@ case class MTGJsonPriceOnline(cardhoarder: MTGJsonPriceProvider)
 case class MTGJsonPriceProvider(retail: Option[MTGJsonRetail])
 
 case class MTGJsonRetail(
-    normal: Option[Map[String, Float]],
-    foil: Option[Map[String, Float]]
+    normal: Option[Map[String, Double]],
+    foil: Option[Map[String, Double]]
 )
 
 object MTGJsonFormats {

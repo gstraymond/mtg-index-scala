@@ -3,7 +3,7 @@ import org.typelevel.sbt.tpolecat.DevMode
 import Dependencies.*
 
 ThisBuild / scalaVersion                 := "3.5.0"
-ThisBuild / version                      := "16"
+ThisBuild / version                      := "17"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
 ThisBuild / packageDoc / publishArtifact := false
@@ -12,7 +12,7 @@ ThisBuild / packageSrc / publishArtifact := false
 ThisBuild / tpolecatDefaultOptionsMode := DevMode
 
 lazy val root = (project in file("."))
-  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
   .settings(
     name := "mtg-index-scala",
     libraryDependencies ++= List(
@@ -24,6 +24,8 @@ lazy val root = (project in file("."))
     libraryDependencies ++= List(specs2_core, specs2_junit).map(_ % Test),
     Compile / run / mainClass        := Some("fr.gstraymond.task.MtgIndexScala"),
     Compile / packageBin / mainClass := Some("fr.gstraymond.task.MtgIndexScala"),
+    GraalVMNativeImage / mainClass := Some("fr.gstraymond.task.MtgIndexScala"),
+    graalVMNativeImageCommand := "/Library/Java/JavaVirtualMachines/graalvm-23.jdk/Contents/Home/bin/native-image",
     scalacOptions ++= Seq(
       // https://docs.scala-lang.org/scala3/reference/other-new-features/indentation.html
       "-no-indent",

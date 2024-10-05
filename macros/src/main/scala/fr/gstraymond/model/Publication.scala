@@ -10,10 +10,10 @@ case class Publication(
     rarityCode: Option[String],
     image: Option[String],
     editionImage: Option[String],
-    price: Option[Float],
-    foilPrice: Option[Float],
-    mtgoPrice: Option[Float],
-    mtgoFoilPrice: Option[Float],
+    price: Option[Double],
+    foilPrice: Option[Double],
+    mtgoPrice: Option[Double],
+    mtgoFoilPrice: Option[Double],
     block: Option[String],
     multiverseId: Option[Long]
 )
