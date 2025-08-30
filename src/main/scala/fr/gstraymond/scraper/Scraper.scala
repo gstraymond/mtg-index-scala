@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.Date
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import sttp.model.HeaderNames.UserAgent
 
 trait Scraper extends Log {
   def host: String
@@ -81,11 +82,14 @@ trait WizardsScraper extends Scraper {
 object Sttp {
   private val backend = HttpClientFutureBackend()
 
+  private val requestWithUserAgent = 
+    quickRequest.header(UserAgent, "'MtgSearch/1.0 (https://mtg-search.com; magic.card.search@gmail.com)'")
+
   def delete(path: String): Future[String] =
     send(quickRequest.delete(uri"""$path"""))
 
   def getString(path: String): Future[String] =
-    send(quickRequest.get(uri"""$path"""))
+    send(requestWithUserAgent.get(uri"""$path"""))
 
   def getBytes(path: String): Future[Array[Byte]] =
     send(basicRequest.get(uri"""$path""").response(asByteArrayAlways))
