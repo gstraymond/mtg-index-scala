@@ -14,19 +14,15 @@ import scala.concurrent.Future
 object CardPictureDownloader extends GathererScraper with Log {
 
   def download(cards: Seq[MTGCard]): Future[Unit] = {
-    val init = Future.successful(())
-    cards.flatMap(download).foldLeft(init) { (acc, f) =>
-      for {
-        _ <- acc
-        _ <- f
-      }
-      yield ()
+    val init = Future.unit
+    cards.foldLeft(init) { (acc, f) =>
+      acc.flatMap(_ => download(f))
     }
   }
 
-  def download(card: MTGCard): Seq[Future[Unit]] =
-    card.publications.map { publication =>
-      publication.multiverseId
+  def download(card: MTGCard): Future[Unit] = {
+    card.publications.foldLeft(Future.unit) { case (acc, publication) =>
+      val res = publication.multiverseId
         .map { multiverseId =>
           val file =
             new File(s"${URIs.pictureLocation}/pics/${publication.editionCode}/$multiverseId-${formatTitle(card)}")
@@ -47,12 +43,15 @@ object CardPictureDownloader extends GathererScraper with Log {
                 fos.close()
             }
           }
-          else Future.successful(())
+          else Future.unit
         }
         .getOrElse {
-          Future.successful(())
+          Future.unit
       }
+
+      acc.flatMap(_ => res)
     }
+  }
 
   def formatTitle(card: MTGCard): String = {
     def name = StringUtils.normalize(card.title)
