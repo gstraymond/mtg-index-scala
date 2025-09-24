@@ -13,7 +13,7 @@ import sys.process.*
 
 object AllPricesScraper extends MtgJsonScraper, Log {
 
-  val path = "/api/v5/AllPrices.json"
+  val path = "/api/v5/AllPricesToday.json"
 
   def scrap: Future[Map[String, CardPricePartial]] = Future {
     new File(FileUtils.scrapPath).mkdirs()
@@ -38,6 +38,7 @@ object AllPricesScraper extends MtgJsonScraper, Log {
       .getLines()
       .filter(_.contains("retail"))
       .filterNot(_.contains("cardmarket"))
+      .filterNot(_.contains("manapool"))
       .zipWithIndex
       .foreach { case (line, i) =>
         if i % 100000 == 0 then log.debug(s"i: $i - ${cardPrices.lastOption}")
