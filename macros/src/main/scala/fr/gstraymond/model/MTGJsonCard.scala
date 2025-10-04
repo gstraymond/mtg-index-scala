@@ -43,7 +43,7 @@ case class MTGJsonCard(
     rulings: Option[Seq[MTGJsonRuling]]
 )
 
-case class MTGJsonIdentifiers(multiverseId: Option[String])
+case class MTGJsonIdentifiers(multiverseId: Option[String], scryfallId: Option[String])
 
 case class MTGJsonForeignData(language: String, name: Option[String])
 

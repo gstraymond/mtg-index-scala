@@ -67,6 +67,10 @@ trait GathererScraper extends Scraper {
   override val host = "gatherer.wizards.com"
 }
 
+trait ScryfallScraper extends Scraper {
+  override val host = "cards.scryfall.io"
+}
+
 trait MtgJsonScraper extends Scraper {
   override val host = "mtgjson.com"
 }

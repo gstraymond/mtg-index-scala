@@ -3,7 +3,7 @@ import org.typelevel.sbt.tpolecat.DevMode
 import Dependencies.*
 
 ThisBuild / scalaVersion                 := "3.5.0"
-ThisBuild / version                      := "20"
+ThisBuild / version                      := "21"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
 ThisBuild / packageDoc / publishArtifact := false

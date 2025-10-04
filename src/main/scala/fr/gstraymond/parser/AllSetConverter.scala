@@ -184,7 +184,7 @@ object AllSetConverter
             stdEditionCode = stdEditionCode,
             rarity = rarity,
             rarityCode = Some(rarityCode),
-            image = card.identifiers.multiverseId.map { multiverseId =>
+            image = card.identifiers.multiverseId.orElse(card.identifiers.scryfallId).map { multiverseId =>
               s"${URIs.pictureHost}/pics/$editionCode/$multiverseId-$urlTitle.jpg"
             },
             editionImage = stdEditionCode.map { code =>
@@ -195,7 +195,8 @@ object AllSetConverter
             mtgoPrice = computePrices(prices.get(card.uuid), online = true),
             mtgoFoilPrice = computePrices(prices.get(card.uuid), foil = true, online = true),
             block = edition.block,
-            multiverseId = card.identifiers.multiverseId.flatMap(_.toLongOption)
+            multiverseId = card.identifiers.multiverseId.flatMap(_.toLongOption),
+            scryfallId = card.identifiers.scryfallId
           )
         },
         abilities = _abilities(title, description, abilities),

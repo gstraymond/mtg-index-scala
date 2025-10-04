@@ -2,7 +2,7 @@ package fr.gstraymond.dl
 
 import fr.gstraymond.constant.URIs
 import fr.gstraymond.model.MTGCard
-import fr.gstraymond.scraper.GathererScraper
+import fr.gstraymond.scraper.ScryfallScraper
 import fr.gstraymond.utils.Log
 import fr.gstraymond.utils.StringUtils
 
@@ -11,7 +11,7 @@ import java.io.FileOutputStream
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object CardPictureDownloader extends GathererScraper with Log {
+object CardPictureDownloader extends ScryfallScraper with Log {
 
   def download(cards: Seq[MTGCard]): Future[Unit] = {
     val init = Future.unit
@@ -22,8 +22,9 @@ object CardPictureDownloader extends GathererScraper with Log {
 
   def download(card: MTGCard): Future[Unit] = {
     card.publications.foldLeft(Future.unit) { case (acc, publication) =>
-      val res = publication.multiverseId
-        .map { multiverseId =>
+      val res = publication.scryfallId
+        .map { scryfallId =>
+          val multiverseId = publication.multiverseId.getOrElse(scryfallId)
           val file =
             new File(s"${URIs.pictureLocation}/pics/${publication.editionCode}/$multiverseId-${formatTitle(card)}")
 
@@ -33,8 +34,8 @@ object CardPictureDownloader extends GathererScraper with Log {
 
           if !file.exists() then {
             log.warn(s"picture not found: [${file.getAbsoluteFile}] ${card.title} - ${publication.edition}")
-            Thread.sleep(100)
-            val path = s"/Handlers/Image.ashx?multiverseid=$multiverseId&type=card"
+            Thread.sleep(500)
+            val path = s"/large/front/${scryfallId(0)}/${scryfallId(1)}/$scryfallId.jpg"
             get(path).map {
               case Array() =>
               case bytes =>
