@@ -34,21 +34,21 @@ object CardPictureDownloader extends ScryfallScraper with Log {
 
           if !file.exists() then {
             log.warn(s"picture not found: [${file.getAbsoluteFile}] ${card.title} - ${publication.edition}")
-            Thread.sleep(500)
             val path = s"/large/front/${scryfallId(0)}/${scryfallId(1)}/$scryfallId.jpg"
-            get(path).map {
-              case Array() =>
-              case bytes =>
-                val fos = new FileOutputStream(file)
-                fos.write(bytes)
-                fos.close()
+            Future(Thread.sleep(500)).flatMap { _ =>
+              get(path).map {
+                case Array() =>
+                case bytes =>
+                  val fos = new FileOutputStream(file)
+                  fos.write(bytes)
+                  fos.close()
+              }
             }
-          }
-          else Future.unit
+          } else Future.unit
         }
         .getOrElse {
           Future.unit
-      }
+        }
 
       acc.flatMap(_ => res)
     }

@@ -37,7 +37,7 @@ trait Scraper extends Log {
   def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
     val fullUrl = buildFullUrl(path)
 
-    Sttp.getString(fullUrl).map { 
+    Sttp.getString(fullUrl).map {
       log.info(s"scraping url $fullUrl done")
       Jsoup.parse
     }
@@ -47,7 +47,8 @@ trait Scraper extends Log {
     download(buildFullUrl(path))
 
   def download(fullUrl: String): Future[Array[Byte]] =
-    Sttp.getBytes(fullUrl)
+    Sttp
+      .getBytes(fullUrl)
       .map { bytes =>
         log.info(s"scraping url $fullUrl done")
         bytes
@@ -64,7 +65,7 @@ trait MTGSalvationScraper extends Scraper {
 }
 
 trait GathererScraper extends Scraper {
-  override val host = "gatherer.wizards.com"
+  override val host = "gatherer-static.wizards.com"
 }
 
 trait ScryfallScraper extends Scraper {
@@ -86,17 +87,23 @@ trait WizardsScraper extends Scraper {
 object Sttp {
   private val backend = HttpClientFutureBackend()
 
-  private val requestWithUserAgent = 
-    quickRequest.header(UserAgent, "'MtgSearch/1.0 (https://mtg-search.com; magic.card.search@gmail.com)'")
+  private val requestWithUserAgent =
+    basicRequest.header(UserAgent, "'MtgSearch/1.0 (https://mtg-search.com; magic.card.search@gmail.com)'")
 
   def delete(path: String): Future[String] =
     send(quickRequest.delete(uri"""$path"""))
 
   def getString(path: String): Future[String] =
-    send(requestWithUserAgent.get(uri"""$path"""))
+    send(requestWithUserAgent.get(uri"""$path""")).flatMap {
+      case Left(error)   => Future.failed(new RuntimeException(error))
+      case Right(string) => Future.successful(string)
+    }
 
   def getBytes(path: String): Future[Array[Byte]] =
-    send(basicRequest.get(uri"""$path""").response(asByteArrayAlways))
+    send(basicRequest.get(uri"""$path""").response(asByteArray)).flatMap {
+      case Left(error)  => Future.failed(new RuntimeException(error))
+      case Right(bytes) => Future.successful(bytes)
+    }
 
   def postJson(path: String, body: String): Future[String] =
     send(

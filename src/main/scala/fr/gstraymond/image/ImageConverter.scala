@@ -8,7 +8,7 @@ import scala.sys.process.*
 
 object ImageConverter extends Log {
 
-  val dest = "/Users/guillaume/git/magic-card-search/app/src/main/assets/sets"
+  val dest = "/home/guillaume/git/magic-card-search/app/src/main/assets/sets"
 
   def convert() = {
     val file1: File = new File(URIs.pictureLocation + "/sets")
