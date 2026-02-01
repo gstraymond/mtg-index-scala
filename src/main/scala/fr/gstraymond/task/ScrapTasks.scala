@@ -42,8 +42,7 @@ object AllPricesScrapTask extends Task[Unit] {
     for {
       prices <- AllPricesScraper.scrap
       _ = storePrices(prices)
-    }
-    yield ()
+    } yield ()
 }
 
 object AllSetConvertTask extends Task[Seq[MTGCard]] {
@@ -64,30 +63,39 @@ object AllSetConvertTask extends Task[Seq[MTGCard]] {
       _ <- EsRulesIndexer.delete()
       _ <- EsRulesIndexer.configure()
       _ <- EsRulesIndexer.index(Seq(rules))
-    }
-    yield storeMTGCards(mtgCards)
+    } yield storeMTGCards(mtgCards)
 }
 
 object MtgIndexScala extends Task[Unit] {
-  override def process: Future[Unit] =
+  override def process: Future[Unit] = {
+    log.info("Scrap prices")
     for {
       allPrices <- AllPricesScraper.scrap
-      _         <- AllSetScraper.scrap
+      _ = log.info("Scrap set")
+      _ <- AllSetScraper.scrap
+      _ = log.info("Scrap ability")
       abilities <- AbilityScraper.scrap
-      mtgCards  <- AllSetConverter.convert(loadAllSet, abilities, allPrices)
-      _         <- EditionPictureDownloader.download(mtgCards)
-      _         <- CardPictureDownloader.download(mtgCards)
-      _         <- EsCardIndexer.delete()
-      _         <- EsCardIndexer.configure()
-      _         <- EsCardIndexer.index(mtgCards)
-      _         <- EsAutocompleteIndexer.delete()
-      _         <- EsAutocompleteIndexer.configure()
-      _         <- EsAutocompleteIndexer.index(mtgCards)
-      rawRules  <- RulesScraper.scrap
+      _ = log.info("AllSet convert")
+      mtgCards <- AllSetConverter.convert(loadAllSet, abilities, allPrices)
+      _ = log.info("DL edition pictures")
+      _ <- EditionPictureDownloader.download(mtgCards)
+      _ = log.info("DL card pictures")
+      _ <- CardPictureDownloader.download(mtgCards)
+      _ = log.info("ES cards")
+      _ <- EsCardIndexer.delete()
+      _ <- EsCardIndexer.configure()
+      _ <- EsCardIndexer.index(mtgCards)
+      _ = log.info("ES autocomplete")
+      _ <- EsAutocompleteIndexer.delete()
+      _ <- EsAutocompleteIndexer.configure()
+      _ <- EsAutocompleteIndexer.index(mtgCards)
+      _ = log.info("Scrap rules")
+      rawRules <- RulesScraper.scrap
       rules = RulesParser.parse.tupled(rawRules)
+      _     = log.info("ES rules")
       _ <- EsRulesIndexer.delete()
       _ <- EsRulesIndexer.configure()
       _ <- EsRulesIndexer.index(Seq(rules))
-    }
-    yield ()
+    } yield ()
+  }
 }
