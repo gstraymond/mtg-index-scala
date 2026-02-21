@@ -33,7 +33,8 @@ case class MTGCard(
     loyalty: Option[String],
     special: Seq[String],
     land: Seq[String],
-    ruling: Seq[Ruling]
+    ruling: Seq[Ruling],
+    side: Option[String]
 )
 
 case class Ruling(date: String, text: String)

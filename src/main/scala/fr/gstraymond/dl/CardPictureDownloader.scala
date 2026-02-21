@@ -22,7 +22,7 @@ object CardPictureDownloader extends ScryfallScraper with Log {
 
   def download(card: MTGCard): Future[Unit] = {
     card.publications.foldLeft(Future.unit) { case (acc, publication) =>
-      val res = publication.scryfallId
+      val res: () => Future[Unit] = { case _ => publication.scryfallId
         .map { scryfallId =>
           val multiverseId = publication.multiverseId.getOrElse(scryfallId)
           val file =
@@ -33,9 +33,13 @@ object CardPictureDownloader extends ScryfallScraper with Log {
           }
 
           if !file.exists() then {
+            val side = card.side match {
+              case Some("b") if card.layout == "transform" => "back" 
+              case _ => "front"
+            }
             log.warn(s"picture not found: [${file.getAbsoluteFile}] ${card.title} - ${publication.edition}")
-            val path = s"/large/front/${scryfallId(0)}/${scryfallId(1)}/$scryfallId.jpg"
-            Future(Thread.sleep(500)).flatMap { _ =>
+            val path = s"/large/$side/${scryfallId(0)}/${scryfallId(1)}/$scryfallId.jpg"
+            Future(Thread.sleep(100)).flatMap { _ =>
               get(path).map {
                 case Array() =>
                 case bytes =>
@@ -49,8 +53,9 @@ object CardPictureDownloader extends ScryfallScraper with Log {
         .getOrElse {
           Future.unit
         }
+      }
 
-      acc.flatMap(_ => res)
+      acc.flatMap(_ => res())
     }
   }
 
