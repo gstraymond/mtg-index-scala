@@ -2,8 +2,8 @@ import org.typelevel.sbt.tpolecat.ReleaseMode
 
 import Dependencies.*
 
-ThisBuild / scalaVersion                 := "3.8.2"
-ThisBuild / version                      := "24"
+ThisBuild / scalaVersion                 := "3.7.4" // latest with JDK11
+ThisBuild / version                      := "25"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
 ThisBuild / packageDoc / publishArtifact := false
