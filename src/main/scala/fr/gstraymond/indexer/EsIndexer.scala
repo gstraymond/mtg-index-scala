@@ -4,7 +4,6 @@ import fr.gstraymond.model.MTGCard
 import fr.gstraymond.scraper.Sttp
 import fr.gstraymond.utils.Log
 import fr.gstraymond.utils.StringUtils
-import sttp.client4.quick.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -44,14 +43,13 @@ trait EsIndexer[A] extends Log {
 
     grouped.zipWithIndex
       .foldLeft(Future.successful(0)) { case (acc, (group, i)) =>
-        for {
+        for
           count <- acc
           _ <- Sttp
             .postJson(bulkPath, buildBody(group))
             .map { _ =>
               log.info(s"processed: ${i + 1}/$groupedSize bulks - ${count + group.size}/$cardSize cards")
             }
-        }
         yield count + group.size
       }
       .map { _ => log.info(s"bulk finished !") }

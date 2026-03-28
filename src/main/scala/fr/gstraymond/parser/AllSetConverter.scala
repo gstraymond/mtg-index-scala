@@ -218,7 +218,7 @@ object AllSetConverter
     result
   }
 
-  implicit val ord: Ordering[LocalDate] = _.compareTo(_)
+  given Ordering[LocalDate] = _.compareTo(_)
 
   private def computePrices(price: Option[CardPricePartial], foil: Boolean = false, online: Boolean = false) = {
     val cardPrice = if online then price.flatMap(_.online) else price.flatMap(_.paper)

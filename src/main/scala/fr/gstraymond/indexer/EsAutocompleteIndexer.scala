@@ -12,12 +12,11 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
 
   override val index = "autocomplete"
 
-  override def index(cards: Seq[MTGCard]): Future[Unit] = for {
+  override def index(cards: Seq[MTGCard]): Future[Unit] = for
     _ <- super.index(cards)
     _ <- indexSuggest("token", extractTokens(cards))
     _ <- indexSuggest("edition", extractEditions(cards))
     _ <- indexSuggest("special", extractSpecials(cards))
-  }
   yield ()
 
   override def buildBody(group: Seq[MTGCard]): String =
@@ -76,10 +75,9 @@ object EsAutocompleteIndexer extends EsIndexer[MTGCard] {
   }
 
   private def extractEditions(cards: Seq[MTGCard]): Seq[Autocomplete] =
-    (for {
+    (for
       card <- cards
       pub  <- card.publications
-    }
     yield {
       pub.edition -> pub.stdEditionCode
     }).distinct

@@ -1,15 +1,15 @@
-import org.typelevel.sbt.tpolecat.DevMode
+import org.typelevel.sbt.tpolecat.ReleaseMode
 
 import Dependencies.*
 
-ThisBuild / scalaVersion                 := "3.5.0"
-ThisBuild / version                      := "23"
+ThisBuild / scalaVersion                 := "3.8.2"
+ThisBuild / version                      := "24"
 ThisBuild / organization                 := "fr.gstraymond"
 ThisBuild / organizationName             := "gstraymond"
 ThisBuild / packageDoc / publishArtifact := false
 ThisBuild / packageSrc / publishArtifact := false
 
-ThisBuild / tpolecatDefaultOptionsMode := DevMode
+ThisBuild / tpolecatDefaultOptionsMode := ReleaseMode
 
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
@@ -29,7 +29,7 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq(
       // https://docs.scala-lang.org/scala3/reference/other-new-features/indentation.html
       "-no-indent",
-      "-rewrite",
+      //"-rewrite",
       // https://docs.scala-lang.org/scala3/reference/other-new-features/safe-initialization.html
       "-Wsafe-init",
       // https://docs.scala-lang.org/scala3/guides/migration/tooling-migration-mode.html

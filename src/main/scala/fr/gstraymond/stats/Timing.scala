@@ -39,12 +39,12 @@ class Timing[A <: Matchable] {
 
   // FIXME: howto pass name ?
   def map[B <: Matchable](f: A => B): Timing[B] =
-    flatten(Timing[B](stats.last.name)(f(get)))
+    flatten(using Timing[B](stats.last.name)(f(get)))
 
   def flatMap[B <: Matchable](f: A => Timing[B]): Timing[B] =
-    flatten(f(get))
+    flatten(using f(get))
 
-  def flatten[B <: Matchable](implicit other: Timing[B]): Timing[B] = {
+  def flatten[B <: Matchable](using other: Timing[B]): Timing[B] = {
     other.stats = stats ++ other.stats
     other
   }

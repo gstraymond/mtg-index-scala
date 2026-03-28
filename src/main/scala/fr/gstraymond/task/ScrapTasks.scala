@@ -39,15 +39,15 @@ object AllSetScrapTask extends Task[Unit] {
 
 object AllPricesScrapTask extends Task[Unit] {
   override def process: Future[Unit] =
-    for {
+    for
       prices <- AllPricesScraper.scrap
       _ = storePrices(prices)
-    } yield ()
+    yield ()
 }
 
 object AllSetConvertTask extends Task[Seq[MTGCard]] {
   override def process: Future[Seq[MTGCard]] =
-    for {
+    for
       abilities <- AbilityScraper.scrap
       mtgCards  <- AllSetConverter.convert(loadAllSet, abilities, loadAllPrices)
       _         <- EditionPictureDownloader.download(mtgCards)
@@ -63,13 +63,13 @@ object AllSetConvertTask extends Task[Seq[MTGCard]] {
       _ <- EsRulesIndexer.delete()
       _ <- EsRulesIndexer.configure()
       _ <- EsRulesIndexer.index(Seq(rules))
-    } yield storeMTGCards(mtgCards)
+    yield storeMTGCards(mtgCards)
 }
 
 object MtgIndexScala extends Task[Unit] {
   override def process: Future[Unit] = {
     log.info("Scrap prices")
-    for {
+    for
       allPrices <- AllPricesScraper.scrap
       _ = log.info("Scrap set")
       _ <- AllSetScraper.scrap
@@ -96,6 +96,6 @@ object MtgIndexScala extends Task[Unit] {
       _ <- EsRulesIndexer.delete()
       _ <- EsRulesIndexer.configure()
       _ <- EsRulesIndexer.index(Seq(rules))
-    } yield ()
+    yield ()
   }
 }

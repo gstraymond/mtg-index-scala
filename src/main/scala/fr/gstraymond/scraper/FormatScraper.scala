@@ -22,7 +22,7 @@ object FormatScraper extends MTGSalvationScraper with Log {
 
   def scrap: Future[Seq[ScrapedFormat]] =
     Future.traverse(scrapers) { scraper =>
-      scrap(scraper.path, followRedirect = true).map { doc =>
+      scrap(scraper.path).map { doc =>
         val format = ScrapedFormat(
           scraper.name,
           scraper.currentRotation(doc).toSet,

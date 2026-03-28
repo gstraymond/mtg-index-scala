@@ -13,6 +13,7 @@ import java.util.Date
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import sttp.model.HeaderNames.UserAgent
+import sttp.model.HttpVersion
 
 trait Scraper extends Log {
   def host: String
@@ -34,7 +35,7 @@ trait Scraper extends Log {
     }
   }
 
-  def scrap(path: String, followRedirect: Boolean = false): Future[Document] = {
+  def scrap(path: String): Future[Document] = {
     val fullUrl = buildFullUrl(path)
 
     Sttp.getString(fullUrl).map {
@@ -88,7 +89,9 @@ object Sttp {
   private val backend = HttpClientFutureBackend()
 
   private val requestWithUserAgent =
-    basicRequest.header(UserAgent, "'MtgSearch/1.0 (https://mtg-search.com; magic.card.search@gmail.com)'")
+    basicRequest
+    .httpVersion(HttpVersion.HTTP_1_1)
+    .header(UserAgent, "'MtgSearch/1.0 (https://mtg-search.com; magic.card.search@gmail.com)'")
 
   def delete(path: String): Future[String] =
     send(quickRequest.delete(uri"""$path"""))

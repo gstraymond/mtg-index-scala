@@ -16,7 +16,7 @@ trait FormatScrap {
 
   def restrictedCards(doc: Document): Seq[String] = { val _ = doc; Nil }
 
-  implicit class DocScrap(doc: Document) {
+  extension (doc: Document) {
     def getTexts(cssPath: String): Seq[String] = {
       val result = doc.select(cssPath).asScala.map(_.text())
       assert(result.nonEmpty, s"no result for $name [$cssPath]")

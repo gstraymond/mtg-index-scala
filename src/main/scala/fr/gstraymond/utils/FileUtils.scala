@@ -13,7 +13,7 @@ object FileUtils {
   val scrapPath  = s"$mainPath/scrap"
   val outputPath = s"$mainPath/output"
 
-  def storeJson[A](file: File, a: A)(implicit codec: JsonValueCodec[A]): Unit =
+  def storeJson[A](file: File, a: A)(using codec: JsonValueCodec[A]): Unit =
     Using.resource(new PrintWriter(file)) {
       _.println(writeToString(a, WriterConfig.withIndentionStep(2)))
     }
